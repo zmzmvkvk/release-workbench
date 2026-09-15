@@ -102,3 +102,7 @@ jobs:
           grep -q '"type":"plan.approved"' /tmp/hybrid-exec.txt
           grep -q '"name":"propose_patch_plan"' /tmp/hybrid-exec.txt
           grep -q '"type":"tool.finished"' /tmp/hybrid-exec.txt
+          snap=$(curl -fsS "https://roomy-page-workbench.hommy.workers.dev/workbench/api/runs/${run_id}")
+          echo "$snap"
+          echo "$snap" | grep -q '"mode":"workers-ai"'
+          echo "$snap" | grep -q 'propose_patch_plan'

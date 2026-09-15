@@ -433,6 +433,7 @@ function executeSteps(scenarioId, fixture) {
 async function persistRun(env, run) {
   if (!env.WORKBENCH_IDEMPOTENCY) return;
   try {
+    const eventTypes = (run.events ?? []).map((e) => e.type);
     await env.WORKBENCH_IDEMPOTENCY.put(
       `run:${run.runId}`,
       JSON.stringify({
@@ -441,6 +442,9 @@ async function persistRun(env, run) {
         fixture: run.fixture,
         mode: run.mode,
         idempotencyKey: run.idempotencyKey,
+        eventCount: eventTypes.length,
+        eventTypes: eventTypes.slice(-40),
+        updatedAt: new Date().toISOString(),
       }),
       { expirationTtl: 3600 },
     );
@@ -977,6 +981,38 @@ export default {
       });
     }
 
+    if (
+      url.pathname.match(/^\/workbench\/api\/runs\/[^/]+$/) &&
+      request.method === "GET"
+    ) {
+      const runId = url.pathname.split("/")[4];
+      const mem = runs.get(runId);
+      if (mem) {
+        const eventTypes = (mem.events ?? []).map((e) => e.type);
+        return Response.json({
+          runId: mem.runId,
+          scenarioId: mem.scenarioId,
+          fixture: mem.fixture,
+          mode: mem.mode,
+          eventCount: eventTypes.length,
+          eventTypes: eventTypes.slice(-40),
+          source: "memory",
+        });
+      }
+      if (env.WORKBENCH_IDEMPOTENCY) {
+        try {
+          const raw = await env.WORKBENCH_IDEMPOTENCY.get(`run:${runId}`);
+          if (raw) {
+            const data = JSON.parse(raw);
+            return Response.json({ ...data, source: "kv" });
+          }
+        } catch {
+          /* fall through */
+        }
+      }
+      return Response.json({ error: "not found" }, { status: 404 });
+    }
+
     // --- SSE mock API (HTTP streaming evidence) ---
     if (
       url.pathname === "/workbench/api/runs/stream" &&
@@ -1219,6 +1255,7 @@ export default {
             execAbort.signal,
             env,
           );
+          await persistRun(env, run);
         },
       });
       return new Response(stream, {
