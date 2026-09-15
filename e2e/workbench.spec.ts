@@ -72,6 +72,21 @@ test("header shows worker health or mock fallback label", async ({ page }) => {
   ).toBeVisible({ timeout: 10_000 });
 });
 
+test("header links to curlable evals JSON", async ({ page }) => {
+  await page.goto(WB);
+  await expect(page.getByRole("link", { name: "evals JSON" })).toHaveAttribute(
+    "href",
+    "/workbench/api/evals",
+  );
+});
+
+test("native empty-state fixture has no alias honesty banner", async ({ page }) => {
+  await page.goto(WB);
+  await page.getByRole("button", { name: /rw-024/ }).click();
+  await expect(page.getByText(/alias:/)).toHaveCount(0);
+  await expect(page.getByText(/정직성: 요청 fixture/)).toHaveCount(0);
+});
+
 test("cancel during structuring reaches cancelled", async ({ page }) => {
   await page.goto(WB);
   await page.getByRole("button", { name: /rw-005/ }).click();
