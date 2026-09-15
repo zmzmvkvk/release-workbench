@@ -4,6 +4,8 @@ export type FixtureId =
   | "happy_card_grid"
   | "happy_empty_state"
   | "happy_table_sort"
+  | "happy_phone_mask"
+  | "happy_kst_display"
   | "cancel_during_structuring"
   | "conflict_discount_copy"
   | "invalid_requirements_json"
@@ -212,6 +214,210 @@ export function buildFixtureSteps(fixture: FixtureId, scenarioId: string): Step[
           partial: {
             type: "run.duplicate_blocked",
             payload: { existingRunId: "run_existing_demo" },
+          },
+        },
+      ];
+    case "happy_phone_mask":
+      return [
+        ...baseSteps(scenarioId),
+        {
+          kind: "event",
+          delayMs: 280,
+          partial: {
+            type: "stream.delta",
+            payload: {
+              channel: "structuring",
+              text: "휴대폰 마스크·제출 검증 구조화…",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 400,
+          partial: {
+            type: "requirements.ready",
+            payload: {
+              requirements: [
+                {
+                  id: "r1",
+                  text: "연락처 입력 형식 010-0000-0000",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "010-0000-0000 형식",
+                      sourceIndex: 0,
+                      start: 10,
+                      end: 24,
+                    },
+                  ],
+                },
+                {
+                  id: "r2",
+                  text: "하이픈 자동 삽입",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "하이픈 자동 삽입",
+                      sourceIndex: 0,
+                      start: 26,
+                      end: 35,
+                    },
+                  ],
+                },
+                {
+                  id: "r3",
+                  text: "제출 전 형식 검증",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "제출 전 검증",
+                      sourceIndex: 0,
+                      start: 37,
+                      end: 44,
+                    },
+                  ],
+                },
+                {
+                  id: "r4",
+                  text: "잘못된 형식 시 인라인 에러",
+                  priority: "should",
+                  citations: [
+                    {
+                      quote: "제출 전 검증",
+                      sourceIndex: 0,
+                      start: 37,
+                      end: 44,
+                    },
+                  ],
+                },
+              ],
+              conflicts: [],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 200,
+          partial: {
+            type: "plan.proposed",
+            payload: { steps: ["mask 입력", "검증", "axe"] },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 100,
+          partial: {
+            type: "metrics.sample",
+            payload: {
+              ttftMs: 165,
+              tokens: 360,
+              costUsd: null,
+              provider: "mock",
+              model: "deterministic",
+              promptVersion: "none-mock",
+            },
+          },
+        },
+      ];
+    case "happy_kst_display":
+      return [
+        ...baseSteps(scenarioId),
+        {
+          kind: "event",
+          delayMs: 280,
+          partial: {
+            type: "stream.delta",
+            payload: {
+              channel: "structuring",
+              text: "KST 표시·타임존 구조화…",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 400,
+          partial: {
+            type: "requirements.ready",
+            payload: {
+              requirements: [
+                {
+                  id: "r1",
+                  text: "모든 시각을 KST(UTC+9)로 표시",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "항상 KST로 표기",
+                      sourceIndex: 0,
+                      start: 14,
+                      end: 24,
+                    },
+                  ],
+                },
+                {
+                  id: "r2",
+                  text: "브라우저 로컬 TZ 따르지 않음",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "브라우저 로컬 TZ 따르지 않음",
+                      sourceIndex: 0,
+                      start: 26,
+                      end: 43,
+                    },
+                  ],
+                },
+                {
+                  id: "r3",
+                  text: "라이브 수업 시작 시각에만 적용",
+                  priority: "should",
+                  citations: [
+                    {
+                      quote: "라이브 수업 시작 시각",
+                      sourceIndex: 0,
+                      start: 0,
+                      end: 11,
+                    },
+                  ],
+                },
+                {
+                  id: "r4",
+                  text: "표시에 KST 라벨 병기",
+                  priority: "should",
+                  citations: [
+                    {
+                      quote: "항상 KST로 표기",
+                      sourceIndex: 0,
+                      start: 14,
+                      end: 24,
+                    },
+                  ],
+                },
+              ],
+              conflicts: [],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 200,
+          partial: {
+            type: "plan.proposed",
+            payload: { steps: ["타임존 유틸", "표시", "axe"] },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 100,
+          partial: {
+            type: "metrics.sample",
+            payload: {
+              ttftMs: 168,
+              tokens: 350,
+              costUsd: null,
+              provider: "mock",
+              model: "deterministic",
+              promptVersion: "none-mock",
+            },
           },
         },
       ];
@@ -804,6 +1010,8 @@ export function scenarioDefaultFixture(scenarioId: string): FixtureId {
     "rw-027": "qa_playwright_mismatch",
     "rw-024": "happy_empty_state",
     "rw-015": "happy_table_sort",
+    "rw-019": "happy_phone_mask",
+    "rw-026": "happy_kst_display",
     "rw-030": "happy_card_grid",
     "rw-033": "conflict_discount_copy",
     "rw-034": "tool_args_edited",

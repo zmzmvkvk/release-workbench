@@ -476,9 +476,8 @@
         "requirementCount": 4,
         "conflicts": []
       },
-      "fixture": "happy_card_grid",
-      "failureFocus": [],
-      "fixtureAliasFrom": "happy_phone_mask"
+      "fixture": "happy_phone_mask",
+      "failureFocus": []
     },
     {
       "id": "rw-020",
@@ -643,9 +642,8 @@
         "requirementCount": 4,
         "conflicts": []
       },
-      "fixture": "happy_card_grid",
-      "failureFocus": [],
-      "fixtureAliasFrom": "happy_kst_display"
+      "fixture": "happy_kst_display",
+      "failureFocus": []
     },
     {
       "id": "rw-027",

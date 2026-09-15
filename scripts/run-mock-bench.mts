@@ -31,6 +31,8 @@ const FIXTURE_IDS = new Set<string>([
   "happy_card_grid",
   "happy_empty_state",
   "happy_table_sort",
+  "happy_phone_mask",
+  "happy_kst_display",
   "cancel_during_structuring",
   "conflict_discount_copy",
   "invalid_requirements_json",
@@ -49,7 +51,9 @@ function isHappyExecuteFixture(fixture: string) {
   return (
     fixture === "happy_card_grid" ||
     fixture === "happy_empty_state" ||
-    fixture === "happy_table_sort"
+    fixture === "happy_table_sort" ||
+    fixture === "happy_phone_mask" ||
+    fixture === "happy_kst_display"
   );
 }
 
