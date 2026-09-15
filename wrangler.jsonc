@@ -1,0 +1,11 @@
+{
+  "name": "roomy-page-workbench",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-15",
+  "assets": {
+    "directory": "./out",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": true
+  }
+}

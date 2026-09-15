@@ -1,0 +1,645 @@
+{
+  "meta": {
+    "title": "Release Workbench synthetic scenarios",
+    "version": "0.1.0",
+    "updated": "2026-09-15",
+    "count": 32,
+    "domain": "교육·유통 운영 UI / 내부 업무 AX 클린룸",
+    "notes": [
+      "회사 데이터·사내 화면 없음. 전부 합성.",
+      "expected.* 는 평가 정답 레이블. 모델 출력이 아님.",
+      "fixture 는 mock 이벤트 시퀀스 id (구현 시 fixtures/ 와 연결)."
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "rw-001",
+      "title": "수강신청 배너 문구 충돌",
+      "tags": ["board", "conflict", "copy"],
+      "difficulty": "easy",
+      "sources": [
+        {
+          "kind": "board",
+          "text": "메인 배너 문구를 '지금 신청하면 10% 할인'으로 바꿔주세요. 모바일에서도 두 줄 이내로."
+        },
+        {
+          "kind": "email",
+          "text": "법무 검토: 할인율 표기는 이번 시즌에 금지. '얼리버드 혜택'으로만 표현."
+        }
+      ],
+      "expected": {
+        "requirementCount": 2,
+        "conflicts": ["contradiction"],
+        "mustBlockApproveWithoutResolution": true
+      },
+      "fixture": "conflict_discount_copy",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-002",
+      "title": "강의 상세 접근성 라벨 누락",
+      "tags": ["design", "a11y"],
+      "difficulty": "easy",
+      "sources": [
+        {
+          "kind": "design",
+          "text": "썸네일 옆 재생 아이콘 버튼 추가. 색은 #E11. 스크린리더 라벨은 디자인에 없음."
+        }
+      ],
+      "expected": {
+        "requirementCount": 2,
+        "conflicts": ["missing"],
+        "qaExpect": ["axe-button-name"]
+      },
+      "fixture": "missing_a11y_label",
+      "failureFocus": ["citation.missing"]
+    },
+    {
+      "id": "rw-003",
+      "title": "웹뷰 헤더 뒤로가기 동작",
+      "tags": ["mobile", "webview"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "brief",
+          "text": "앱 웹뷰 강의실 헤더에 뒤로가기. iOS는 history.back, Android는 브릿지 closeWebView 호출."
+        },
+        {
+          "kind": "email",
+          "text": "Android도 일단 history.back만 쓰면 안 되나요? 브릿지 일정 미정."
+        }
+      ],
+      "expected": {
+        "requirementCount": 3,
+        "conflicts": ["ambiguity"],
+        "platforms": ["ios", "android"]
+      },
+      "fixture": "webview_back_ambiguity",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-004",
+      "title": "PPT 요구: 반응형 카드 그리드",
+      "tags": ["ppt", "responsive"],
+      "difficulty": "easy",
+      "sources": [
+        {
+          "kind": "ppt",
+          "text": "슬라이드3: 과정 카드 3열(데스크톱) / 1열(모바일). 카드에 제목, 가격, CTA. CTA는 '상세보기'."
+        }
+      ],
+      "expected": {
+        "requirementCount": 4,
+        "conflicts": [],
+        "layout": { "desktopCols": 3, "mobileCols": 1 }
+      },
+      "fixture": "happy_card_grid",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-005",
+      "title": "스트리밍 중 취소 시연",
+      "tags": ["failure", "cancel"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "brief",
+          "text": "공지 목록 필터 UI 추가. 카테고리·기간·키워드."
+        }
+      ],
+      "expected": {
+        "requirementCount": 3,
+        "demo": "cancel_mid_stream"
+      },
+      "fixture": "cancel_during_structuring",
+      "failureFocus": ["run.cancelled"]
+    },
+    {
+      "id": "rw-006",
+      "title": "네트워크 끊김 후 재개",
+      "tags": ["failure", "reconnect"],
+      "difficulty": "hard",
+      "sources": [
+        {
+          "kind": "board",
+          "text": "마이페이지 수강중 강의 진행률 바 추가. 퍼센트 숫자도 표시."
+        }
+      ],
+      "expected": {
+        "requirementCount": 2,
+        "demo": "reconnect_after_offline"
+      },
+      "fixture": "stream_reconnect",
+      "failureFocus": ["stream.reconnect"]
+    },
+    {
+      "id": "rw-007",
+      "title": "잘못된 JSON 구조화",
+      "tags": ["failure", "schema"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "email",
+          "text": "FAQ 아코디언 컴포넌트. 질문은 h3, 답은 접힌 상태 기본."
+        }
+      ],
+      "expected": {
+        "demo": "invalid_structured_output",
+        "recoverable": true
+      },
+      "fixture": "invalid_requirements_json",
+      "failureFocus": ["requirements.invalid"]
+    },
+    {
+      "id": "rw-008",
+      "title": "도구 실패 후 재시도",
+      "tags": ["failure", "tool-retry"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "design",
+          "text": "검색창 자동완성 드롭다운. 키보드 위아래·Enter 지원."
+        }
+      ],
+      "expected": {
+        "demo": "tool_fail_then_retry",
+        "tool": "apply_code_patch"
+      },
+      "fixture": "tool_retry_once",
+      "failureFocus": ["tool.failed", "tool.retried"]
+    },
+    {
+      "id": "rw-009",
+      "title": "계획 승인 거절",
+      "tags": ["failure", "hitl"],
+      "difficulty": "easy",
+      "sources": [
+        {
+          "kind": "brief",
+          "text": "전체 사이트를 다크모드로 전환하고 기존 테마 토큰 삭제."
+        }
+      ],
+      "expected": {
+        "demo": "plan_rejected",
+        "reasonHint": "scope too large / destructive"
+      },
+      "fixture": "plan_reject_darkmode",
+      "failureFocus": ["plan.rejected"]
+    },
+    {
+      "id": "rw-010",
+      "title": "도구 인자 수정 후 실행",
+      "tags": ["failure", "hitl", "args-edit"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "board",
+          "text": "공지 상세에 첨부파일 목록. PDF만 허용이라고 적혀 있음."
+        }
+      ],
+      "expected": {
+        "demo": "edit_tool_args_before_approve",
+        "editedField": "allowedMime"
+      },
+      "fixture": "tool_args_edited",
+      "failureFocus": ["tool.args_edited"]
+    },
+    {
+      "id": "rw-011",
+      "title": "중복 실행 차단",
+      "tags": ["failure", "idempotency"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "brief",
+          "text": "결제 완료 페이지에 영수증 다운로드 버튼."
+        }
+      ],
+      "expected": {
+        "demo": "duplicate_run_blocked",
+        "idempotencyKey": "rw-011-fixed-key"
+      },
+      "fixture": "duplicate_blocked",
+      "failureFocus": ["run.duplicate_blocked"]
+    },
+    {
+      "id": "rw-012",
+      "title": "근거 없는 요구 생성 거절",
+      "tags": ["failure", "citation"],
+      "difficulty": "easy",
+      "sources": [
+        {
+          "kind": "email",
+          "text": "그냥 요즘 느낌으로 예쁘게 해주세요. 자세한 건 알아서."
+        }
+      ],
+      "expected": {
+        "demo": "refuse_without_citation",
+        "approveDisabled": true
+      },
+      "fixture": "citation_missing_block",
+      "failureFocus": ["citation.missing"]
+    },
+    {
+      "id": "rw-013",
+      "title": "위험한 HTML 미리보기 격리",
+      "tags": ["failure", "security"],
+      "difficulty": "hard",
+      "sources": [
+        {
+          "kind": "board",
+          "text": "공지 본문에 관리자가 넣은 HTML을 그대로 렌더. 샘플: <img src=x onerror=alert(1)>"
+        }
+      ],
+      "expected": {
+        "demo": "sanitize_dangerous_html",
+        "mustSandbox": true
+      },
+      "fixture": "preview_xss_sanitized",
+      "failureFocus": ["preview.sanitized"]
+    },
+    {
+      "id": "rw-014",
+      "title": "최대 실행 단계 초과",
+      "tags": ["failure", "step-limit"],
+      "difficulty": "hard",
+      "sources": [
+        {
+          "kind": "ppt",
+          "text": "홈·강의목록·상세·마이페이지·설정·검색·결제·리뷰·알림·관리자 10개 화면을 한 요청에 전부 수정."
+        }
+      ],
+      "expected": {
+        "demo": "max_steps_exceeded",
+        "maxSteps": 8
+      },
+      "fixture": "step_limit_exceeded",
+      "failureFocus": ["run.step_limit"]
+    },
+    {
+      "id": "rw-015",
+      "title": "매장 재고 테이블 정렬",
+      "tags": ["retail", "table"],
+      "difficulty": "easy",
+      "sources": [
+        {
+          "kind": "brief",
+          "text": "재고 현황 테이블: 상품명, SKU, 수량, 업데이트일. 수량 클릭 시 오름/내림 정렬."
+        }
+      ],
+      "expected": {
+        "requirementCount": 3,
+        "conflicts": []
+      },
+      "fixture": "happy_table_sort",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-016",
+      "title": "쿠폰 적용 UI 모호한 시점",
+      "tags": ["retail", "ambiguity"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "email",
+          "text": "결제 전에 쿠폰 입력창. 장바구니에도 넣고 싶다는 말이 있었음."
+        },
+        {
+          "kind": "board",
+          "text": "쿠폰은 결제 페이지에만."
+        }
+      ],
+      "expected": {
+        "conflicts": ["contradiction"],
+        "requirementCount": 2
+      },
+      "fixture": "coupon_page_conflict",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-017",
+      "title": "키보드 포커스 트랩 모달",
+      "tags": ["a11y", "modal"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "design",
+          "text": "로그인 유도 모달. Esc로 닫기, 포커스는 모달 안에 가둬야 함. 배경 클릭 닫기 여부는 미정."
+        }
+      ],
+      "expected": {
+        "conflicts": ["ambiguity"],
+        "qaExpect": ["focus-trap", "escape-closes"]
+      },
+      "fixture": "modal_focus_ambiguity",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-018",
+      "title": "다국어 문자열 키만 전달",
+      "tags": ["i18n"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "brief",
+          "text": "에러 메시지 하드코딩 금지. t('error.network') 사용. 한국어 카피는 아직 없음."
+        }
+      ],
+      "expected": {
+        "conflicts": ["missing"],
+        "requirementCount": 2
+      },
+      "fixture": "i18n_missing_copy",
+      "failureFocus": ["citation.missing"]
+    },
+    {
+      "id": "rw-019",
+      "title": "폼 유효성: 휴대폰 번호",
+      "tags": ["form", "validation"],
+      "difficulty": "easy",
+      "sources": [
+        {
+          "kind": "board",
+          "text": "문의 폼 연락처는 010-0000-0000 형식. 하이픈 자동 삽입. 제출 전 검증."
+        }
+      ],
+      "expected": {
+        "requirementCount": 3,
+        "conflicts": []
+      },
+      "fixture": "happy_phone_mask",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-020",
+      "title": "무한 스크롤 vs 페이지네이션 충돌",
+      "tags": ["conflict", "list"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "ppt",
+          "text": "리뷰 목록은 무한 스크롤."
+        },
+        {
+          "kind": "email",
+          "text": "SEO 때문에 페이지네이션 유지. 무한 스크롤 금지."
+        }
+      ],
+      "expected": {
+        "conflicts": ["contradiction"],
+        "mustBlockApproveWithoutResolution": true
+      },
+      "fixture": "pagination_vs_infinite",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-021",
+      "title": "차트 색약 대비",
+      "tags": ["a11y", "data-viz"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "design",
+          "text": "출석률 라인 차트. 빨강/초록만 구분. 패턴이나 라벨 병행 요청 있음."
+        }
+      ],
+      "expected": {
+        "requirementCount": 2,
+        "qaExpect": ["color-nonreliance"]
+      },
+      "fixture": "chart_a11y",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-022",
+      "title": "파일 업로드 용량 한도 불명",
+      "tags": ["missing", "upload"],
+      "difficulty": "easy",
+      "sources": [
+        {
+          "kind": "brief",
+          "text": "과제 제출에 파일 업로드. 용량 한도는 백엔드에 물어보라고만 적힘."
+        }
+      ],
+      "expected": {
+        "conflicts": ["missing"],
+        "requirementCount": 1
+      },
+      "fixture": "upload_limit_missing",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-023",
+      "title": "SSR 하이드레이션 주의 카피",
+      "tags": ["next", "ssr"],
+      "difficulty": "hard",
+      "sources": [
+        {
+          "kind": "board",
+          "text": "서버에서 렌더한 가격과 클라이언트 쿠폰 적용가가 잠깐 다르게 보임. 깜빡임 없게."
+        }
+      ],
+      "expected": {
+        "requirementCount": 2,
+        "techHints": ["suppress hydration mismatch carefully"]
+      },
+      "fixture": "hydration_price_flicker",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-024",
+      "title": "빈 상태 Empty view",
+      "tags": ["empty-state"],
+      "difficulty": "easy",
+      "sources": [
+        {
+          "kind": "design",
+          "text": "위시리스트 비었을 때 일러스트+ '강의 둘러보기' CTA. 일러스트 URL은 assets/empty-wish.svg."
+        }
+      ],
+      "expected": {
+        "requirementCount": 2,
+        "conflicts": []
+      },
+      "fixture": "happy_empty_state",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-025",
+      "title": "권한 없는 메뉴 숨김 vs 비활성",
+      "tags": ["authz", "ambiguity"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "email",
+          "text": "강사 전용 '성적 다운로드'는 학생에게 안 보이게."
+        },
+        {
+          "kind": "board",
+          "text": "학생에게는 보이되 클릭 시 '권한 없음' 토스트."
+        }
+      ],
+      "expected": {
+        "conflicts": ["contradiction"],
+        "mustBlockApproveWithoutResolution": true
+      },
+      "fixture": "authz_hide_vs_disable",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-026",
+      "title": "타임존 표시 KST 고정",
+      "tags": ["datetime"],
+      "difficulty": "easy",
+      "sources": [
+        {
+          "kind": "brief",
+          "text": "라이브 수업 시작 시각은 항상 KST로 표기. 브라우저 로컬 TZ 따르지 않음."
+        }
+      ],
+      "expected": {
+        "requirementCount": 2,
+        "conflicts": []
+      },
+      "fixture": "happy_kst_display",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-027",
+      "title": "Playwright 실패 → 수정 제안",
+      "tags": ["qa", "playwright"],
+      "difficulty": "hard",
+      "sources": [
+        {
+          "kind": "ppt",
+          "text": "CTA 버튼 텍스트 '수강신청'. 테스트는 getByRole('button', { name: '신청하기' }) 로 작성되어 있음(의도적 불일치)."
+        }
+      ],
+      "expected": {
+        "demo": "qa_fail_with_suggestion",
+        "qaExpect": ["playwright-name-mismatch"]
+      },
+      "fixture": "qa_playwright_mismatch",
+      "failureFocus": ["qa.finished"]
+    },
+    {
+      "id": "rw-028",
+      "title": "디자인 토큰 임의 hex 금지",
+      "tags": ["design-system", "rules"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "design",
+          "text": "강조 색 #FF00AA 써달라는 요청. 디자인 시스템 규칙: primary 토큰만 허용."
+        }
+      ],
+      "expected": {
+        "conflicts": ["contradiction"],
+        "qaExpect": ["rule-no-raw-hex"]
+      },
+      "fixture": "token_vs_raw_hex",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-029",
+      "title": "메일 스레드에서 우선순위 추출",
+      "tags": ["email", "priority"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "email",
+          "text": "1) 필수: 로딩 스켈레톤\n2) 가능하면: 애니메이션\n3) 나중에: 사운드 효과"
+        }
+      ],
+      "expected": {
+        "requirementCount": 3,
+        "priorities": ["must", "should", "nice"]
+      },
+      "fixture": "priority_from_email",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-030",
+      "title": "게이트 거절 후 평가셋 기록",
+      "tags": ["eval", "gate"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "brief",
+          "text": "홈 히어로에 자동재생 영상. 접근성·데이터 요금 이슈로 게이트에서 거절될 시나리오."
+        }
+      ],
+      "expected": {
+        "demo": "gate_reject_to_eval_dataset",
+        "evalRecorded": true
+      },
+      "fixture": "gate_reject_eval_record",
+      "failureFocus": ["gate.rejected", "eval.case_recorded"]
+    },
+    {
+      "id": "rw-031",
+      "title": "크로스브라우징: legacy flex gap",
+      "tags": ["cross-browser"],
+      "difficulty": "hard",
+      "sources": [
+        {
+          "kind": "board",
+          "text": "구형 Android WebView에서 gap 미지원. margin 폴백 필요. 대상: 강의 태그 칩 가로열."
+        }
+      ],
+      "expected": {
+        "requirementCount": 2,
+        "qaExpect": ["no-unsupported-gap-only"]
+      },
+      "fixture": "legacy_gap_fallback",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-032",
+      "title": "복합: 충돌+QA+HITL 풀패스",
+      "tags": ["e2e", "conflict", "hitl", "qa"],
+      "difficulty": "hard",
+      "sources": [
+        {
+          "kind": "ppt",
+          "text": "이벤트 랜딩: 타이머, 신청 버튼, 유의사항. 버튼 문구 '지금 등록'."
+        },
+        {
+          "kind": "email",
+          "text": "버튼 문구는 '사전 신청'으로. 타이머는 없어도 됨."
+        },
+        {
+          "kind": "design",
+          "text": "모바일에서 타이머는 고정 하단. 유의사항은 접기/펼치기."
+        }
+      ],
+      "expected": {
+        "requirementCount": 4,
+        "conflicts": ["contradiction", "ambiguity"],
+        "demo": "full_path_resolve_conflict_then_gate"
+      },
+      "fixture": "full_path_conflict_hitl_qa",
+      "failureFocus": []
+    }
+  ],
+  "coverage": {
+    "failureFocusUnion": [
+      "run.cancelled",
+      "stream.reconnect",
+      "requirements.invalid",
+      "tool.failed",
+      "tool.retried",
+      "plan.rejected",
+      "tool.args_edited",
+      "run.duplicate_blocked",
+      "citation.missing",
+      "preview.sanitized",
+      "run.step_limit",
+      "qa.finished",
+      "gate.rejected",
+      "eval.case_recorded"
+    ],
+    "sourceKinds": ["board", "email", "ppt", "design", "brief"],
+    "domains": ["교육 운영", "유통/커머스 운영", "접근성", "웹뷰", "보안"]
+  }
+}
