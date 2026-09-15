@@ -172,6 +172,8 @@ function summarize(event: WorkbenchEvent): TimelineItem {
     summary = `tool ${String(payload.name)} started`;
   } else if (event.type === "tool.failed") {
     summary = `tool failed: ${String(payload.error ?? "")}`;
+  } else if (event.type === "tool.retried") {
+    summary = `tool retried (attempt ${String(payload.attempt ?? "?")})`;
   } else if (event.type === "requirements.ready") {
     summary = "requirements ready for review";
   } else if (event.type === "run.duplicate_blocked") {
@@ -299,6 +301,17 @@ export function applyEvent(state: RunState, raw: unknown): RunState {
         tools: next.tools.map((t) =>
           t.callId === callId
             ? { ...t, status: "failed" as const, error: String(payload.error ?? "") }
+            : t,
+        ),
+      };
+    }
+    case "tool.retried": {
+      const callId = String(payload.callId ?? "");
+      return {
+        ...next,
+        tools: next.tools.map((t) =>
+          t.callId === callId
+            ? { ...t, status: "running" as const, error: undefined }
             : t,
         ),
       };

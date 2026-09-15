@@ -108,6 +108,14 @@ test("step limit fixture reaches failed", async ({ page }) => {
   await expect(page.getByText("status:")).toContainText("failed", { timeout: 20_000 });
 });
 
+test("tool fail then retry on rw-008", async ({ page }) => {
+  await page.goto("/workbench");
+  await page.getByRole("button", { name: /rw-008/ }).click();
+  await page.getByRole("button", { name: "실행 시작" }).click();
+  await expect(page.getByText(/tool failed:/i)).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText(/tool retried/i)).toBeVisible({ timeout: 20_000 });
+});
+
 test("axe: workbench shell has no critical/serious issues", async ({ page }) => {
   await page.goto("/workbench");
   await expect(page.getByRole("heading", { name: /검증된 릴리즈/ })).toBeVisible();

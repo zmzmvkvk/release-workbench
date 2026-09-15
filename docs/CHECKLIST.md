@@ -36,14 +36,14 @@
 | 시연 | fixture/E2E |
 | --- | --- |
 | 취소 | rw-005 + E2E |
-| 재연결 | rw-006 + Worker `network_resume` |
+| 재연결 | rw-006 + Worker `network_resume` + E2E |
 | 잘못된 구조화 | rw-007 + E2E |
 | 도구 실패·재시도 | rw-008 + Worker `tool_fail_retry` |
+| 승인 거절 | rw-009 + E2E |
+| 인자 수정 | rw-010 + HITL UI `인자 수정 적용` + E2E |
 | 중복 차단 | rw-011 + E2E + Worker KV `WORKBENCH_IDEMPOTENCY` |
 | 근거 없음 | rw-012 + E2E |
 | HTML 격리 | rw-013 + Worker `unsafe_html_isolated` |
-| 단계 초과 | rw-014 + Worker `max_steps_exceeded` |
-| 승인 거절 | rw-009 + E2E |
-| 인자 수정 | rw-010 + HITL UI `인자 수정 적용` + E2E |
+| 단계 초과 | rw-014 + Worker `max_steps_exceeded` + E2E |
 
 목표 완료로 보지 않음: OpenAI/Anthropic 키 경로 고도화, FDE용 BE/DB·인증, Workers AI 대량 벤치 표본은 이후. KV idempotency·HITL 인자 수정 UI는 반영됨.
