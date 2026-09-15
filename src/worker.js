@@ -594,6 +594,7 @@ SOURCE:
 ${(sourceText || "card grid desktop 3 mobile 1 CTA detail").slice(0, 800)}`;
 
   let raw = "";
+  let usageTokens = null;
   try {
     const result = await env.AI.run("@cf/meta/llama-3.2-3b-instruct", {
       messages: [
@@ -608,6 +609,13 @@ ${(sourceText || "card grid desktop 3 mobile 1 CTA detail").slice(0, 800)}`;
       temperature: 0.1,
     });
     ttftMs = Date.now() - t0;
+    const usage = result?.usage ?? result?.result?.usage;
+    if (usage && typeof usage.total_tokens === "number") {
+      usageTokens = usage.total_tokens;
+    } else if (usage && typeof usage.prompt_tokens === "number") {
+      usageTokens =
+        (usage.prompt_tokens ?? 0) + (usage.completion_tokens ?? 0);
+    }
     raw =
       typeof result === "string"
         ? result
@@ -732,7 +740,7 @@ ${(sourceText || "card grid desktop 3 mobile 1 CTA detail").slice(0, 800)}`;
   push("metrics.sample", {
     ttftMs,
     totalMs,
-    tokens: null,
+    tokens: usageTokens,
     costUsd: null,
     provider: "workers-ai",
     model: "@cf/meta/llama-3.2-3b-instruct",
