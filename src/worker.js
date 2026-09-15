@@ -448,6 +448,165 @@ async function play(run, steps, controller, signal) {
   controller.close();
 }
 
+async function playWorkersAiStructuring(run, env, controller, signal, sourceText) {
+  const enc = new TextEncoder();
+  const push = (type, payload) => {
+    const event = append(run, type, payload);
+    controller.enqueue(enc.encode(sse(event, event.id)));
+    return event;
+  };
+
+  push("run.started", {
+    scenarioId: run.scenarioId,
+    mode: "workers-ai",
+    model: "@cf/meta/llama-3.2-3b-instruct",
+    idempotencyKey: run.idempotencyKey,
+  });
+  push("stream.delta", {
+    channel: "structuring",
+    text: "Workers AI로 요구사항 구조화…",
+  });
+
+  const prompt = `Extract at most 2 requirements from the source. JSON only, no markdown.
+Schema:
+{"requirements":[{"id":"r1","text":"short","priority":"must","citations":[{"quote":"from source","sourceIndex":0,"start":0,"end":4}]}],"conflicts":[]}
+Source:
+${(sourceText || "card grid desktop 3 mobile 1 CTA detail").slice(0, 800)}`;
+
+  let raw = "";
+  try {
+    const result = await env.AI.run("@cf/meta/llama-3.2-3b-instruct", {
+      messages: [
+        {
+          role: "system",
+          content: "You are a JSON API. Output one minified JSON object. Stop after the closing brace.",
+        },
+        { role: "user", content: prompt },
+      ],
+      max_tokens: 400,
+      temperature: 0.2,
+    });
+    raw =
+      typeof result === "string"
+        ? result
+        : typeof result?.response === "string"
+          ? result.response
+          : JSON.stringify(result?.response ?? result);
+  } catch (err) {
+    push("run.failed", {
+      code: "WORKERS_AI",
+      message: String(err?.message ?? err),
+    });
+    controller.close();
+    return;
+  }
+
+  if (signal.aborted || run.cancelled) {
+    push("run.cancelled", { reason: "user_cancelled" });
+    controller.close();
+    return;
+  }
+
+  push("stream.delta", {
+    channel: "structuring",
+    text: raw.slice(0, 280),
+  });
+
+  function tryParse(text) {
+    return JSON.parse(text);
+  }
+
+  function repairJson(text) {
+    let repaired = text.trim();
+    const start = repaired.indexOf("{");
+    if (start >= 0) repaired = repaired.slice(start);
+    repaired = repaired.replace(/```json|```/g, "");
+    repaired = repaired.replace(/,\s*$/, "");
+    repaired = repaired.replace(/:\s*"[^"]*$/, ':""');
+    repaired = repaired.replace(/:\s*[^,\]}]*$/, ":null");
+    while (
+      (repaired.match(/\[/g) || []).length >
+      (repaired.match(/\]/g) || []).length
+    ) {
+      repaired += "]";
+    }
+    while (
+      (repaired.match(/\{/g) || []).length >
+      (repaired.match(/\}/g) || []).length
+    ) {
+      repaired += "}";
+    }
+    return repaired;
+  }
+
+  let parsed;
+  try {
+    parsed = tryParse(raw.trim());
+  } catch {
+    try {
+      parsed = tryParse(repairJson(raw));
+      push("stream.delta", {
+        channel: "structuring",
+        text: "[repaired truncated JSON]",
+      });
+    } catch {
+      push("requirements.invalid", {
+        issues: [{ path: "$", message: "model output was not JSON" }],
+        rawPreview: raw.slice(0, 400),
+      });
+      push("stream.delta", {
+        channel: "structuring",
+        text: "스키마 실패 → 휴리스틱 폴백(HITL 검토 필요)",
+      });
+      const src = (sourceText || "desktop 3 columns").slice(0, 120);
+      parsed = {
+        requirements: [
+          {
+            id: "r1",
+            text: src,
+            priority: "must",
+            citations: [
+              {
+                quote: src.slice(0, Math.min(24, src.length)),
+                sourceIndex: 0,
+                start: 0,
+                end: Math.min(24, src.length),
+              },
+            ],
+          },
+        ],
+        conflicts: [],
+        fallback: "heuristic_after_schema_fail",
+      };
+    }
+  }
+
+  if (!Array.isArray(parsed.requirements)) {
+    push("requirements.invalid", {
+      issues: [{ path: "requirements", message: "expected array" }],
+    });
+    push("run.failed", { code: "SCHEMA", message: "missing requirements array" });
+    controller.close();
+    return;
+  }
+
+  push("requirements.ready", {
+    requirements: parsed.requirements,
+    conflicts: Array.isArray(parsed.conflicts) ? parsed.conflicts : [],
+  });
+  push("plan.proposed", {
+    steps: ["코드 패치", "미리보기", "QA"],
+  });
+  push("metrics.sample", {
+    ttftMs: null,
+    tokens: null,
+    costUsd: null,
+    provider: "workers-ai",
+    model: "@cf/meta/llama-3.2-3b-instruct",
+  });
+  controller.close();
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -461,6 +620,7 @@ export default {
       const scenarioId = body.scenarioId ?? "rw-004";
       const fixture = body.fixture ?? "happy_card_grid";
       const key = body.idempotencyKey ?? `${scenarioId}-key`;
+      const mode = body.mode === "workers-ai" ? "workers-ai" : "mock";
 
       if (fixture === "duplicate_blocked" || idempotency.has(key)) {
         const existing = idempotency.get(key) ?? "run_existing_demo";
@@ -494,6 +654,8 @@ export default {
         runId,
         scenarioId,
         fixture,
+        mode,
+        idempotencyKey: key,
         cancelled: false,
         events: [],
         abort: ac,
@@ -502,17 +664,41 @@ export default {
       idempotency.set(key, runId);
 
       const stream = new ReadableStream({
-        start(controller) {
+        async start(controller) {
           request.signal.addEventListener("abort", () => {
             run.cancelled = true;
             ac.abort();
           });
-          play(
-            run,
-            structuringSteps(fixture, scenarioId, key),
-            controller,
-            ac.signal,
-          );
+          try {
+            if (mode === "workers-ai" && env.AI) {
+              await playWorkersAiStructuring(
+                run,
+                env,
+                controller,
+                ac.signal,
+                body.sourceText,
+              );
+            } else {
+              await play(
+                run,
+                structuringSteps(fixture, scenarioId, key),
+                controller,
+                ac.signal,
+              );
+            }
+          } catch (err) {
+            const enc = new TextEncoder();
+            const event = append(run, "run.failed", {
+              code: "STREAM",
+              message: String(err?.message ?? err),
+            });
+            try {
+              controller.enqueue(enc.encode(sse(event, event.id)));
+              controller.close();
+            } catch {
+              /* already closed */
+            }
+          }
         },
       });
 
@@ -522,6 +708,7 @@ export default {
           "Cache-Control": "no-cache",
           Connection: "keep-alive",
           "X-Run-Id": runId,
+          "X-Workbench-Mode": mode,
         },
       });
     }
