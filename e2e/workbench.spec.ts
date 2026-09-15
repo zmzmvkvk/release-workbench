@@ -40,7 +40,7 @@ test("evals page shows benchmark table", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "합성 벤치마크" })).toBeVisible();
   await expect(page.getByText("rw-004")).toBeVisible();
   await expect(page.getByRole("heading", { name: "실패·복구 시연 매트릭스" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "열기" }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: "자동실행" }).first()).toBeVisible();
 });
 
 test("cancel during structuring reaches cancelled", async ({ page }) => {
@@ -135,6 +135,13 @@ test("deep link selects scenario and failure filter", async ({ page }) => {
   await expect(page.getByRole("button", { name: "failure", exact: true })).toHaveClass(
     /emerald/,
   );
+});
+
+test("autorun deep link starts structuring", async ({ page }) => {
+  await page.goto("/workbench/?mock=1&scenario=rw-012&autorun=1");
+  await expect(page.getByText("status:")).toContainText(/structuring|awaiting_plan_review|failed/, {
+    timeout: 20_000,
+  });
 });
 
 test("axe: workbench shell has no critical/serious issues", async ({ page }) => {

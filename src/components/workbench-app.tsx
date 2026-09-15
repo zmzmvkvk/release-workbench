@@ -84,8 +84,9 @@ export function WorkbenchApp() {
     return () => abortRef.current?.abort();
   }, []);
 
-  // Deep links: /workbench/?mock=1&scenario=rw-027&filter=failure
+  // Deep links: /workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1
   // Prefer trailing slash before ? on roomy.page (bare /workbench?q can 522).
+  const autorunDoneRef = useRef(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
@@ -256,6 +257,17 @@ export function WorkbenchApp() {
       setBusy(false);
     }
   }
+
+  useEffect(() => {
+    if (typeof window === "undefined" || autorunDoneRef.current) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("autorun") !== "1") return;
+    const scenario = params.get("scenario");
+    if (scenario && selectedId !== scenario) return;
+    autorunDoneRef.current = true;
+    void startRun();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot deep-link autorun
+  }, [selectedId]);
 
   async function cancelRun() {
     const cancelLatencyMs =

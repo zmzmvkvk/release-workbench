@@ -123,9 +123,9 @@ export default function EvalsPage() {
               </span>
               <a
                 className="text-xs text-emerald-400 hover:underline"
-                href={`/workbench/?mock=1&scenario=${id}&filter=failure`}
+                href={`/workbench/?mock=1&scenario=${id}&filter=failure&autorun=1`}
               >
-                열기
+                자동실행
               </a>
             </li>
           ))}
