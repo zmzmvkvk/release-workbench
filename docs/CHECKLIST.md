@@ -10,7 +10,7 @@
 | 4 | 시스템 아키텍처 | ✅ | `docs/ARCHITECTURE.md` |
 | 5 | 이벤트·상태머신 | ✅ | `docs/PROTOCOL.md` |
 | 6 | 평가 30+ · 결과표 | ✅ | scenarios **35** · `/evals` · mock + Workers AI spot v3 · 실패 매트릭스 |
-| 7 | Playwright · Vitest CI | ✅ | Actions · prod health + Workers AI SSE + hybrid patch-plan smoke |
+| 7 | Playwright · Vitest CI | ✅ | Actions · eval gates · prod health + Workers AI hybrid smoke |
 | 8 | 실패 사례 보고서 | ✅ | `docs/FAILURE_CASES.md` · `/evals#failures` 딥링크 |
 | 9 | 보안·공개범위 | ✅ | `docs/SECURITY.md` (trailing-slash URL 주의) |
 | 10 | 케이스스터디 | ✅ | `docs/CASE_STUDY.md` · wiki `concept-case-release-workbench` |
@@ -33,6 +33,7 @@
 | KV idempotency | ✅ + run resume across isolates |
 | Stream concurrency | ✅ per-isolate max 8 → 429 · client 1회 재시도 · health cap |
 | Run snapshot 링크 | ✅ http-sse `runId` → `GET /api/runs/:id` |
+| Eval regression gates | ✅ `pnpm bench:gates` (n≥35, extraction/tool/conflict=1, cost null) |
 | QA fail → eval | ✅ rw-027 E2E · gate reject → `eval.case_recorded` |
 | costUsd 정직성 | ✅ provider 미제공 → `null` / UI `— (미계측)` · mock도 `$0` 미표기 |
 | promptVersion UI | ✅ metrics strip · Workers AI `workers-ai-struct-v3` |

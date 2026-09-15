@@ -130,12 +130,26 @@ export function WorkbenchApp() {
       setBanner("동일 idempotencyKey 실행이 이미 진행 중");
     }
     if (next.type === "tool.started") {
-      const payload = next.payload as { args?: unknown };
+      const payload = next.payload as {
+        args?: unknown;
+        name?: string;
+      };
       try {
         setToolArgsDraft(JSON.stringify(payload.args ?? {}, null, 2));
       } catch {
         setToolArgsDraft("{}");
       }
+      const args = payload.args as { patchPlan?: string; from?: string } | undefined;
+      if (typeof args?.patchPlan === "string" && args.patchPlan.length > 0) {
+        setBanner(
+          `Workers AI patch plan → 도구 인자: ${args.patchPlan.slice(0, 120)}${args.patchPlan.length > 120 ? "…" : ""}`,
+        );
+      }
+    }
+    if (next.type === "diff.updated") {
+      const files = (next.payload as { files?: { patch?: string }[] })?.files;
+      const hit = files?.some((f) => f.patch?.includes("AI plan:"));
+      if (hit) setBanner("diff에 Workers AI plan 주석이 반영됨");
     }
   }
 

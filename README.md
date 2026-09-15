@@ -16,16 +16,17 @@ Not an "AI builds a page" demo — a work system where incomplete model output i
 | Evals | https://roomy.page/workbench/evals |
 | 90s demo | https://roomy.page/workbench/demo/release-workbench-90s.webm |
 | Failure deep link | https://roomy.page/workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1 |
+| Workers AI hybrid | https://roomy.page/workbench/?mode=workers-ai&scenario=rw-004 |
 | Failure matrix | https://roomy.page/workbench/evals#failures |
 | workers.dev | https://roomy-page-workbench.hommy.workers.dev/workbench/ |
-| CI | [GitHub Actions](https://github.com/zmzmvkvk/release-workbench/actions) (unit/e2e + prod health + Workers AI SSE smoke) |
+| CI | [GitHub Actions](https://github.com/zmzmvkvk/release-workbench/actions) (unit/e2e + eval gates + prod AI smoke) |
 | Case study | [`docs/CASE_STUDY.md`](./docs/CASE_STUDY.md) |
 | Hiring brief (1p) | [`docs/HIRING_BRIEF.md`](./docs/HIRING_BRIEF.md) |
 | Internal automation (2nd case) | [`docs/CASE_INTERNAL_AUTOMATION.md`](./docs/CASE_INTERNAL_AUTOMATION.md) |
 
 > On roomy.page always use a **trailing slash**: `/workbench/?…`. Bare `/workbench?…` can 522.
 
-Transport: **HTTP SSE** (Cloudflare Worker) + **client mock** fallback. Same event protocol. Optional **Workers AI** structuring (`mode=workers-ai`, prompt `workers-ai-struct-v3`). Metrics show `promptVersion` / tokens; **costUsd stays null** when the provider does not meter cost (no invented estimates).
+Transport: **HTTP SSE** (Cloudflare Worker) + **client mock** fallback. Same event protocol. Optional **Workers AI** structuring (`mode=workers-ai`, prompt `workers-ai-struct-v3`) and hybrid `propose_patch_plan` → diff `AI plan:`. Metrics show `promptVersion` / tokens; **costUsd stays null** when unmetered.
 
 HITL: plan approve/reject, **tool args edit / continue** (client-mock + HTTP Worker `args_continue`/`args_edit` gate), release gate.
 
@@ -34,9 +35,9 @@ HITL: plan approve/reject, **tool args edit / continue** (client-mock + HTTP Wor
 1. SSE streaming + cancel  
 2. Tool call timeline + fail/retry  
 3. HITL: plan approve/reject, tool arg edit/continue, gate  
-4. Failure demos: schema invalid, citation block, duplicate (KV), XSS sandbox, step limit, reconnect, QA fail → gate reject → eval  
-5. Synthetic evals n=32 (mock) + Workers AI spot (separate table, source-bound citations)  
-6. Playwright · Vitest · axe in CI + live Workers AI structuring smoke  
+4. Failure demos: schema invalid, citation block, duplicate (KV), XSS sandbox, step limit, reconnect, QA fail → gate reject → eval, 429 retry  
+5. Synthetic evals n=35 (mock) + Workers AI spot (source-bound citations; costUsd null)  
+6. Playwright · Vitest · axe · **eval gates** · live Workers AI structure/hybrid smoke  
 
 ## Stack
 
@@ -50,6 +51,7 @@ pnpm dev          # http://localhost:3000/workbench/
 pnpm test
 pnpm test:e2e
 pnpm bench
+pnpm bench:gates
 pnpm run deploy
 ```
 
