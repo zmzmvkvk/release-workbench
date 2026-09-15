@@ -29,9 +29,11 @@ Ship a **public work system**: request → structure with citations → HITL app
 | 32 synthetic scenarios | yes |
 | Failure demos (10+) + E2E | yes (incl. QA fail → gate reject → eval) |
 | Playwright / Vitest / axe CI | yes (public Actions) |
+| Prod health + Workers AI SSE smoke | yes (CI `prod-smoke` on push to main) |
 | Mock bench n=32 + Workers AI spot | yes (extraction/toolSelection/conflict = 1) |
 | Architecture / protocol / security / failures | yes (`docs/`) |
 | 60–90s demo | yes (includes QA fail + eval record) |
+| Metrics honesty | yes (`promptVersion` in UI; costUsd null when unmetered) |
 
 ## Numbers (honest)
 

@@ -15,6 +15,8 @@ test("happy path: structure → approve → gate", async ({ page }) => {
   await expect(page.getByText("status:")).toContainText("awaiting_plan_review", {
     timeout: 20_000,
   });
+  await expect(page.getByText(/prompt none-mock/)).toBeVisible();
+  await expect(page.getByText(/— \(미계측\)/)).toBeVisible();
 
   await page.getByRole("button", { name: "계획 승인 → 실행" }).click();
   await expect(page.getByRole("button", { name: "인자 수정 적용" })).toBeVisible({
