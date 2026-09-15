@@ -94,6 +94,20 @@ test("tool args edit HITL control appears during execute", async ({ page }) => {
   await expect(page.getByText("도구 인자 수정: t_patch")).toBeVisible({ timeout: 10_000 });
 });
 
+test("stream reconnect banner on rw-006", async ({ page }) => {
+  await page.goto("/workbench");
+  await page.getByRole("button", { name: /rw-006/ }).click();
+  await page.getByRole("button", { name: "실행 시작" }).click();
+  await expect(page.getByText("연결 재개됨 (seq 연속)")).toBeVisible({ timeout: 20_000 });
+});
+
+test("step limit fixture reaches failed", async ({ page }) => {
+  await page.goto("/workbench");
+  await page.getByRole("button", { name: /rw-014/ }).click();
+  await page.getByRole("button", { name: "실행 시작" }).click();
+  await expect(page.getByText("status:")).toContainText("failed", { timeout: 20_000 });
+});
+
 test("axe: workbench shell has no critical/serious issues", async ({ page }) => {
   await page.goto("/workbench");
   await expect(page.getByRole("heading", { name: /검증된 릴리즈/ })).toBeVisible();
