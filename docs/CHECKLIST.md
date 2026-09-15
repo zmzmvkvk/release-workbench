@@ -6,7 +6,7 @@
 | --- | --- | --- | --- |
 | 1 | 라이브 서비스 | ✅ | https://roomy.page/workbench/ |
 | 2 | 공개 GitHub | ✅ | https://github.com/zmzmvkvk/release-workbench |
-| 3 | 60–90초 데모 | ✅ | https://roomy.page/workbench/demo/release-workbench-90s.webm · ≈66s · QA fail→gate reject |
+| 3 | 60–90초 데모 | ✅ | https://roomy.page/workbench/demo/release-workbench-90s.webm · ≈63s · QA fail→gate reject · evals |
 | 4 | 시스템 아키텍처 | ✅ | `docs/ARCHITECTURE.md` |
 | 5 | 이벤트·상태머신 | ✅ | `docs/PROTOCOL.md` |
 | 6 | 평가 30+ · 결과표 | ✅ | scenarios **35** · `/evals` · mock + Workers AI spot v3 · 실패 매트릭스 |

@@ -101,6 +101,8 @@ test("record release workbench demo", async ({ page }) => {
   await page.goto("/workbench/evals");
   await expect(page.getByRole("heading", { name: "합성 벤치마크" })).toBeVisible();
   await expect(page.getByText("요구사항 추출 정확도", { exact: true })).toBeVisible();
+  await expect(page.getByText("fixture 커버", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: /evals JSON/ })).toBeVisible();
   await page.waitForTimeout(7000);
   await page.locator("#failures").scrollIntoViewIfNeeded();
   await expect(page.getByRole("heading", { name: "실패·복구 시연 매트릭스" })).toBeVisible();

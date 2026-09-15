@@ -3,7 +3,7 @@
 녹화 대상: https://roomy.page/workbench/  
 (대체) https://roomy-page-workbench.hommy.workers.dev/workbench/  
 
-산출물: `public/demo/release-workbench-90s.webm` (최근 녹화 ≈66s, QA fail→gate reject 포함)
+산출물: `public/demo/release-workbench-90s.webm` (재녹화 ≈63s, QA fail→gate reject · evals fixture 커버 · evals JSON 링크)
 
 ## 타임라인
 
