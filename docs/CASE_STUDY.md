@@ -37,7 +37,7 @@ Ship a **public work system**: request → structure with citations → HITL app
 | Eval summary API | yes (`GET /workbench/api/evals` · fixtureCoverage) |
 | Run snapshot API | yes (KV-first `GET /workbench/api/runs/:id` · UI link on http-sse) |
 | Architecture / protocol / security / failures | yes (`docs/`) |
-| 60–90s demo | yes (includes QA fail + eval record) |
+| 60–90s demo | yes (~63s · QA fail + eval · evals fixture coverage) |
 | Metrics honesty | yes (`promptVersion` in UI; costUsd null when unmetered) |
 
 ## Numbers (honest)
