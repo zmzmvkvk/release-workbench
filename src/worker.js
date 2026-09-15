@@ -4,6 +4,8 @@
  */
 
 const runs = new Map();
+/** @type {Map<string, string>} idempotencyKey -> runId */
+const idempotency = new Map();
 
 function sse(data, id) {
   const idLine = id ? `id: ${id}\n` : "";
@@ -126,6 +128,80 @@ function structuringSteps(fixture, scenarioId, key) {
       },
     ];
   }
+  if (fixture === "max_steps_exceeded") {
+    return [
+      start,
+      delta("도구 루프…"),
+      {
+        delayMs: 200,
+        type: "run.failed",
+        payload: {
+          code: "MAX_STEPS",
+          message: "exceeded max tool steps (8)",
+          steps: 8,
+        },
+      },
+    ];
+  }
+  if (fixture === "unsafe_html_isolated") {
+    return [
+      start,
+      delta("미리보기 격리 검사…"),
+      {
+        delayMs: 250,
+        type: "preview.ready",
+        payload: {
+          desktopHtml:
+            '<div>safe</div><script>alert(1)</script><img src=x onerror=alert(1)>',
+          mobileHtml: "<div>safe</div>",
+          sanitized: true,
+          blocked: ["script", "onerror"],
+        },
+      },
+      {
+        delayMs: 100,
+        type: "plan.proposed",
+        payload: { steps: ["DOMPurify", "sandboxed iframe"] },
+      },
+    ];
+  }
+  if (fixture === "network_resume") {
+    return [
+      start,
+      delta("스트리밍…"),
+      {
+        delayMs: 200,
+        type: "stream.interrupted",
+        payload: { reason: "network_drop", lastSeq: 1 },
+      },
+      {
+        delayMs: 400,
+        type: "stream.resumed",
+        payload: { fromSeq: 2 },
+      },
+      delta("재개 후 구조화…", 200),
+      {
+        delayMs: 250,
+        type: "requirements.ready",
+        payload: {
+          requirements: [
+            {
+              id: "r1",
+              text: "재개된 요구",
+              priority: "must",
+              citations: [{ quote: "재개", sourceIndex: 0, start: 0, end: 2 }],
+            },
+          ],
+          conflicts: [],
+        },
+      },
+      {
+        delayMs: 100,
+        type: "plan.proposed",
+        payload: { steps: ["재개 검증"] },
+      },
+    ];
+  }
   // default happy
   return [
     start,
@@ -165,7 +241,126 @@ function structuringSteps(fixture, scenarioId, key) {
   ];
 }
 
-function executeSteps(scenarioId) {
+function executeSteps(scenarioId, fixture) {
+  if (fixture === "tool_fail_retry") {
+    return [
+      {
+        delayMs: 100,
+        type: "tool.started",
+        payload: { callId: "t1", name: "apply_code_patch", args: { scenarioId } },
+      },
+      {
+        delayMs: 200,
+        type: "tool.failed",
+        payload: { callId: "t1", error: "sandbox_timeout", retryable: true },
+      },
+      {
+        delayMs: 150,
+        type: "tool.started",
+        payload: {
+          callId: "t1r",
+          name: "apply_code_patch",
+          args: { scenarioId, attempt: 2 },
+        },
+      },
+      {
+        delayMs: 250,
+        type: "tool.finished",
+        payload: { callId: "t1r", result: { filesChanged: 2, retried: true } },
+      },
+      {
+        delayMs: 100,
+        type: "diff.updated",
+        payload: {
+          files: [
+            {
+              path: "src/components/CourseCardGrid.tsx",
+              additions: 8,
+              deletions: 1,
+              patch: "+/* retry succeeded */",
+            },
+          ],
+        },
+      },
+      {
+        delayMs: 100,
+        type: "preview.ready",
+        payload: {
+          desktopHtml: "<div>retry ok</div>",
+          mobileHtml: "<div>retry ok</div>",
+        },
+      },
+      {
+        delayMs: 100,
+        type: "qa.finished",
+        payload: {
+          report: {
+            passed: true,
+            suites: [{ name: "axe", passed: true, detail: "0 after retry" }],
+          },
+        },
+      },
+      { delayMs: 50, type: "gate.pending", payload: {} },
+    ];
+  }
+  if (fixture === "qa_axe_fail") {
+    return [
+      {
+        delayMs: 100,
+        type: "tool.started",
+        payload: { callId: "t1", name: "apply_code_patch", args: { scenarioId } },
+      },
+      {
+        delayMs: 150,
+        type: "tool.finished",
+        payload: { callId: "t1", result: { filesChanged: 1 } },
+      },
+      {
+        delayMs: 100,
+        type: "diff.updated",
+        payload: {
+          files: [
+            {
+              path: "src/Banner.tsx",
+              additions: 5,
+              deletions: 0,
+              patch: '+<img src="/x.png" />',
+            },
+          ],
+        },
+      },
+      {
+        delayMs: 100,
+        type: "preview.ready",
+        payload: {
+          desktopHtml: '<img src="/x.png" />',
+          mobileHtml: '<img src="/x.png" />',
+        },
+      },
+      {
+        delayMs: 100,
+        type: "qa.started",
+        payload: { suites: ["axe"] },
+      },
+      {
+        delayMs: 200,
+        type: "qa.finished",
+        payload: {
+          report: {
+            passed: false,
+            suites: [
+              {
+                name: "axe",
+                passed: false,
+                detail: "image-alt: img missing alt",
+              },
+            ],
+          },
+        },
+      },
+      { delayMs: 50, type: "gate.pending", payload: {} },
+    ];
+  }
   return [
     {
       delayMs: 100,
@@ -266,16 +461,45 @@ export default {
       const scenarioId = body.scenarioId ?? "rw-004";
       const fixture = body.fixture ?? "happy_card_grid";
       const key = body.idempotencyKey ?? `${scenarioId}-key`;
+
+      if (fixture === "duplicate_blocked" || idempotency.has(key)) {
+        const existing = idempotency.get(key) ?? "run_existing_demo";
+        const event = {
+          id: `evt_dup_${Date.now().toString(36)}`,
+          runId: existing,
+          seq: 0,
+          ts: new Date().toISOString(),
+          type: "run.duplicate_blocked",
+          payload: { existingRunId: existing, idempotencyKey: key },
+        };
+        const stream = new ReadableStream({
+          start(controller) {
+            const enc = new TextEncoder();
+            controller.enqueue(enc.encode(sse(event, event.id)));
+            controller.close();
+          },
+        });
+        return new Response(stream, {
+          headers: {
+            "Content-Type": "text/event-stream; charset=utf-8",
+            "Cache-Control": "no-cache",
+            "X-Run-Id": existing,
+          },
+        });
+      }
+
       const runId = `run_${Date.now().toString(36)}`;
       const ac = new AbortController();
       const run = {
         runId,
         scenarioId,
+        fixture,
         cancelled: false,
         events: [],
         abort: ac,
       };
       runs.set(runId, run);
+      idempotency.set(key, runId);
 
       const stream = new ReadableStream({
         start(controller) {
@@ -337,7 +561,7 @@ export default {
           controller.enqueue(enc.encode(sse(approve, approve.id)));
           await play(
             run,
-            executeSteps(run.scenarioId ?? "rw-004"),
+            executeSteps(run.scenarioId ?? "rw-004", run.fixture),
             controller,
             run.abort.signal,
           );

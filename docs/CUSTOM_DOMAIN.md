@@ -1,27 +1,24 @@
-# Custom domain (roomy.page)
+# Custom domain: roomy.page/workbench
 
-현재 라이브(Workers.dev):
+## Status (2026-09-15 검증)
 
-https://roomy-page-workbench.hommy.workers.dev/workbench
+| URL | 결과 |
+|-----|------|
+| https://roomy.page/workbench | 200 — Release Workbench HTML |
+| https://roomy.page/workbench/api/runs/stream | HTTP SSE mock (POST) |
+| https://roomy-page-workbench.hommy.workers.dev/workbench | 200 (canonical workers.dev) |
+| https://roomy.page/portfolio | 200 |
 
-## 목표 URL
+## Routing notes
 
-`https://roomy.page/workbench` (포트폴리오 `/portfolio`와 역할 분리)
+- Workbench Worker: `roomy-page-workbench` (`workers_dev: true`).
+- Direct `routes` on `roomy.page/workbench*` caused **522** when asset path mismatched; removed.
+- Prefer serving via Worker's attached custom path **or** portfolio Worker 302 to workers.dev.
+- Current verified: `https://roomy.page/workbench` returns live Workbench (title `Release Workbench`) and same-origin SSE.
 
-## Cloudflare에서 할 일
+## Operator checklist if 522 returns
 
-1. Worker `roomy-page-workbench`에 커스텀 도메인 `roomy.page` 연결  
-   **또는** 기존 `roomy-page-portfolio` Worker에 `/workbench*` 경로를 이 Worker/자산으로 라우팅
-2. DNS는 이미 `roomy.page`가 Workers에 붙어 있으면 경로 라우팅만 추가
-3. 배포 후 케이스스터디·README URL을 `roomy.page/workbench`로 교체
-
-## 로컬 확인
-
-```bash
-cd portfolio/workbench
-pnpm deploy
-curl -sI https://roomy-page-workbench.hommy.workers.dev/   # 302 → /workbench
-curl -sI https://roomy-page-workbench.hommy.workers.dev/workbench  # 200
-```
-
-포트폴리오 Worker(`roomy-page-portfolio`)는 `/portfolio`만 담당. 워크벤치를 같은 워커에 합치지 않는 편이 AX 플래그십 분리가 분명하다.
+1. Re-enable `workers_dev: true` on workbench wrangler.
+2. Do **not** attach overlapping catch-all routes that break assets.
+3. Portfolio `src/worker.js` fallback: 302 `/workbench` → `https://roomy-page-workbench.hommy.workers.dev/workbench…`.
+4. Redeploy both: `portfolio/workbench` then `portfolio/web`.
