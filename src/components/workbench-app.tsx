@@ -314,6 +314,7 @@ export function WorkbenchApp() {
         { caseId: selected.id, outcome: "gate_rejected" },
         push,
       );
+      setBanner(`평가 데이터셋에 기록: ${selected.id} (gate_rejected)`);
       return;
     }
     if (action === "gate_edit") {

@@ -40,6 +40,7 @@ const FIXTURE_IDS = new Set<string>([
   "citation_missing_block",
   "preview_xss_sanitized",
   "step_limit_exceeded",
+  "qa_playwright_mismatch",
 ]);
 
 async function runOne(scenarioId: string, fixture: FixtureId): Promise<{

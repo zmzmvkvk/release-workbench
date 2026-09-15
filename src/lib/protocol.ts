@@ -178,6 +178,8 @@ function summarize(event: WorkbenchEvent): TimelineItem {
     summary = "requirements ready for review";
   } else if (event.type === "run.duplicate_blocked") {
     summary = `duplicate blocked → ${String(payload.existingRunId ?? "")}`;
+  } else if (event.type === "eval.case_recorded") {
+    summary = `eval recorded: ${String(payload.caseId ?? "")} (${String(payload.outcome ?? "")})`;
   }
 
   return {

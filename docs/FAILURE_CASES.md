@@ -14,7 +14,9 @@
 | rw-012 | citation_missing_block | 승인 버튼 비활성 | E2E |
 | rw-013 | preview_xss_sanitized | sanitized note + sandbox iframe + DOMPurify | E2E |
 | rw-014 | step_limit_exceeded | `run.step_limit` → `failed` | E2E |
+| rw-027 | qa_playwright_mismatch | QA 실패 + 수정 제안 | E2E |
 | rw-001 | conflict_discount_copy | 충돌 → 승인 차단 | fixture + bench |
+| gate reject | (rw-027 등) | `gate.rejected` + `eval.case_recorded` | E2E |
 
 정상 경로: rw-004 → 계획 승인 → (**수정 없이 계속** 또는 인자 수정) → execute → QA → 게이트 승인.
 

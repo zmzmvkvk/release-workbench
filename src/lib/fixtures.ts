@@ -12,7 +12,8 @@ export type FixtureId =
   | "tool_args_edited"
   | "citation_missing_block"
   | "preview_xss_sanitized"
-  | "step_limit_exceeded";
+  | "step_limit_exceeded"
+  | "qa_playwright_mismatch";
 
 type Step =
   | { kind: "event"; delayMs: number; partial: Omit<WorkbenchEvent, "id" | "runId" | "seq" | "ts"> & { type: WorkbenchEvent["type"]; payload: unknown } }
@@ -540,6 +541,36 @@ export function buildFixtureSteps(fixture: FixtureId, scenarioId: string): Step[
           },
         },
       ];
+    case "qa_playwright_mismatch":
+      return [
+        ...baseSteps(scenarioId),
+        {
+          kind: "event",
+          delayMs: 200,
+          partial: {
+            type: "requirements.ready",
+            payload: {
+              requirements: [
+                {
+                  id: "r1",
+                  text: "CTA 문구 수강신청",
+                  priority: "must",
+                  citations: [{ quote: "수강신청", sourceIndex: 0, start: 0, end: 4 }],
+                },
+              ],
+              conflicts: [],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 150,
+          partial: {
+            type: "plan.proposed",
+            payload: { steps: ["CTA 패치", "Playwright 검수"] },
+          },
+        },
+      ];
   }
 }
 
@@ -557,6 +588,8 @@ export function scenarioDefaultFixture(scenarioId: string): FixtureId {
     "rw-012": "citation_missing_block",
     "rw-013": "preview_xss_sanitized",
     "rw-014": "step_limit_exceeded",
+    "rw-027": "qa_playwright_mismatch",
+    "rw-030": "happy_card_grid",
   };
   return map[scenarioId] ?? "happy_card_grid";
 }

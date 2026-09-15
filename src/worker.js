@@ -1004,7 +1004,11 @@ export default {
         const e1 = append(run, "gate.rejected", {
           reason: body.reason ?? "rejected",
         });
-        return Response.json({ ok: true, events: [e1] });
+        const e2 = append(run, "eval.case_recorded", {
+          caseId: run.scenarioId ?? "unknown",
+          outcome: "gate_rejected",
+        });
+        return Response.json({ ok: true, events: [e1, e2] });
       }
 
       const approve = append(run, "plan.approved", { by: "user" });
