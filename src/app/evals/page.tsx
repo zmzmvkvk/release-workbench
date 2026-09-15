@@ -57,6 +57,14 @@ export default function EvalsPage() {
         />
         <Stat label="재연결 성공률" value={fmt(aggregate.reconnectSuccessRate)} />
         <Stat label="중복 side effect" value={String(aggregate.duplicateSideEffects)} />
+        <Stat
+          label="a11y/격리 탐지율"
+          value={fmt(
+            "a11yDefectDetectionRate" in aggregate
+              ? (aggregate.a11yDefectDetectionRate as number | null)
+              : null,
+          )}
+        />
       </section>
 
       <section className="mt-10 rounded-xl border border-sky-900/50 bg-sky-950/20 p-4">

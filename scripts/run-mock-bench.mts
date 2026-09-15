@@ -148,6 +148,8 @@ async function main() {
   let completed = 0;
   let attemptedComplete = 0;
   let dupSideEffects = 0;
+  let a11yDetectHits = 0;
+  let a11yDetectExpected = 0;
 
   for (const s of scenariosData.scenarios) {
     const fixture = (FIXTURE_IDS.has(s.fixture)
@@ -191,6 +193,16 @@ async function main() {
     if (fixture === "duplicate_blocked") {
       // side effects should stay 0 (no started run tools)
       if (state.tools.length > 0) dupSideEffects += 1;
+    }
+
+    if (fixture === "preview_xss_sanitized") {
+      a11yDetectExpected += 1;
+      if (
+        state.preview.sanitized.length > 0 ||
+        state.events.some((e) => e.type === "preview.sanitized")
+      ) {
+        a11yDetectHits += 1;
+      }
     }
 
     cases.push({
@@ -243,6 +255,7 @@ async function main() {
       workflowP95Ms: percentile(workflows, 95),
       reconnectSuccessRate: pct(reconnectOk, reconnectN),
       duplicateSideEffects: dupSideEffects,
+      a11yDefectDetectionRate: pct(a11yDetectHits, a11yDetectExpected),
     },
     cases,
   };

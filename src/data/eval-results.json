@@ -21,10 +21,11 @@
     "ttftP50Ms": 201,
     "ttftP95Ms": 202,
     "cancelLatencyP50Ms": 1,
-    "workflowP50Ms": 6345,
-    "workflowP95Ms": 6356,
+    "workflowP50Ms": 6346,
+    "workflowP95Ms": 6362,
     "reconnectSuccessRate": 1,
-    "duplicateSideEffects": 0
+    "duplicateSideEffects": 0,
+    "a11yDefectDetectionRate": 1
   },
   "cases": [
     {
@@ -33,7 +34,7 @@
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 201
+      "ttftMs": 207
     },
     {
       "scenarioId": "rw-002",
@@ -70,14 +71,14 @@
       "fixture": "stream_reconnect",
       "outcome": "awaiting_plan_review",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 200
     },
     {
       "scenarioId": "rw-007",
       "fixture": "invalid_requirements_json",
       "outcome": "failed",
       "schemaValid": false,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-008",
@@ -91,14 +92,14 @@
       "fixture": "plan_reject_darkmode",
       "outcome": "rejected_at_plan",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-010",
       "fixture": "tool_args_edited",
       "outcome": "executing",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-011",
@@ -119,21 +120,21 @@
       "outcome": "awaiting_gate",
       "schemaValid": true,
       "sanitized": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-014",
       "fixture": "step_limit_exceeded",
       "outcome": "failed",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-015",
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202,
+      "ttftMs": 201,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -141,7 +142,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 200,
+      "ttftMs": 201,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -149,7 +150,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201,
+      "ttftMs": 200,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -181,7 +182,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202,
+      "ttftMs": 201,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -197,7 +198,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 200,
+      "ttftMs": 201,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -205,7 +206,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202,
+      "ttftMs": 200,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -221,7 +222,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201,
+      "ttftMs": 202,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -229,7 +230,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202,
+      "ttftMs": 201,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -245,7 +246,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202,
+      "ttftMs": 200,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -253,7 +254,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201,
+      "ttftMs": 202,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -261,7 +262,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201,
+      "ttftMs": 202,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
