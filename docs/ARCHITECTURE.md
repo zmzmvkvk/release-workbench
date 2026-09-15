@@ -19,6 +19,7 @@ Browser (React / Next static export, basePath /workbench)
         │              Cloudflare Worker `roomy-page-workbench`
         │                GET  /workbench/api/health
         │                GET  /workbench/api/protocol  (event/state catalog)
+        │                GET  /workbench/api/runs/:id  (KV snapshot · eventTypes · toolNames)
         │                POST /workbench/api/runs/stream
         │                POST /workbench/api/runs/:id/continue
         │                POST /workbench/api/runs/:id/cancel
@@ -70,6 +71,7 @@ KV: `idem:*` duplicate · `run:*` resume after SSE disconnect (`waitUntil`) · `
 
 - `GET /workbench/api/health` — `{ ok, sse, kv, ai, protocol }` (UI header badge)
 - `GET /workbench/api/protocol` — states, eventTypes, HITL, promptVersions (curl hiring evidence)
+- `GET /workbench/api/runs/:id` — KV/memory snapshot (`mode`, `eventTypes`, `toolNames`)
 - `metrics.sample` — ttftMs, totalMs, tokens, costUsd, provider, model, promptVersion
 - Workers AI: `usage.total_tokens` 파싱 시 tokens 기록. **costUsd는 provider 미제공 → null** (추정 금지)
 - Hybrid execute: `propose_patch_plan` tool (prompt `workers-ai-patch-v1`) before mock fixtures
