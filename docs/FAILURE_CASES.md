@@ -12,10 +12,12 @@
 | rw-010 | tool_args_edited | `tool.args_edited` + HITL UI | E2E (rw-004 경로) |
 | rw-011 | duplicate_blocked | `run.duplicate_blocked` | E2E + Worker KV |
 | rw-012 | citation_missing_block | 승인 버튼 비활성 | E2E |
-| rw-013 | preview_xss_sanitized | sanitized note + sandbox iframe | E2E |
+| rw-013 | preview_xss_sanitized | sanitized note + sandbox iframe + DOMPurify | E2E |
 | rw-014 | step_limit_exceeded | `run.step_limit` → `failed` | E2E |
 | rw-001 | conflict_discount_copy | 충돌 → 승인 차단 | fixture + bench |
 
-정상 경로: rw-004 → 계획 승인 → (인자 수정 선택) → execute → QA → 게이트 승인.
+정상 경로: rw-004 → 계획 승인 → (**수정 없이 계속** 또는 인자 수정) → execute → QA → 게이트 승인.
+
+HTTP SSE (라이브): execute 첫 `tool.started`에서 Worker가 일시정지 → `POST …/continue` `args_continue`/`args_edit`(KV 신호, isolate-safe) → soft-timeout 12s.
 
 측정 시 표본·fixture 버전·실행 횟수·모델·프롬프트 버전을 `/evals`와 README에 같이 적는다.
