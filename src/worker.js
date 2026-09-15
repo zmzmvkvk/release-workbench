@@ -482,6 +482,9 @@ async function loadRun(env, runId) {
     if (!raw) return null;
     const data = JSON.parse(raw);
     const ac = new AbortController();
+    // Reconstruct stub history so continue-phase persistRun does not wipe
+    // structuring eventTypes when this isolate never saw the original stream.
+    const priorTypes = Array.isArray(data.eventTypes) ? data.eventTypes : [];
     run = {
       runId,
       scenarioId: data.scenarioId,
@@ -490,7 +493,14 @@ async function loadRun(env, runId) {
       idempotencyKey: data.idempotencyKey,
       patchPlanSummary: data.patchPlanSummary ?? null,
       cancelled: false,
-      events: [],
+      events: priorTypes.map((type, i) => ({
+        id: `hist_${runId}_${i}`,
+        runId,
+        seq: i,
+        ts: data.updatedAt ?? new Date().toISOString(),
+        type,
+        payload: {},
+      })),
       abort: ac,
     };
     runs.set(runId, run);
@@ -1073,6 +1083,19 @@ export default {
       request.method === "GET"
     ) {
       const runId = url.pathname.split("/")[4];
+      // Prefer KV: structuring and continue may run on different isolates;
+      // in-memory Map is often stale (structuring-only) after hybrid execute.
+      if (env.WORKBENCH_IDEMPOTENCY) {
+        try {
+          const raw = await env.WORKBENCH_IDEMPOTENCY.get(`run:${runId}`);
+          if (raw) {
+            const data = JSON.parse(raw);
+            return Response.json({ ...data, source: "kv" });
+          }
+        } catch {
+          /* fall through to memory */
+        }
+      }
       const mem = runs.get(runId);
       if (mem) {
         const eventTypes = (mem.events ?? []).map((e) => e.type);
@@ -1090,17 +1113,6 @@ export default {
           toolNames: [...new Set(toolNames)].slice(-20),
           source: "memory",
         });
-      }
-      if (env.WORKBENCH_IDEMPOTENCY) {
-        try {
-          const raw = await env.WORKBENCH_IDEMPOTENCY.get(`run:${runId}`);
-          if (raw) {
-            const data = JSON.parse(raw);
-            return Response.json({ ...data, source: "kv" });
-          }
-        } catch {
-          /* fall through */
-        }
       }
       return Response.json({ error: "not found" }, { status: 404 });
     }
@@ -1366,6 +1378,12 @@ export default {
             )) ?? patchPlan;
           }
           if (execAbort.signal.aborted || run.cancelled) {
+            await persistRun(env, run);
+            try {
+              controller.close();
+            } catch {
+              /* already closed */
+            }
             return;
           }
           await play(
@@ -1379,6 +1397,7 @@ export default {
             execAbort.signal,
             env,
           );
+          // play() already persists + closes; ensure KV is fresh for GET
           await persistRun(env, run);
         },
       });
