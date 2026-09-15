@@ -251,7 +251,10 @@ function structuringSteps(fixture, scenarioId, key) {
   ];
 }
 
-function executeSteps(scenarioId, fixture) {
+function executeSteps(scenarioId, fixture, patchPlanSummary) {
+  const safePlan = patchPlanSummary
+    ? String(patchPlanSummary).slice(0, 140).replace(/\*\//g, "")
+    : null;
   if (fixture === "tool_fail_retry") {
     return [
       {
@@ -375,7 +378,14 @@ function executeSteps(scenarioId, fixture) {
     {
       delayMs: 100,
       type: "tool.started",
-      payload: { callId: "t1", name: "apply_code_patch", args: { scenarioId } },
+      payload: {
+        callId: "t1",
+        name: "apply_code_patch",
+        args: {
+          scenarioId,
+          ...(safePlan ? { patchPlan: safePlan, from: "workers-ai-patch-v1" } : {}),
+        },
+      },
     },
     {
       delayMs: 250,
@@ -391,7 +401,7 @@ function executeSteps(scenarioId, fixture) {
             path: "src/components/CourseCardGrid.tsx",
             additions: 20,
             deletions: 2,
-            patch: "+export function CourseCardGrid() { /* … */ }",
+            patch: `${safePlan ? `+/* AI plan: ${safePlan} */\n` : ""}+export function CourseCardGrid() { /* … */ }`,
           },
         ],
       },
@@ -450,6 +460,7 @@ async function persistRun(env, run) {
         fixture: run.fixture,
         mode: run.mode,
         idempotencyKey: run.idempotencyKey,
+        patchPlanSummary: run.patchPlanSummary ?? null,
         eventCount: eventTypes.length,
         eventTypes: eventTypes.slice(-40),
         toolNames: [...new Set(toolNames)].slice(-20),
@@ -477,6 +488,7 @@ async function loadRun(env, runId) {
       fixture: data.fixture,
       mode: data.mode ?? "mock",
       idempotencyKey: data.idempotencyKey,
+      patchPlanSummary: data.patchPlanSummary ?? null,
       cancelled: false,
       events: [],
       abort: ac,
@@ -644,7 +656,7 @@ async function playWorkersAiPatchPlan(run, env, controller, signal) {
   if (signal.aborted || run.cancelled) {
     push("run.cancelled", { reason: "user_cancelled" });
     controller.close();
-    return;
+    return null;
   }
 
   push("tool.finished", {
@@ -657,6 +669,7 @@ async function playWorkersAiPatchPlan(run, env, controller, signal) {
       tokens,
     },
   });
+  run.patchPlanSummary = summary;
   push("trace.span", {
     name: "workers_ai_patch_plan",
     start: 0,
@@ -664,6 +677,7 @@ async function playWorkersAiPatchPlan(run, env, controller, signal) {
     attrs: { tokens, promptVersion: "workers-ai-patch-v1" },
   });
   await persistRun(env, run);
+  return summary;
 }
 
 async function playWorkersAiStructuring(run, env, controller, signal, sourceText) {
@@ -1290,15 +1304,25 @@ export default {
           });
           const enc = new TextEncoder();
           controller.enqueue(enc.encode(sse(approve, approve.id)));
+          let patchPlan = run.patchPlanSummary ?? null;
           if (run.mode === "workers-ai" && env.AI) {
-            await playWorkersAiPatchPlan(run, env, controller, execAbort.signal);
+            patchPlan = (await playWorkersAiPatchPlan(
+              run,
+              env,
+              controller,
+              execAbort.signal,
+            )) ?? patchPlan;
           }
           if (execAbort.signal.aborted || run.cancelled) {
             return;
           }
           await play(
             run,
-            executeSteps(run.scenarioId ?? "rw-004", run.fixture),
+            executeSteps(
+              run.scenarioId ?? "rw-004",
+              run.fixture,
+              patchPlan,
+            ),
             controller,
             execAbort.signal,
             env,

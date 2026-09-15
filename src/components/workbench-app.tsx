@@ -487,6 +487,13 @@ export function WorkbenchApp() {
           </a>
           {" · "}
           <a
+            href="/workbench/?mode=workers-ai&scenario=rw-004"
+            className="text-emerald-400 hover:underline"
+          >
+            Workers AI 하이브리드
+          </a>
+          {" · "}
+          <a
             href="/workbench/demo/release-workbench-90s.webm"
             className="text-emerald-400 hover:underline"
           >
