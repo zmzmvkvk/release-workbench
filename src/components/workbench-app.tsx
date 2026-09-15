@@ -430,6 +430,15 @@ export function WorkbenchApp() {
           </Link>
           {" · "}
           <a
+            href="https://github.com/zmzmvkvk/release-workbench/blob/main/docs/HIRING_BRIEF.md"
+            className="text-emerald-400 hover:underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            채용 브리프
+          </a>
+          {" · "}
+          <a
             href="/workbench/demo/release-workbench-90s.webm"
             className="text-emerald-400 hover:underline"
           >
