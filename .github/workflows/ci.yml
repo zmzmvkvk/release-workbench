@@ -46,3 +46,20 @@ jobs:
           cat /tmp/health.json || true
           test "$code" = "200"
           grep -q '"ok":true' /tmp/health.json
+      - name: Workers AI structuring smoke (required)
+        run: |
+          set -euo pipefail
+          key="ci-ai-$(date +%s)"
+          curl -fsSN -X POST \
+            "https://roomy-page-workbench.hommy.workers.dev/workbench/api/runs/stream" \
+            -H "Content-Type: application/json" \
+            --data "{\"scenarioId\":\"rw-004\",\"fixture\":\"happy_card_grid\",\"idempotencyKey\":\"$key\",\"mode\":\"workers-ai\",\"sourceText\":\"desktop 3 columns mobile 1 column CTA detail\"}" \
+            --max-time 60 \
+            -o /tmp/ai-sse.txt
+          # Show a short excerpt for the Actions log
+          head -c 2000 /tmp/ai-sse.txt || true
+          echo
+          grep -q '"mode":"workers-ai"' /tmp/ai-sse.txt
+          grep -q '"type":"requirements.ready"' /tmp/ai-sse.txt
+          grep -q '"type":"metrics.sample"' /tmp/ai-sse.txt
+          grep -q '"provider":"workers-ai"' /tmp/ai-sse.txt
