@@ -6,7 +6,7 @@
 | --- | --- | --- | --- |
 | rw-005 | cancel_during_structuring | `run.cancelled` | E2E |
 | rw-006 | stream_reconnect | `stream.reconnect` + banner | E2E |
-| (live) | HTTP SSE drop mid-stream | `GET /api/runs/:id` snapshot → `stream.reconnect` (`recoveredFrom: run-snapshot`) | client `http-sse` + Vitest |
+| (live) | HTTP SSE drop mid-stream | `GET /api/runs/:id` snapshot → `stream.reconnect` (`recoveredFrom: run-snapshot`) | Vitest `tryHttpStructuring` recovered + client banner |
 | rw-007 | invalid_requirements_json | `requirements.invalid` → `failed` | E2E |
 | rw-008 | tool_retry_once | `tool.failed` → `tool.retried` | E2E |
 | rw-009 | plan_reject_darkmode | `plan.rejected` / `rejected_at_plan` | E2E |

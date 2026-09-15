@@ -602,6 +602,29 @@ async function play(run, steps, controller, signal, env) {
     }
   }
   await persistRun(env, run);
+  // Hiring evidence: SSE carries persisted toolNames so clients/CI need not race KV.
+  try {
+    const toolNames = [...new Set(
+      (run.events ?? [])
+        .filter((e) => e.type === "tool.started" || e.type === "tool.finished")
+        .map((e) => e.payload?.name)
+        .filter(Boolean),
+    )];
+    const persisted = append(run, "trace.span", {
+      name: "run_persisted",
+      start: 0,
+      end: 0,
+      attrs: {
+        eventCount: (run.events ?? []).length,
+        toolNames,
+        mode: run.mode ?? "mock",
+      },
+    });
+    controller.enqueue(enc.encode(sse(persisted, persisted.id)));
+    await persistRun(env, run);
+  } catch {
+    /* stream may already be closing */
+  }
   controller.close();
 }
 
