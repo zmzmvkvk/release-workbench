@@ -33,6 +33,8 @@ export async function tryHttpStructuring(opts: {
   scenarioId: string;
   fixture: string;
   idempotencyKey: string;
+  mode?: "mock" | "workers-ai";
+  sourceText?: string;
   signal: AbortSignal;
   onEvent: (e: WorkbenchEvent) => void;
   onRunId: (id: string) => void;
@@ -45,6 +47,8 @@ export async function tryHttpStructuring(opts: {
         scenarioId: opts.scenarioId,
         fixture: opts.fixture,
         idempotencyKey: opts.idempotencyKey,
+        mode: opts.mode ?? "mock",
+        sourceText: opts.sourceText,
       }),
       signal: opts.signal,
     });

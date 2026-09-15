@@ -65,6 +65,7 @@ export function WorkbenchApp() {
   const clientRunRef = useRef<ClientRun | null>(null);
   const httpRunIdRef = useRef<string | null>(null);
   const [transport, setTransport] = useState<"http-sse" | "client-mock">("client-mock");
+  const [llmMode, setLlmMode] = useState<"mock" | "workers-ai">("mock");
 
   const visible = useMemo(() => {
     return scenarios.filter((s) => {
@@ -101,6 +102,10 @@ export function WorkbenchApp() {
         scenarioId: selected.id,
         fixture,
         idempotencyKey: `${selected.id}-${Date.now()}`,
+        mode: llmMode,
+        sourceText: selected.sources
+          ?.map((s: { kind?: string; text?: string }) => `[${s.kind}] ${s.text}`)
+          .join("\n\n"),
         signal: ac.signal,
         onEvent: push,
         onRunId: (id) => {
@@ -275,6 +280,27 @@ export function WorkbenchApp() {
           </a>
         </p>
       </header>
+
+      <div className="flex flex-wrap items-center gap-2 text-xs">
+        <span className="text-zinc-500">구조화 모드</span>
+        {(["mock", "workers-ai"] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => setLlmMode(m)}
+            className={`rounded-md border px-2 py-1 ${
+              llmMode === m
+                ? "border-sky-500/50 text-sky-100"
+                : "border-zinc-800 text-zinc-400"
+            }`}
+          >
+            {m === "mock" ? "deterministic mock" : "Workers AI (llama-3.2-3b)"}
+          </button>
+        ))}
+        <span className="text-zinc-600">
+          · transport {transport} · mode {llmMode}
+        </span>
+      </div>
 
       <div className="flex flex-wrap gap-2 text-xs">
         {(["all", "failure", "happy"] as const).map((f) => (

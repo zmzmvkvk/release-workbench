@@ -28,7 +28,7 @@
 | 자동 QA | ✅ mock report + axe E2E |
 | trace · metrics | ✅ events + bench TTFT |
 | 평가 대시보드 | ✅ `/evals` |
-| 실 LLM 연동 | ❌ 스텁만 (`src/lib/llm-adapter.ts`, `WORKBENCH_LLM`) |
+| 실 LLM 연동 | ✅ Workers AI `@cf/meta/llama-3.2-3b-instruct` (`mode=workers-ai`) · 스키마 실패 시 휴리스틱 폴백 |
 | roomy.page 커스텀 도메인 | ✅ 200 검증 (2026-09-15) |
 
 ## 실패 10종
@@ -46,4 +46,4 @@
 | HTML 격리 | rw-013 + Worker `unsafe_html_isolated` |
 | 단계 초과 | rw-014 + Worker `max_steps_exceeded` |
 
-목표 완료로 보지 않음: **실 LLM SSE**(키 게이트 실제 스트리밍), Durable idempotency, FDE용 BE/DB는 이후.
+목표 완료로 보지 않음: Durable idempotency, OpenAI/Anthropic 키 경로 고도화, FDE용 BE/DB·인증은 이후. Workers AI 라이브 구조화는 검증됨.
