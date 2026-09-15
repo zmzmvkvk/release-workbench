@@ -54,6 +54,15 @@ test("citation missing blocks plan approve", async ({ page }) => {
   await expect(page.getByRole("button", { name: "계획 승인 → 실행" })).toBeDisabled();
 });
 
+test("evals page links to curlable evals JSON", async ({ page }) => {
+  await page.goto("/workbench/evals");
+  await expect(page.getByRole("link", { name: /evals JSON/ })).toHaveAttribute(
+    "href",
+    "/workbench/api/evals",
+  );
+  await expect(page.getByText("fixture 커버", { exact: true })).toBeVisible();
+});
+
 test("evals page shows benchmark table", async ({ page }) => {
   await page.goto("/workbench/evals");
   await expect(page.getByRole("heading", { name: "합성 벤치마크" })).toBeVisible();
