@@ -11,7 +11,8 @@ AI? ???? ???? ??? ???, ??? ??? **?? · ?? QA · ???? ???**?? ?? ??????.
 | App | https://roomy.page/workbench/ |
 | Evals | https://roomy.page/workbench/evals |
 | 90s demo | https://roomy.page/workbench/demo/release-workbench-90s.webm |
-| Failure deep link | https://roomy.page/workbench/?mock=1&scenario=rw-027&filter=failure |
+| Failure deep link | https://roomy.page/workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1 |
+| Failure matrix | https://roomy.page/workbench/evals#failures |
 | workers.dev | https://roomy-page-workbench.hommy.workers.dev/workbench/ |
 | CI | [GitHub Actions](https://github.com/zmzmvkvk/release-workbench/actions) |
 | Case study | [`docs/CASE_STUDY.md`](./docs/CASE_STUDY.md) |
