@@ -12,6 +12,7 @@ Not an "AI builds a page" demo — a work system where incomplete model output i
 | --- | --- |
 | App | https://roomy.page/workbench/ |
 | Worker health | https://roomy.page/workbench/api/health |
+| Eval summary (curl) | https://roomy.page/workbench/api/evals |
 | Event protocol (JSON) | https://roomy.page/workbench/api/protocol |
 | Evals | https://roomy.page/workbench/evals |
 | 90s demo | https://roomy.page/workbench/demo/release-workbench-90s.webm |

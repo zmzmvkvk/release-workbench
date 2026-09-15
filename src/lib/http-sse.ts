@@ -50,6 +50,13 @@ export type HttpStructuringResult =
   | { kind: "ok" }
   | { kind: "unavailable" }
   | {
+      kind: "recovered";
+      runId: string;
+      eventCount: number;
+      eventTypes: string[];
+      source?: string;
+    }
+  | {
       kind: "rate_limited";
       retryAfterSec: number;
       activeStreams?: number;
@@ -83,6 +90,36 @@ async function postStreamOnce(
   });
 }
 
+export type RunSnapshot = {
+  runId: string;
+  scenarioId?: string;
+  fixture?: string;
+  mode?: string;
+  eventCount: number;
+  eventTypes?: string[];
+  toolNames?: string[];
+  source?: string;
+  error?: string;
+};
+
+/** GET /workbench/api/runs/:id — memory or KV snapshot after SSE drop. */
+export async function fetchRunSnapshot(
+  runId: string,
+  signal?: AbortSignal,
+): Promise<RunSnapshot | null> {
+  try {
+    const res = await fetch(`/workbench/api/runs/${encodeURIComponent(runId)}`, {
+      signal: signal ?? AbortSignal.timeout(2500),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as RunSnapshot & { error?: string };
+    if (data.error || !data.runId) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
 /** Prefer Worker HTTP SSE; returns structured result (429 retry once). */
 export async function tryHttpStructuring(opts: {
   scenarioId: string;
@@ -94,6 +131,8 @@ export async function tryHttpStructuring(opts: {
   onEvent: (e: WorkbenchEvent) => void;
   onRunId: (id: string) => void;
   onRateLimited?: (info: { retryAfterSec: number; attempt: number }) => void;
+  /** Called when the SSE body drops mid-stream and a run snapshot is recovered. */
+  onStreamInterrupted?: (snap: RunSnapshot) => void;
 }): Promise<HttpStructuringResult> {
   const payload = {
     scenarioId: opts.scenarioId,
@@ -102,6 +141,8 @@ export async function tryHttpStructuring(opts: {
     mode: opts.mode ?? "mock",
     sourceText: opts.sourceText,
   };
+
+  let runId: string | null = null;
 
   try {
     let res = await postStreamOnce(payload, opts.signal);
@@ -142,11 +183,27 @@ export async function tryHttpStructuring(opts: {
       return { kind: "unavailable" };
     }
     const id = res.headers.get("X-Run-Id");
-    if (id) opts.onRunId(id);
+    if (id) {
+      runId = id;
+      opts.onRunId(id);
+    }
     await readSseStream(res, opts.onEvent, opts.signal);
     return { kind: "ok" };
   } catch (e) {
     if ((e as Error).name === "AbortError") throw e;
+    if (runId) {
+      const snap = await fetchRunSnapshot(runId, opts.signal);
+      if (snap && snap.eventCount > 0) {
+        opts.onStreamInterrupted?.(snap);
+        return {
+          kind: "recovered",
+          runId,
+          eventCount: snap.eventCount,
+          eventTypes: snap.eventTypes ?? [],
+          source: snap.source,
+        };
+      }
+    }
     return { kind: "unavailable" };
   }
 }

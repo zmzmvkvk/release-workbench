@@ -263,9 +263,36 @@ export function WorkbenchApp() {
               `동시 스트림 한도(429). ${retryAfterSec}s 후 자동 재시도…`,
             );
           },
+          onStreamInterrupted: (snap) => {
+            setState((s) =>
+              applyEvent(s, {
+                id: `reconnect-${snap.runId}-${Date.now()}`,
+                type: "stream.reconnect",
+                runId: snap.runId,
+                seq: s.lastSeq + 1,
+                ts: new Date().toISOString(),
+                payload: {
+                  lastSeq: s.lastSeq,
+                  recoveredFrom: "run-snapshot",
+                  eventCount: snap.eventCount,
+                  source: snap.source,
+                },
+              }),
+            );
+            setBanner(
+              `SSE 중단 → run snapshot 재개 (events=${snap.eventCount}, source=${snap.source ?? "?"})`,
+            );
+          },
         }));
       if (httpResult && httpResult.kind === "ok") {
         setTransport("http-sse");
+        return;
+      }
+      if (httpResult && httpResult.kind === "recovered") {
+        setTransport("http-sse");
+        setBanner(
+          `SSE 중단 후 snapshot 복구 완료 (run=${httpResult.runId.slice(0, 8)}… · events=${httpResult.eventCount})`,
+        );
         return;
       }
       if (httpResult && httpResult.kind === "rate_limited") {

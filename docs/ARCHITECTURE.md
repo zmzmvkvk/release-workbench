@@ -69,7 +69,9 @@ KV: `idem:*` duplicate · `run:*` resume after SSE disconnect (`waitUntil`) · `
 
 ## Observability
 
-- `GET /workbench/api/health` — `{ ok, sse, kv, ai, protocol }` (UI header badge)
+- `GET /workbench/api/health` — `{ ok, sse, kv, ai, protocol, evals }` (UI header badge)
+- `GET /workbench/api/evals` — curlable mock + Workers AI spot gate summary (`public/data/eval-summary.json`)
+- `GET /workbench/api/runs/:id` — run snapshot (memory/KV); client recovers after SSE drop via `stream.reconnect`
 - `GET /workbench/api/protocol` — states, eventTypes, HITL, promptVersions (curl hiring evidence)
 - `GET /workbench/api/runs/:id` — KV/memory snapshot (`mode`, `eventTypes`, `toolNames`)
 - `metrics.sample` — ttftMs, totalMs, tokens, costUsd, provider, model, promptVersion

@@ -39,6 +39,7 @@ jobs:
           echo "$body" | grep -q '"kv":true'
           echo "$body" | grep -q '"ai":true'
           echo "$body" | grep -q '"protocol":"/workbench/api/protocol"'
+          echo "$body" | grep -q '"evals":"/workbench/api/evals"'
           echo "$body" | grep -q '"maxActiveStreams":8'
           proto=$(curl -fsS "https://roomy-page-workbench.hommy.workers.dev/workbench/api/protocol")
           echo "$proto" | head -c 500
@@ -47,6 +48,12 @@ jobs:
           echo "$proto" | grep -q '"workersAiPatchPlan":"workers-ai-patch-v1"'
           echo "$proto" | grep -q 'metrics.sample'
           echo "$proto" | grep -q 'tool.args_edited'
+          evals=$(curl -fsS "https://roomy-page-workbench.hommy.workers.dev/workbench/api/evals")
+          echo "$evals" | head -c 800
+          echo
+          echo "$evals" | grep -q '"ok":true'
+          echo "$evals" | grep -q 'scenarioCountMin\|"scenarioCount"'
+          echo "$evals" | grep -q 'workers-ai-struct-v3\|workersAiSpot'
       - name: Probe roomy.page health (best-effort)
         continue-on-error: true
         run: |

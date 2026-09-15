@@ -931,10 +931,62 @@ export default {
         kv: Boolean(env.WORKBENCH_IDEMPOTENCY),
         ai: Boolean(env.AI),
         protocol: "/workbench/api/protocol",
+        evals: "/workbench/api/evals",
         maxActiveStreams: MAX_ACTIVE_STREAMS,
         activeStreams,
         ts: new Date().toISOString(),
       });
+    }
+
+    if (
+      url.pathname === "/workbench/api/evals" &&
+      request.method === "GET"
+    ) {
+      try {
+        const assetRes = await env.ASSETS.fetch(
+          new Request(new URL("/data/eval-summary.json", url.origin), request),
+        );
+        if (assetRes.ok) {
+          const data = await assetRes.json();
+          return Response.json(
+            { ...data, source: data.source ?? "assets" },
+            {
+              headers: {
+                "Cache-Control": "public, max-age=60",
+                "Access-Control-Allow-Origin": "*",
+              },
+            },
+          );
+        }
+      } catch {
+        /* fall through to embedded fallback */
+      }
+      return Response.json(
+        {
+          ok: true,
+          source: "fallback",
+          note: "Deploy after `pnpm bench:gates` to refresh public/data/eval-summary.json",
+          gates: {
+            scenarioCountMin: 35,
+            extractionAccuracyMin: 1,
+            toolSelectionAccuracyMin: 1,
+            conflictRecallMin: 1,
+            schemaValidRateMin: 0.9,
+            workersAiSpotSampleMin: 5,
+            promptVersion: "workers-ai-struct-v3",
+          },
+          links: {
+            dashboard: "/workbench/evals",
+            protocol: "/workbench/api/protocol",
+          },
+        },
+        {
+          headers: {
+            "Cache-Control": "public, max-age=30",
+            "Access-Control-Allow-Origin": "*",
+          },
+        },
+      );
     }
 
     if (
