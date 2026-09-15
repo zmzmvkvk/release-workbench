@@ -274,6 +274,8 @@ export function WorkbenchApp() {
           onEvent: push,
         });
         if (mode !== "none") return;
+        // Stale or unreachable Worker — fall through to client mock
+        httpRunIdRef.current = null;
       } finally {
         setBusy(false);
       }

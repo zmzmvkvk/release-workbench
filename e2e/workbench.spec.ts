@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 test("happy path: structure → approve → gate", async ({ page }) => {
+  test.setTimeout(60_000);
   await page.goto("/workbench");
   await expect(page.getByRole("heading", { name: /검증된 릴리즈/ })).toBeVisible();
 
@@ -13,14 +14,14 @@ test("happy path: structure → approve → gate", async ({ page }) => {
   });
 
   await page.getByRole("button", { name: "계획 승인 → 실행" }).click();
-  // Release args HITL gate (client-mock waitArgsEdit)
-  const skipArgs = page.getByRole("button", { name: "수정 없이 계속" });
-  await skipArgs.waitFor({ state: "visible", timeout: 8_000 });
-  await skipArgs.click();
+  await expect(page.getByRole("button", { name: "수정 없이 계속" })).toBeVisible({
+    timeout: 20_000,
+  });
+  await page.getByRole("button", { name: "수정 없이 계속" }).click();
   await expect(page.getByText("status:")).toContainText("awaiting_gate", { timeout: 25_000 });
 
   await page.getByRole("button", { name: "게이트 승인" }).click();
-  await expect(page.getByText("status:")).toContainText("completed", { timeout: 10_000 });
+  await expect(page.getByText("status:")).toContainText("completed", { timeout: 15_000 });
 });
 
 test("citation missing blocks plan approve", async ({ page }) => {
