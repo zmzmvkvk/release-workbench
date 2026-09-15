@@ -11,6 +11,10 @@ export type FixtureId =
   | "modal_focus_ambiguity"
   | "priority_from_email"
   | "token_vs_raw_hex"
+  | "webview_back_ambiguity"
+  | "hydration_price_flicker"
+  | "legacy_gap_fallback"
+  | "full_path_conflict_hitl_qa"
   | "cancel_during_structuring"
   | "conflict_discount_copy"
   | "invalid_requirements_json"
@@ -900,6 +904,385 @@ export function buildFixtureSteps(fixture: FixtureId, scenarioId: string): Step[
           },
         },
       ];
+    case "webview_back_ambiguity":
+      return [
+        ...baseSteps(scenarioId),
+        {
+          kind: "event",
+          delayMs: 280,
+          partial: {
+            type: "stream.delta",
+            payload: {
+              channel: "structuring",
+              text: "iOS/Android 웹뷰 뒤로가기 모호성…",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 200,
+          partial: {
+            type: "conflict.detected",
+            payload: {
+              a: "r2",
+              b: "r3",
+              kind: "ambiguity",
+              note: "Android 브릿지 일정 미정 vs history.back만",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 350,
+          partial: {
+            type: "requirements.ready",
+            payload: {
+              requirements: [
+                {
+                  id: "r1",
+                  text: "웹뷰 강의실 헤더 뒤로가기",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "헤더에 뒤로가기",
+                      sourceIndex: 0,
+                      start: 9,
+                      end: 18,
+                    },
+                  ],
+                },
+                {
+                  id: "r2",
+                  text: "iOS: history.back",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "iOS는 history.back",
+                      sourceIndex: 0,
+                      start: 20,
+                      end: 35,
+                    },
+                  ],
+                },
+                {
+                  id: "r3",
+                  text: "Android: closeWebView 브릿지",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "브릿지 closeWebView",
+                      sourceIndex: 0,
+                      start: 45,
+                      end: 60,
+                    },
+                  ],
+                },
+                {
+                  id: "r4",
+                  text: "Android history.back만 (일정 미정 대안)",
+                  priority: "should",
+                  citations: [
+                    {
+                      quote: "history.back만 쓰면 안 되나요",
+                      sourceIndex: 1,
+                      start: 12,
+                      end: 30,
+                    },
+                  ],
+                },
+              ],
+              conflicts: [
+                {
+                  id: "c1",
+                  kind: "ambiguity",
+                  requirementIds: ["r3", "r4"],
+                  note: "Android 브릿지 vs history.back — 일정 미정",
+                },
+              ],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 150,
+          partial: {
+            type: "plan.proposed",
+            payload: { steps: ["플랫폼 분기 명세", "승인 전 모호성 해소"] },
+          },
+        },
+      ];
+    case "hydration_price_flicker":
+      return [
+        ...baseSteps(scenarioId),
+        {
+          kind: "event",
+          delayMs: 280,
+          partial: {
+            type: "stream.delta",
+            payload: {
+              channel: "structuring",
+              text: "SSR/CSR 가격 불일치 깜빡임…",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 200,
+          partial: {
+            type: "conflict.detected",
+            payload: {
+              a: "r1",
+              b: "r2",
+              kind: "contradiction",
+              note: "서버 가격 vs 클라이언트 쿠폰가 순간 불일치",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 350,
+          partial: {
+            type: "requirements.ready",
+            payload: {
+              requirements: [
+                {
+                  id: "r1",
+                  text: "서버 렌더 가격 유지",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "서버에서 렌더한 가격",
+                      sourceIndex: 0,
+                      start: 0,
+                      end: 12,
+                    },
+                  ],
+                },
+                {
+                  id: "r2",
+                  text: "클라이언트 쿠폰 적용가 (깜빡임 없이)",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "깜빡임 없게",
+                      sourceIndex: 0,
+                      start: 35,
+                      end: 42,
+                    },
+                  ],
+                },
+              ],
+              conflicts: [
+                {
+                  id: "c1",
+                  kind: "contradiction",
+                  requirementIds: ["r1", "r2"],
+                  note: "하이드레이션 가격 불일치 — suppress 신중 적용",
+                },
+              ],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 150,
+          partial: {
+            type: "plan.proposed",
+            payload: { steps: ["가격 소스 of truth", "hydration 전략"] },
+          },
+        },
+      ];
+    case "legacy_gap_fallback":
+      return [
+        ...baseSteps(scenarioId),
+        {
+          kind: "event",
+          delayMs: 280,
+          partial: {
+            type: "stream.delta",
+            payload: {
+              channel: "structuring",
+              text: "legacy WebView gap→margin 폴백…",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 400,
+          partial: {
+            type: "requirements.ready",
+            payload: {
+              requirements: [
+                {
+                  id: "r1",
+                  text: "강의 태그 칩 가로열",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "강의 태그 칩 가로열",
+                      sourceIndex: 0,
+                      start: 35,
+                      end: 46,
+                    },
+                  ],
+                },
+                {
+                  id: "r2",
+                  text: "구형 Android WebView gap 미지원 대응",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "gap 미지원",
+                      sourceIndex: 0,
+                      start: 18,
+                      end: 25,
+                    },
+                  ],
+                },
+                {
+                  id: "r3",
+                  text: "margin 폴백",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "margin 폴백 필요",
+                      sourceIndex: 0,
+                      start: 27,
+                      end: 37,
+                    },
+                  ],
+                },
+                {
+                  id: "r4",
+                  text: "QA: no-unsupported-gap-only",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "gap 미지원",
+                      sourceIndex: 0,
+                      start: 18,
+                      end: 25,
+                    },
+                  ],
+                },
+              ],
+              conflicts: [],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 200,
+          partial: {
+            type: "plan.proposed",
+            payload: { steps: ["칩 레이아웃", "margin 폴백", "WebView QA"] },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 100,
+          partial: {
+            type: "metrics.sample",
+            payload: {
+              ttftMs: 170,
+              tokens: 370,
+              costUsd: null,
+              provider: "mock",
+              model: "deterministic",
+              promptVersion: "none-mock",
+            },
+          },
+        },
+      ];
+    case "full_path_conflict_hitl_qa":
+      return [
+        ...baseSteps(scenarioId),
+        {
+          kind: "event",
+          delayMs: 280,
+          partial: {
+            type: "stream.delta",
+            payload: {
+              channel: "structuring",
+              text: "복합 충돌(등록 문구·타이머) 탐지…",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 200,
+          partial: {
+            type: "conflict.detected",
+            payload: {
+              a: "r1",
+              b: "r2",
+              kind: "contradiction",
+              note: "지금 등록 vs 사전 신청",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 350,
+          partial: {
+            type: "requirements.ready",
+            payload: {
+              requirements: [
+                {
+                  id: "r1",
+                  text: "버튼 문구 '지금 등록'",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "지금 등록",
+                      sourceIndex: 0,
+                      start: 28,
+                      end: 33,
+                    },
+                  ],
+                },
+                {
+                  id: "r2",
+                  text: "버튼 문구 '사전 신청' · 타이머 생략 가능",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "사전 신청",
+                      sourceIndex: 1,
+                      start: 8,
+                      end: 13,
+                    },
+                  ],
+                },
+              ],
+              conflicts: [
+                {
+                  id: "c1",
+                  kind: "contradiction",
+                  requirementIds: ["r1", "r2"],
+                  note: "CTA 문구 충돌",
+                },
+                {
+                  id: "c2",
+                  kind: "ambiguity",
+                  requirementIds: ["r2"],
+                  note: "타이머 필요 여부 모호 (PPT vs 메일)",
+                },
+              ],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 150,
+          partial: {
+            type: "plan.proposed",
+            payload: {
+              steps: ["충돌 해소 HITL", "모바일 타이머", "QA 게이트"],
+            },
+          },
+        },
+      ];
     case "modal_focus_ambiguity":
       return [
         ...baseSteps(scenarioId),
@@ -1476,6 +1859,10 @@ export function scenarioDefaultFixture(scenarioId: string): FixtureId {
     "rw-017": "modal_focus_ambiguity",
     "rw-028": "token_vs_raw_hex",
     "rw-029": "priority_from_email",
+    "rw-003": "webview_back_ambiguity",
+    "rw-023": "hydration_price_flicker",
+    "rw-031": "legacy_gap_fallback",
+    "rw-032": "full_path_conflict_hitl_qa",
     "rw-026": "happy_kst_display",
     "rw-030": "happy_card_grid",
     "rw-033": "conflict_discount_copy",

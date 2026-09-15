@@ -9,7 +9,7 @@
       "회사 데이터·사내 화면 없음. 전부 합성.",
       "expected.* 는 평가 정답 레이블. 모델 출력이 아님.",
       "fixture 는 mock 이벤트 시퀀스 id (구현 시 fixtures/ 와 연결).",
-      "미구현 fixture 이름은 fixtureAliasFrom에 보존하고 실제 재생 fixture로 재매핑(정직성)."
+      "미구현 fixture는 만들지 않음. 시나리오별 네이티브 fixture를 사용(정직성)."
     ]
   },
   "scenarios": [
@@ -98,9 +98,8 @@
           "android"
         ]
       },
-      "fixture": "happy_card_grid",
-      "failureFocus": [],
-      "fixtureAliasFrom": "webview_back_ambiguity"
+      "fixture": "webview_back_ambiguity",
+      "failureFocus": []
     },
     {
       "id": "rw-004",
@@ -571,9 +570,8 @@
           "suppress hydration mismatch carefully"
         ]
       },
-      "fixture": "conflict_discount_copy",
-      "failureFocus": [],
-      "fixtureAliasFrom": "hydration_price_flicker"
+      "fixture": "hydration_price_flicker",
+      "failureFocus": []
     },
     {
       "id": "rw-024",
@@ -762,9 +760,8 @@
           "no-unsupported-gap-only"
         ]
       },
-      "fixture": "happy_card_grid",
-      "failureFocus": [],
-      "fixtureAliasFrom": "legacy_gap_fallback"
+      "fixture": "legacy_gap_fallback",
+      "failureFocus": []
     },
     {
       "id": "rw-032",
@@ -798,9 +795,8 @@
         ],
         "demo": "full_path_resolve_conflict_then_gate"
       },
-      "fixture": "conflict_discount_copy",
-      "failureFocus": [],
-      "fixtureAliasFrom": "full_path_conflict_hitl_qa"
+      "fixture": "full_path_conflict_hitl_qa",
+      "failureFocus": []
     },
     {
       "id": "rw-033",

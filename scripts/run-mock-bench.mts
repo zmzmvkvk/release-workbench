@@ -38,6 +38,10 @@ const FIXTURE_IDS = new Set<string>([
   "modal_focus_ambiguity",
   "priority_from_email",
   "token_vs_raw_hex",
+  "webview_back_ambiguity",
+  "hydration_price_flicker",
+  "legacy_gap_fallback",
+  "full_path_conflict_hitl_qa",
   "cancel_during_structuring",
   "conflict_discount_copy",
   "invalid_requirements_json",
@@ -60,7 +64,8 @@ function isHappyExecuteFixture(fixture: string) {
     fixture === "happy_phone_mask" ||
     fixture === "happy_kst_display" ||
     fixture === "chart_a11y" ||
-    fixture === "priority_from_email"
+    fixture === "priority_from_email" ||
+    fixture === "legacy_gap_fallback"
   );
 }
 
@@ -226,7 +231,10 @@ async function main() {
     if (
       fixture === "conflict_discount_copy" ||
       fixture === "modal_focus_ambiguity" ||
-      fixture === "token_vs_raw_hex"
+      fixture === "token_vs_raw_hex" ||
+      fixture === "webview_back_ambiguity" ||
+      fixture === "hydration_price_flicker" ||
+      fixture === "full_path_conflict_hitl_qa"
     ) {
       conflictExpected += 1;
       if (state.conflicts.length > 0 || state.approveBlockedReason?.includes("충돌")) {
