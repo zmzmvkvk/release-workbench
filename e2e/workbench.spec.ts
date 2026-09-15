@@ -45,6 +45,14 @@ test("evals page shows benchmark table", async ({ page }) => {
   await expect(page.getByText("tokens p50", { exact: true })).toBeVisible();
 });
 
+test("header shows worker health or mock fallback label", async ({ page }) => {
+  await page.goto(WB);
+  await expect(page.getByText(/Release Workbench ·/)).toBeVisible();
+  await expect(
+    page.getByText(/worker SSE|worker unreachable \(client-mock fallback\)/),
+  ).toBeVisible({ timeout: 10_000 });
+});
+
 test("cancel during structuring reaches cancelled", async ({ page }) => {
   await page.goto(WB);
   await page.getByRole("button", { name: /rw-005/ }).click();

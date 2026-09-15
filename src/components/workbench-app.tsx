@@ -20,6 +20,8 @@ import {
   tryHttpCancel,
   tryHttpContinue,
   tryHttpStructuring,
+  probeWorkerHealth,
+  type WorkerHealth,
 } from "@/lib/http-sse";
 import { sanitizePreviewHtml } from "@/lib/sanitize-preview";
 import scenariosData from "@/data/scenarios.json";
@@ -70,6 +72,7 @@ export function WorkbenchApp() {
   const [transport, setTransport] = useState<"http-sse" | "client-mock">("client-mock");
   const [llmMode, setLlmMode] = useState<"mock" | "workers-ai">("mock");
   const [toolArgsDraft, setToolArgsDraft] = useState("");
+  const [workerHealth, setWorkerHealth] = useState<WorkerHealth | null>(null);
 
   const visible = useMemo(() => {
     return scenarios.filter((s) => {
@@ -82,6 +85,14 @@ export function WorkbenchApp() {
 
   useEffect(() => {
     return () => abortRef.current?.abort();
+  }, []);
+
+  useEffect(() => {
+    const ac = new AbortController();
+    void probeWorkerHealth(ac.signal).then((h) => {
+      if (!ac.signal.aborted) setWorkerHealth(h);
+    });
+    return () => ac.abort();
   }, []);
 
   // Deep links: /workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1
@@ -427,6 +438,9 @@ export function WorkbenchApp() {
       <header className="space-y-2 border-b border-zinc-800 pb-6">
         <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
           Release Workbench · {transport} · {scenariosData.meta.count} scenarios
+          {workerHealth
+            ? ` · worker SSE${workerHealth.kv ? "+KV" : ""}${workerHealth.ai ? "+AI" : ""}`
+            : " · worker unreachable (client-mock fallback)"}
         </p>
         <h1 className="text-3xl font-semibold tracking-tight text-zinc-50">
           작업 요청 → 검증된 릴리즈

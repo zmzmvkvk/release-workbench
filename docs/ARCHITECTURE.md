@@ -62,6 +62,7 @@ KV: `idem:*` duplicate · `run:*` resume after SSE disconnect (`waitUntil`) · `
 
 ## Observability
 
+- `GET /workbench/api/health` — `{ ok, sse, kv, ai }` (UI header badge; proves Worker not SPA fallback)
 - `metrics.sample` — ttftMs, totalMs, tokens, costUsd, provider, model, promptVersion
 - Workers AI: `usage.total_tokens` 파싱 시 tokens 기록. **costUsd는 provider 미제공 → null** (추정 금지)
 - HITL/gate 감사 로그 UI + trace JSON 다운로드

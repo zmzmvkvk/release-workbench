@@ -794,6 +794,20 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
+    if (
+      url.pathname === "/workbench/api/health" &&
+      request.method === "GET"
+    ) {
+      return Response.json({
+        ok: true,
+        service: "release-workbench",
+        sse: true,
+        kv: Boolean(env.WORKBENCH_IDEMPOTENCY),
+        ai: Boolean(env.AI),
+        ts: new Date().toISOString(),
+      });
+    }
+
     // --- SSE mock API (HTTP streaming evidence) ---
     if (
       url.pathname === "/workbench/api/runs/stream" &&

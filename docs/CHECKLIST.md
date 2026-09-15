@@ -20,7 +20,7 @@
 | 기능 | 상태 |
 | --- | --- |
 | deterministic mock | ✅ |
-| HTTP SSE (Worker) | ✅ roomy.page same-origin |
+| HTTP SSE (Worker) | ✅ roomy.page same-origin · `GET /workbench/api/health` badge |
 | Workers AI 구조화 | ✅ `mode=workers-ai` · prompt v3 · source-bound citations |
 | 도구 호출 UI | ✅ |
 | 승인·수정·거절 | ✅ plan / gate / **인자 수정·수정 없이 계속** (HTTP KV `args_*`) |

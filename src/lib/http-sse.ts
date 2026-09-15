@@ -131,3 +131,31 @@ export async function tryHttpCancel(runId: string): Promise<WorkbenchEvent | nul
     return null;
   }
 }
+
+export type WorkerHealth = {
+  ok: boolean;
+  sse: boolean;
+  kv: boolean;
+  ai: boolean;
+  ts?: string;
+};
+
+/** Same-origin Worker probe — proves HTTP API (not SPA HTML fallback). */
+export async function probeWorkerHealth(
+  signal?: AbortSignal,
+): Promise<WorkerHealth | null> {
+  try {
+    const res = await fetch("/workbench/api/health", {
+      method: "GET",
+      signal,
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) return null;
+    const ct = res.headers.get("content-type") ?? "";
+    if (!ct.includes("application/json")) return null;
+    const data = (await res.json()) as WorkerHealth;
+    return data?.ok ? data : null;
+  } catch {
+    return null;
+  }
+}
