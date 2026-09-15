@@ -1,9 +1,12 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
+/** Force client-mock transport in CI (no Worker). */
+const WB = "/workbench?mock=1";
+
 test("happy path: structure → approve → gate", async ({ page }) => {
   test.setTimeout(60_000);
-  await page.goto("/workbench");
+  await page.goto(WB);
   await expect(page.getByRole("heading", { name: /검증된 릴리즈/ })).toBeVisible();
 
   await page.getByRole("button", { name: /rw-004/ }).click();
@@ -14,7 +17,7 @@ test("happy path: structure → approve → gate", async ({ page }) => {
   });
 
   await page.getByRole("button", { name: "계획 승인 → 실행" }).click();
-  await expect(page.getByRole("button", { name: "수정 없이 계속" })).toBeVisible({
+  await expect(page.getByRole("button", { name: "인자 수정 적용" })).toBeVisible({
     timeout: 20_000,
   });
   await page.getByRole("button", { name: "수정 없이 계속" }).click();
@@ -25,7 +28,7 @@ test("happy path: structure → approve → gate", async ({ page }) => {
 });
 
 test("citation missing blocks plan approve", async ({ page }) => {
-  await page.goto("/workbench");
+  await page.goto(WB);
   await page.getByRole("button", { name: /rw-012/ }).click();
   await page.getByRole("button", { name: "실행 시작" }).click();
   await expect(page.getByText(/근거\(citation\) 없는 요구/)).toBeVisible({ timeout: 20_000 });
@@ -39,7 +42,7 @@ test("evals page shows benchmark table", async ({ page }) => {
 });
 
 test("cancel during structuring reaches cancelled", async ({ page }) => {
-  await page.goto("/workbench");
+  await page.goto(WB);
   await page.getByRole("button", { name: /rw-005/ }).click();
   await page.getByRole("button", { name: "실행 시작" }).click();
   await expect(page.getByText("status:")).toContainText("structuring", { timeout: 10_000 });
@@ -48,7 +51,7 @@ test("cancel during structuring reaches cancelled", async ({ page }) => {
 });
 
 test("duplicate blocked fixture shows banner", async ({ page }) => {
-  await page.goto("/workbench");
+  await page.goto(WB);
   await page.getByRole("button", { name: /rw-011/ }).click();
   await page.getByRole("button", { name: "실행 시작" }).click();
   await expect(page.getByText("동일 idempotencyKey 실행이 이미 진행 중")).toBeVisible({
@@ -57,21 +60,21 @@ test("duplicate blocked fixture shows banner", async ({ page }) => {
 });
 
 test("invalid structured output fails run", async ({ page }) => {
-  await page.goto("/workbench");
+  await page.goto(WB);
   await page.getByRole("button", { name: /rw-007/ }).click();
   await page.getByRole("button", { name: "실행 시작" }).click();
   await expect(page.getByText("status:")).toContainText("failed", { timeout: 20_000 });
 });
 
 test("xss fixture shows sanitized note", async ({ page }) => {
-  await page.goto("/workbench");
+  await page.goto(WB);
   await page.getByRole("button", { name: /rw-013/ }).click();
   await page.getByRole("button", { name: "실행 시작" }).click();
   await expect(page.getByText(/sanitized:/i)).toBeVisible({ timeout: 20_000 });
 });
 
 test("plan reject reaches rejected_at_plan", async ({ page }) => {
-  await page.goto("/workbench");
+  await page.goto(WB);
   await page.getByRole("button", { name: /rw-009/ }).click();
   await page.getByRole("button", { name: "실행 시작" }).click();
   await expect(page.getByText("status:")).toContainText("awaiting_plan_review", {
@@ -84,7 +87,7 @@ test("plan reject reaches rejected_at_plan", async ({ page }) => {
 });
 
 test("tool args edit HITL control appears during execute", async ({ page }) => {
-  await page.goto("/workbench");
+  await page.goto(WB);
   await page.getByRole("button", { name: /rw-004/ }).click();
   await page.getByRole("button", { name: "실행 시작" }).click();
   await expect(page.getByText("status:")).toContainText("awaiting_plan_review", {
@@ -100,21 +103,21 @@ test("tool args edit HITL control appears during execute", async ({ page }) => {
 });
 
 test("stream reconnect banner on rw-006", async ({ page }) => {
-  await page.goto("/workbench");
+  await page.goto(WB);
   await page.getByRole("button", { name: /rw-006/ }).click();
   await page.getByRole("button", { name: "실행 시작" }).click();
   await expect(page.getByText("연결 재개됨 (seq 연속)")).toBeVisible({ timeout: 20_000 });
 });
 
 test("step limit fixture reaches failed", async ({ page }) => {
-  await page.goto("/workbench");
+  await page.goto(WB);
   await page.getByRole("button", { name: /rw-014/ }).click();
   await page.getByRole("button", { name: "실행 시작" }).click();
   await expect(page.getByText("status:")).toContainText("failed", { timeout: 20_000 });
 });
 
 test("tool fail then retry on rw-008", async ({ page }) => {
-  await page.goto("/workbench");
+  await page.goto(WB);
   await page.getByRole("button", { name: /rw-008/ }).click();
   await page.getByRole("button", { name: "실행 시작" }).click();
   await expect(page.getByText(/tool failed:/i)).toBeVisible({ timeout: 20_000 });
@@ -122,7 +125,7 @@ test("tool fail then retry on rw-008", async ({ page }) => {
 });
 
 test("axe: workbench shell has no critical/serious issues", async ({ page }) => {
-  await page.goto("/workbench");
+  await page.goto(WB);
   await expect(page.getByRole("heading", { name: /검증된 릴리즈/ })).toBeVisible();
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa"])

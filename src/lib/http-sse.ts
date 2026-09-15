@@ -73,6 +73,10 @@ export async function tryHttpContinue(opts: {
   onEvent: (e: WorkbenchEvent) => void;
 }): Promise<"sse" | "json" | "none"> {
   try {
+    const timeout = AbortSignal.timeout(4_000);
+    const signal = opts.signal
+      ? AbortSignal.any([opts.signal, timeout])
+      : timeout;
     const res = await fetch(`/workbench/api/runs/${opts.runId}/continue`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -81,21 +85,33 @@ export async function tryHttpContinue(opts: {
         ...(opts.args !== undefined ? { args: opts.args } : {}),
         ...(opts.reason !== undefined ? { reason: opts.reason } : {}),
       }),
-      signal: opts.signal,
+      signal,
     });
     if (!res.ok) return "none";
     const ct = res.headers.get("content-type") ?? "";
     if (ct.includes("text/event-stream")) {
-      await readSseStream(res, opts.onEvent, opts.signal);
+      await readSseStream(res, opts.onEvent, signal);
       return "sse";
     }
+    if (!ct.includes("application/json")) return "none";
     const data = (await res.json()) as {
       event?: WorkbenchEvent;
       events?: WorkbenchEvent[];
+      ok?: boolean;
+      released?: boolean;
     };
+    // args_continue may return {ok,released} without events — still success
+    if (data.released || data.ok === true) {
+      if (data.event) opts.onEvent(data.event);
+      if (data.events) data.events.forEach(opts.onEvent);
+      return "json";
+    }
     if (data.event) opts.onEvent(data.event);
-    if (data.events) data.events.forEach(opts.onEvent);
-    return "json";
+    if (data.events?.length) {
+      data.events.forEach(opts.onEvent);
+      return "json";
+    }
+    return "none";
   } catch {
     return "none";
   }

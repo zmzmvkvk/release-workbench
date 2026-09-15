@@ -185,20 +185,25 @@ export function WorkbenchApp() {
     setBanner(null);
     setBusy(true);
     try {
-      const usedHttp = await tryHttpStructuring({
-        scenarioId: selected.id,
-        fixture,
-        idempotencyKey: `${selected.id}-${Date.now()}`,
-        mode: llmMode,
-        sourceText: selected.sources
-          ?.map((s: { kind?: string; text?: string }) => `[${s.kind}] ${s.text}`)
-          .join("\n\n"),
-        signal: ac.signal,
-        onEvent: push,
-        onRunId: (id) => {
-          httpRunIdRef.current = id;
-        },
-      });
+      const forceMock =
+        typeof window !== "undefined" &&
+        new URLSearchParams(window.location.search).has("mock");
+      const usedHttp =
+        !forceMock &&
+        (await tryHttpStructuring({
+          scenarioId: selected.id,
+          fixture,
+          idempotencyKey: `${selected.id}-${Date.now()}`,
+          mode: llmMode,
+          sourceText: selected.sources
+            ?.map((s: { kind?: string; text?: string }) => `[${s.kind}] ${s.text}`)
+            .join("\n\n"),
+          signal: ac.signal,
+          onEvent: push,
+          onRunId: (id) => {
+            httpRunIdRef.current = id;
+          },
+        }));
       if (usedHttp) {
         setTransport("http-sse");
         return;
