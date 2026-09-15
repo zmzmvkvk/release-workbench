@@ -466,6 +466,15 @@ export function WorkbenchApp() {
           </a>
           {" · "}
           <a
+            href="/workbench/api/protocol"
+            className="text-emerald-400 hover:underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            protocol JSON
+          </a>
+          {" · "}
+          <a
             href="/workbench/demo/release-workbench-90s.webm"
             className="text-emerald-400 hover:underline"
           >

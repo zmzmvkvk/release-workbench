@@ -42,6 +42,7 @@ jobs:
           echo "$proto" | head -c 500
           echo
           echo "$proto" | grep -q '"workersAiStructuring":"workers-ai-struct-v3"'
+          echo "$proto" | grep -q '"workersAiPatchPlan":"workers-ai-patch-v1"'
           echo "$proto" | grep -q 'metrics.sample'
           echo "$proto" | grep -q 'tool.args_edited'
       - name: Probe roomy.page health (best-effort)

@@ -22,6 +22,7 @@
 | deterministic mock | ✅ |
 | HTTP SSE (Worker) | ✅ roomy.page same-origin · health badge · CI smoke · `/api/protocol` |
 | Workers AI 구조화 | ✅ prompt v3 · source-bound citations · CI AI SSE smoke |
+| Workers AI 도구 스텝 | ✅ execute 전 `propose_patch_plan` (hybrid · patch-v1) |
 | 도구 호출 UI | ✅ |
 | 승인·수정·거절 | ✅ plan / gate / **인자 수정·수정 없이 계속** (HTTP KV `args_*`) |
 | 실패 복구 시연 | ✅ 10종 + E2E |

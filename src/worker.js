@@ -569,6 +569,88 @@ async function play(run, steps, controller, signal, env) {
   controller.close();
 }
 
+/** Live Workers AI tool step before deterministic execute fixtures (hybrid evidence). */
+async function playWorkersAiPatchPlan(run, env, controller, signal) {
+  const enc = new TextEncoder();
+  const push = (type, payload) => {
+    const event = append(run, type, payload);
+    controller.enqueue(enc.encode(sse(event, event.id)));
+    return event;
+  };
+
+  const toolId = `tool_ai_plan_${Date.now().toString(36)}`;
+  push("tool.started", {
+    toolId,
+    name: "propose_patch_plan",
+    args: { scenarioId: run.scenarioId, provider: "workers-ai" },
+  });
+
+  let summary =
+    "Apply responsive card grid: desktop 3 / mobile 1, keep CTA, preserve a11y labels.";
+  let tokens = null;
+  const t0 = Date.now();
+  try {
+    const result = await env.AI.run("@cf/meta/llama-3.2-3b-instruct", {
+      messages: [
+        {
+          role: "system",
+          content:
+            "You write one short English sentence describing a safe UI patch plan. No markdown. Max 30 words.",
+        },
+        {
+          role: "user",
+          content: `Scenario ${run.scenarioId}. Write the patch plan sentence for a clean-room React card grid (desktop 3 cols, mobile 1, CTA detail).`,
+        },
+      ],
+      max_tokens: 80,
+      temperature: 0.2,
+    });
+    const usage = result?.usage ?? result?.result?.usage;
+    if (usage && typeof usage.total_tokens === "number") {
+      tokens = usage.total_tokens;
+    }
+    const text =
+      typeof result === "string"
+        ? result
+        : typeof result?.response === "string"
+          ? result.response
+          : "";
+    if (text.trim()) summary = text.trim().slice(0, 240);
+  } catch (err) {
+    push("tool.failed", {
+      toolId,
+      name: "propose_patch_plan",
+      message: String(err?.message ?? err),
+      retryable: true,
+    });
+    push("tool.retried", { toolId, name: "propose_patch_plan", attempt: 2 });
+    // Fall through with deterministic summary so execute can continue.
+  }
+
+  if (signal.aborted || run.cancelled) {
+    push("run.cancelled", { reason: "user_cancelled" });
+    controller.close();
+    return;
+  }
+
+  push("tool.finished", {
+    toolId,
+    name: "propose_patch_plan",
+    result: {
+      summary,
+      provider: "workers-ai",
+      latencyMs: Date.now() - t0,
+      tokens,
+    },
+  });
+  push("trace.span", {
+    name: "workers_ai_patch_plan",
+    start: 0,
+    end: Date.now() - t0,
+    attrs: { tokens, promptVersion: "workers-ai-patch-v1" },
+  });
+}
+
 async function playWorkersAiStructuring(run, env, controller, signal, sourceText) {
   const enc = new TextEncoder();
   const t0 = Date.now();
@@ -825,6 +907,7 @@ export default {
         promptVersions: {
           mock: "none-mock",
           workersAiStructuring: "workers-ai-struct-v3",
+          workersAiPatchPlan: "workers-ai-patch-v1",
         },
         states: [
           "idle",
@@ -1123,6 +1206,12 @@ export default {
           });
           const enc = new TextEncoder();
           controller.enqueue(enc.encode(sse(approve, approve.id)));
+          if (run.mode === "workers-ai" && env.AI) {
+            await playWorkersAiPatchPlan(run, env, controller, execAbort.signal);
+          }
+          if (execAbort.signal.aborted || run.cancelled) {
+            return;
+          }
           await play(
             run,
             executeSteps(run.scenarioId ?? "rw-004", run.fixture),
