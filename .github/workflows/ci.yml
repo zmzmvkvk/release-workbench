@@ -63,3 +63,5 @@ jobs:
           grep -q '"type":"requirements.ready"' /tmp/ai-sse.txt
           grep -q '"type":"metrics.sample"' /tmp/ai-sse.txt
           grep -q '"provider":"workers-ai"' /tmp/ai-sse.txt
+          grep -q '"promptVersion":"workers-ai-struct-v3"' /tmp/ai-sse.txt
+          grep -E -q '"tokens":[1-9][0-9]*' /tmp/ai-sse.txt

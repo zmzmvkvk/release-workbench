@@ -156,4 +156,26 @@ describe("workbench protocol reducer", () => {
     expect(state.status).toBe("cancelled");
     expect(state.metrics?.cancelLatencyMs).toBe(42);
   });
+
+  it("keeps costUsd null and records promptVersion from metrics.sample", () => {
+    const state = applyEvent(initialRunState(), {
+      id: "1",
+      runId: "r1",
+      seq: 0,
+      ts: "2026-09-15T00:00:00.000Z",
+      type: "metrics.sample",
+      payload: {
+        ttftMs: 120,
+        tokens: 200,
+        costUsd: null,
+        provider: "workers-ai",
+        model: "@cf/meta/llama-3.2-3b-instruct",
+        promptVersion: "workers-ai-struct-v3",
+      },
+    });
+    expect(state.metrics?.costUsd).toBeNull();
+    expect(state.metrics?.tokens).toBe(200);
+    expect(state.metrics?.promptVersion).toBe("workers-ai-struct-v3");
+    expect(state.metrics?.provider).toBe("workers-ai");
+  });
 });

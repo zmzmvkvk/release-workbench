@@ -31,7 +31,8 @@
 | 평가 대시보드 | ✅ `/evals` + 실패 매트릭스 딥링크 |
 | KV idempotency | ✅ + run resume across isolates |
 | QA fail → eval | ✅ rw-027 E2E · gate reject → `eval.case_recorded` |
-| 감사 로그 UI | ✅ plan/gate/args/eval 결정 이력 + trace JSON |
+| costUsd 정직성 | ✅ provider 미제공 → `null` / UI `— (미계측)` · mock도 `$0` 미표기 |
+| promptVersion UI | ✅ metrics strip · Workers AI `workers-ai-struct-v3` |
 
 ## 실패 10종
 

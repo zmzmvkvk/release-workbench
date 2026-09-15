@@ -839,6 +839,11 @@ export function WorkbenchApp() {
               {state.metrics.costUsd == null
                 ? "— (미계측)"
                 : `$${state.metrics.costUsd}`}
+              {state.metrics.promptVersion
+                ? ` · prompt ${state.metrics.promptVersion}`
+                : ""}
+              {state.metrics.provider ? ` · ${state.metrics.provider}` : ""}
+              {state.metrics.model ? ` · ${state.metrics.model}` : ""}
               {state.metrics.cancelLatencyMs != null
                 ? ` · cancel ${state.metrics.cancelLatencyMs}ms`
                 : ""}

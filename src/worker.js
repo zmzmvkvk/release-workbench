@@ -236,7 +236,14 @@ function structuringSteps(fixture, scenarioId, key) {
     {
       delayMs: 50,
       type: "metrics.sample",
-      payload: { ttftMs: 180, tokens: 420, costUsd: 0 },
+      payload: {
+        ttftMs: 180,
+        tokens: 420,
+        costUsd: null,
+        provider: "mock",
+        model: "deterministic",
+        promptVersion: "none-mock",
+      },
     },
   ];
 }

@@ -111,9 +111,12 @@ export type RunState = {
   metrics: {
     ttftMs?: number;
     tokens?: number;
-    costUsd?: number;
+    costUsd?: number | null;
     cancelLatencyMs?: number;
     reconnectOk?: boolean;
+    provider?: string;
+    model?: string;
+    promptVersion?: string;
   } | null;
   traces: { name: string; start: number; end: number; attrs?: unknown }[];
   duplicateBlocked: boolean;
@@ -414,12 +417,23 @@ export function applyEvent(state: RunState, raw: unknown): RunState {
           ttftMs: typeof payload.ttftMs === "number" ? payload.ttftMs : next.metrics?.ttftMs,
           tokens: typeof payload.tokens === "number" ? payload.tokens : next.metrics?.tokens,
           costUsd:
-            typeof payload.costUsd === "number" ? payload.costUsd : next.metrics?.costUsd,
+            typeof payload.costUsd === "number"
+              ? payload.costUsd
+              : payload.costUsd === null
+                ? null
+                : next.metrics?.costUsd,
           cancelLatencyMs:
             typeof payload.cancelLatencyMs === "number"
               ? payload.cancelLatencyMs
               : next.metrics?.cancelLatencyMs,
           reconnectOk: next.metrics?.reconnectOk,
+          provider:
+            typeof payload.provider === "string" ? payload.provider : next.metrics?.provider,
+          model: typeof payload.model === "string" ? payload.model : next.metrics?.model,
+          promptVersion:
+            typeof payload.promptVersion === "string"
+              ? payload.promptVersion
+              : next.metrics?.promptVersion,
         },
       };
     case "stream.reconnect":
