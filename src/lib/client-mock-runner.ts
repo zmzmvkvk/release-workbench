@@ -166,14 +166,24 @@ export async function runExecuteMock(opts: {
   scenarioId: string;
   onEvent: (e: WorkbenchEvent) => void;
   signal?: AbortSignal;
+  /** Non-interactive runners (bench) auto-release the HITL args gate. */
+  autoReleaseArgsMs?: number;
 }) {
   opts.onEvent(nextEvent(opts.run, "plan.approved", { by: "user" }));
-  await playSteps(
-    opts.run,
-    buildExecuteSteps(opts.scenarioId),
-    opts.onEvent,
-    opts.signal,
-  );
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  if (opts.autoReleaseArgsMs != null) {
+    timer = setTimeout(() => opts.run.notifyArgsEdited?.(), opts.autoReleaseArgsMs);
+  }
+  try {
+    await playSteps(
+      opts.run,
+      buildExecuteSteps(opts.scenarioId),
+      opts.onEvent,
+      opts.signal,
+    );
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
 
 export function emitClientEvent(

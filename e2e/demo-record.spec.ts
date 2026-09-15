@@ -18,14 +18,17 @@ test("record release workbench demo", async ({ page }) => {
   await page.waitForTimeout(1200);
 
   await page.getByRole("button", { name: "계획 승인 → 실행" }).click();
-  // HITL tool args (appears while tool running)
+  // HITL tool args
   const argsBtn = page.getByRole("button", { name: "인자 수정 적용" });
+  const skipBtn = page.getByRole("button", { name: "수정 없이 계속" });
   if (await argsBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
     await page.getByLabel("도구 인자 JSON").fill(
       '{"project":"cleanroom-react","allowedMime":["application/pdf"]}',
     );
     await argsBtn.click();
     await page.waitForTimeout(800);
+  } else if (await skipBtn.isVisible({ timeout: 1_000 }).catch(() => false)) {
+    await skipBtn.click();
   }
   await expect(page.getByText("status:")).toContainText("awaiting_gate", {
     timeout: 25_000,

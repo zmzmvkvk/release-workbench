@@ -13,6 +13,11 @@ test("happy path: structure → approve → gate", async ({ page }) => {
   });
 
   await page.getByRole("button", { name: "계획 승인 → 실행" }).click();
+  // Release args HITL gate quickly when present (client-mock path)
+  const skipArgs = page.getByRole("button", { name: "수정 없이 계속" });
+  if (await skipArgs.isVisible({ timeout: 5_000 }).catch(() => false)) {
+    await skipArgs.click();
+  }
   await expect(page.getByText("status:")).toContainText("awaiting_gate", { timeout: 20_000 });
 
   await page.getByRole("button", { name: "게이트 승인" }).click();

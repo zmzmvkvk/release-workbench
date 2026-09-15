@@ -133,6 +133,21 @@ export function WorkbenchApp() {
     setBanner(`도구 인자 수정(로컬): ${pending.callId}`);
   }
 
+  function continueWithoutArgsEdit() {
+    const run = clientRunRef.current;
+    const pending = state.tools.find((t) => t.status === "running");
+    if (!pending) {
+      setBanner("실행 중인 도구가 없습니다");
+      return;
+    }
+    if (run) {
+      run.notifyArgsEdited?.();
+      setBanner(`인자 확인 후 계속: ${pending.callId}`);
+      return;
+    }
+    setBanner("HTTP 실행은 서버 스트림이 이어집니다");
+  }
+
   async function startRun() {
     abortRef.current?.abort();
     const ac = new AbortController();
@@ -577,6 +592,13 @@ export function WorkbenchApp() {
                 className="rounded-md border border-sky-500/40 bg-sky-500/10 px-3 py-1.5 text-xs text-sky-100"
               >
                 인자 수정 적용
+              </button>
+              <button
+                type="button"
+                onClick={() => continueWithoutArgsEdit()}
+                className="ml-2 rounded-md border border-zinc-600 px-3 py-1.5 text-xs text-zinc-200"
+              >
+                수정 없이 계속
               </button>
             </div>
           ) : null}

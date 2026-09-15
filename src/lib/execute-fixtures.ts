@@ -28,7 +28,7 @@ export function buildExecuteSteps(scenarioId: string): FixtureStep[] {
         },
       },
     },
-    { kind: "waitArgsEdit", timeoutMs: 3_000 },
+    { kind: "waitArgsEdit", timeoutMs: 12_000 },
     {
       kind: "event",
       delayMs: 200,

@@ -97,7 +97,12 @@ async function runOne(scenarioId: string, fixture: FixtureId): Promise<{
     !state.approveBlockedReason &&
     fixture === "happy_card_grid"
   ) {
-    await runExecuteMock({ run, scenarioId, onEvent });
+    await runExecuteMock({
+      run,
+      scenarioId,
+      onEvent,
+      autoReleaseArgsMs: 20,
+    });
     const st = state.status as RunState["status"];
     if (st === "awaiting_gate" || state.gatePending) {
       state = applyEvent(state, {
