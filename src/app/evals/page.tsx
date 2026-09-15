@@ -98,6 +98,40 @@ export default function EvalsPage() {
         />
       </section>
 
+      <section className="mt-10" id="failures">
+        <h2 className="text-lg font-medium text-zinc-100">실패·복구 시연 매트릭스</h2>
+        <p className="mt-1 text-xs text-zinc-500">
+          채용 검토용 원클릭 (trailing slash + mock). 상세는{" "}
+          <code className="text-zinc-400">docs/FAILURE_CASES.md</code>.
+        </p>
+        <ul className="mt-3 divide-y divide-zinc-800 rounded-xl border border-zinc-800">
+          {[
+            ["rw-027", "QA 실패 → 게이트 거절 → eval 기록"],
+            ["rw-005", "스트리밍 중 취소 (+ cancel latency)"],
+            ["rw-006", "네트워크 끊김 후 재개"],
+            ["rw-007", "잘못된 구조화 JSON"],
+            ["rw-008", "도구 실패 후 재시도"],
+            ["rw-009", "계획 거절"],
+            ["rw-011", "중복 실행 차단"],
+            ["rw-012", "근거 없는 요구 생성 거절"],
+            ["rw-013", "위험한 HTML 격리"],
+            ["rw-014", "최대 실행 단계 초과"],
+          ].map(([id, label]) => (
+            <li key={id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm">
+              <span className="text-zinc-300">
+                <code className="text-amber-200/90">{id}</code> · {label}
+              </span>
+              <a
+                className="text-xs text-emerald-400 hover:underline"
+                href={`/workbench/?mock=1&scenario=${id}&filter=failure`}
+              >
+                열기
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       <section className="mt-10 rounded-xl border border-sky-900/50 bg-sky-950/20 p-4">
         <h2 className="text-lg font-medium text-sky-100">Workers AI spot (별도 표본)</h2>
         <p className="mt-1 text-xs text-sky-200/70">

@@ -413,6 +413,10 @@ export function WorkbenchApp() {
             평가 대시보드
           </Link>
           {" · "}
+          <Link href="/evals#failures" className="text-emerald-400 hover:underline">
+            실패 매트릭스
+          </Link>
+          {" · "}
           <a
             href="/workbench/demo/release-workbench-90s.webm"
             className="text-emerald-400 hover:underline"
