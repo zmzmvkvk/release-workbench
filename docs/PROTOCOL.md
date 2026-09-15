@@ -8,6 +8,25 @@
 
 터미널: `completed`, `cancelled`, `rejected_at_plan`, `failed`
 
+```mermaid
+stateDiagram-v2
+  [*] --> idle
+  idle --> structuring: run.started
+  structuring --> awaiting_plan_review: requirements.ready + plan.proposed
+  structuring --> failed: requirements.invalid / SCHEMA
+  structuring --> cancelled: run.cancelled
+  awaiting_plan_review --> executing: plan.approved
+  awaiting_plan_review --> rejected_at_plan: plan.rejected
+  executing --> awaiting_gate: gate.pending
+  executing --> cancelled: run.cancelled
+  awaiting_gate --> completed: gate.approved
+  awaiting_gate --> failed: gate.rejected (+ eval.case_recorded)
+  completed --> [*]
+  cancelled --> [*]
+  failed --> [*]
+  rejected_at_plan --> [*]
+```
+
 ## HITL
 
 | 액션 | 이벤트 / API |
@@ -19,6 +38,7 @@
 | 게이트 승인 | `gate.approved` + `run.completed` |
 | 게이트 거절 | `gate.rejected` |
 | 취소 | `run.cancelled` |
+| SSE 중단 복구 | `GET /runs/:id` 스냅샷 → 클라이언트 `stream.reconnect` (`recoveredFrom: run-snapshot`) |
 
 HTTP execute 경로: Worker `play()`는 첫 `tool.started` 이후 soft-timeout(기본 12s) 또는 `args_continue`/`args_edit`까지 스트림을 일시정지한다.
 
@@ -37,13 +57,18 @@ HTTP execute 경로: Worker `play()`는 첫 `tool.started` 이후 soft-timeout(�
 - `metrics.sample`: `ttftMs`, `totalMs`, `tokens`, `costUsd` (`null` when unmetered), `provider`, `model`, `promptVersion`
 - `trace.span`: 구간명·시작/끝·attrs
 - 중복 실행: KV `WORKBENCH_IDEMPOTENCY` + 인메모리 → `run.duplicate_blocked`
+- curl 평가 요약: `GET /workbench/api/evals`
 
 ## 주요 API
 
 | Method | Path | 비고 |
 | --- | --- | --- |
+| GET | `/workbench/api/health` | `sse`/`kv`/`ai`/`evals` |
+| GET | `/workbench/api/evals` | mock + Workers AI spot gate summary |
+| GET | `/workbench/api/protocol` | 이벤트·프롬프트 버전 JSON |
+| GET | `/workbench/api/runs/:id` | **KV 우선** 스냅샷 (`eventTypes`/`toolNames`) — isolate 간 hybrid continue 후 정본 |
 | POST | `/workbench/api/runs/stream` | SSE 구조화; 완료 후 KV `run:{id}` persist |
 | POST | `/workbench/api/runs/:id/continue` | `approve`/`reject`/`gate_*`/`args_continue`/`args_edit` — isolate 간 KV resume |
 | POST | `/workbench/api/runs/:id/cancel` | 취소 |
 
-Worker 인스턴스가 달라도 `WORKBENCH_IDEMPOTENCY` KV로 run 메타·args 게이트 신호를 공유한다.
+Worker 인스턴스가 달라도 `WORKBENCH_IDEMPOTENCY` KV로 run 메타·args 게이트 신호를 공유한다. GET 스냅샷은 메모리보다 KV를 우선한다(구조화 isolate의 구 상태 방지).
