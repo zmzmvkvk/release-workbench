@@ -3,6 +3,7 @@ import type { WorkbenchEvent } from "./protocol";
 export type FixtureId =
   | "happy_card_grid"
   | "happy_empty_state"
+  | "happy_table_sort"
   | "cancel_during_structuring"
   | "conflict_discount_copy"
   | "invalid_requirements_json"
@@ -211,6 +212,108 @@ export function buildFixtureSteps(fixture: FixtureId, scenarioId: string): Step[
           partial: {
             type: "run.duplicate_blocked",
             payload: { existingRunId: "run_existing_demo" },
+          },
+        },
+      ];
+    case "happy_table_sort":
+      return [
+        ...baseSteps(scenarioId),
+        {
+          kind: "event",
+          delayMs: 300,
+          partial: {
+            type: "stream.delta",
+            payload: {
+              channel: "structuring",
+              text: "재고 테이블 컬럼·정렬 구조화…",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 400,
+          partial: {
+            type: "requirements.ready",
+            payload: {
+              requirements: [
+                {
+                  id: "r1",
+                  text: "재고 현황 테이블 컬럼: 상품명·SKU·수량·업데이트일",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "상품명, SKU, 수량, 업데이트일",
+                      sourceIndex: 0,
+                      start: 10,
+                      end: 28,
+                    },
+                  ],
+                },
+                {
+                  id: "r2",
+                  text: "수량 헤더 클릭 시 오름차순 정렬",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "수량 클릭 시 오름/내림 정렬",
+                      sourceIndex: 0,
+                      start: 30,
+                      end: 46,
+                    },
+                  ],
+                },
+                {
+                  id: "r3",
+                  text: "수량 헤더 재클릭 시 내림차순 토글",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "오름/내림 정렬",
+                      sourceIndex: 0,
+                      start: 37,
+                      end: 46,
+                    },
+                  ],
+                },
+                {
+                  id: "r4",
+                  text: "정렬 상태 시각적 표시(aria-sort)",
+                  priority: "should",
+                  citations: [
+                    {
+                      quote: "수량 클릭 시 오름/내림 정렬",
+                      sourceIndex: 0,
+                      start: 30,
+                      end: 46,
+                    },
+                  ],
+                },
+              ],
+              conflicts: [],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 200,
+          partial: {
+            type: "plan.proposed",
+            payload: { steps: ["테이블 패치", "정렬 토글", "axe 검사"] },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 100,
+          partial: {
+            type: "metrics.sample",
+            payload: {
+              ttftMs: 170,
+              tokens: 410,
+              costUsd: null,
+              provider: "mock",
+              model: "deterministic",
+              promptVersion: "none-mock",
+            },
           },
         },
       ];
@@ -700,6 +803,7 @@ export function scenarioDefaultFixture(scenarioId: string): FixtureId {
     "rw-014": "step_limit_exceeded",
     "rw-027": "qa_playwright_mismatch",
     "rw-024": "happy_empty_state",
+    "rw-015": "happy_table_sort",
     "rw-030": "happy_card_grid",
     "rw-033": "conflict_discount_copy",
     "rw-034": "tool_args_edited",

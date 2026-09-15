@@ -30,6 +30,7 @@ type CaseRow = {
 const FIXTURE_IDS = new Set<string>([
   "happy_card_grid",
   "happy_empty_state",
+  "happy_table_sort",
   "cancel_during_structuring",
   "conflict_discount_copy",
   "invalid_requirements_json",
@@ -45,7 +46,11 @@ const FIXTURE_IDS = new Set<string>([
 ]);
 
 function isHappyExecuteFixture(fixture: string) {
-  return fixture === "happy_card_grid" || fixture === "happy_empty_state";
+  return (
+    fixture === "happy_card_grid" ||
+    fixture === "happy_empty_state" ||
+    fixture === "happy_table_sort"
+  );
 }
 
 async function runOne(scenarioId: string, fixture: FixtureId): Promise<{

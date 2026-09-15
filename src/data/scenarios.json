@@ -376,9 +376,8 @@
         "requirementCount": 4,
         "conflicts": []
       },
-      "fixture": "happy_card_grid",
-      "failureFocus": [],
-      "fixtureAliasFrom": "happy_table_sort"
+      "fixture": "happy_table_sort",
+      "failureFocus": []
     },
     {
       "id": "rw-016",
