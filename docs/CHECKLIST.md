@@ -5,7 +5,7 @@
 | # | 산출물 | 상태 | 증거 |
 | --- | --- | --- | --- |
 | 1 | 라이브 서비스 | ✅ | https://roomy-page-workbench.hommy.workers.dev/workbench |
-| 2 | 공개 GitHub | ⚠️ 부분 | monorepo `portfolio/workbench` (별도 public repo 미분리) |
+| 2 | 공개 GitHub | ✅ | https://github.com/zmzmvkvk/release-workbench |
 | 3 | 60–90초 데모 영상 | ✅ | `/workbench/demo/release-workbench-90s.webm` + `docs/DEMO_SCRIPT.md` |
 | 4 | 시스템 아키텍처 | ✅ | `docs/ARCHITECTURE.md` |
 | 5 | 이벤트·상태머신 문서 | ✅ | `docs/PROTOCOL.md` + wiki protocol |
@@ -20,6 +20,7 @@
 | 기능 | 상태 |
 | --- | --- |
 | deterministic mock | ✅ client mock |
+| HTTP SSE (mock on Worker) | ✅ `POST /workbench/api/runs/stream` |
 | 도구 호출 UI | ✅ |
 | 승인·수정·거절 | ✅ plan/gate (인자 수정은 fixture) |
 | 실패 복구 시연 | ✅ fixtures + E2E |
@@ -27,8 +28,8 @@
 | 자동 QA | ✅ mock report + axe E2E |
 | trace · metrics | ✅ events + bench TTFT |
 | 평가 대시보드 | ✅ `/evals` |
-| HTTP SSE (live LLM) | ❌ 이후 (node-server 참고) |
-| roomy.page 커스텀 도메인 | ❌ `docs/CUSTOM_DOMAIN.md` 절차만 |
+| 실 LLM 연동 | ❌ 다음 (프로토콜 동일 유지) |
+| roomy.page 커스텀 도메인 | ⚠️ portfolio Worker 프록시 시도 / 522 시 workers.dev 사용 |
 
 ## 실패 10종
 
