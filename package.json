@@ -12,6 +12,7 @@
     "test:e2e": "playwright test",
     "test:ci": "vitest run && playwright test",
     "bench": "tsx scripts/run-mock-bench.mts",
+    "bench:workers-ai": "tsx scripts/run-workers-ai-spot.mts",
     "demo:record": "playwright test -c playwright.demo.config.ts",
     "deploy": "next build && wrangler deploy",
     "deploy:cf": "next build && wrangler deploy"

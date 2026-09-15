@@ -36,7 +36,7 @@ Ship a **public work system**: request → structure with citations → HITL app
 ## Numbers (honest)
 
 - Mock TTFT ≈ fixture delay (~200ms) — not a real LLM.
-- Workers AI spot (prompt `workers-ai-struct-v3`, n=5): TTFT p50≈929ms, source-bound citations; cost/tokens not reported by provider → null.
+- Workers AI spot (prompt `workers-ai-struct-v3`, n=5): TTFT p50≈473ms, tokens p50≈236, source-bound citations; **costUsd null** (provider 미제공, 추정 안 함).
 - No company productivity percentages.
 
 ## Internal automation (second case)

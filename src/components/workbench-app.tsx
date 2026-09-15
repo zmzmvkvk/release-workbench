@@ -820,8 +820,11 @@ export function WorkbenchApp() {
           ) : null}
           {state.metrics ? (
             <p className="mt-3 text-xs text-zinc-500">
-              TTFT {state.metrics.ttftMs ?? "—"}ms · tokens {state.metrics.tokens ?? "—"} ·
-              cost ${state.metrics.costUsd ?? 0}
+              TTFT {state.metrics.ttftMs ?? "—"}ms · tokens{" "}
+              {state.metrics.tokens ?? "—"} · cost{" "}
+              {state.metrics.costUsd == null
+                ? "— (미계측)"
+                : `$${state.metrics.costUsd}`}
               {state.metrics.cancelLatencyMs != null
                 ? ` · cancel ${state.metrics.cancelLatencyMs}ms`
                 : ""}

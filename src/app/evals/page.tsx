@@ -156,6 +156,14 @@ export default function EvalsPage() {
           <Stat label="TTFT p50 (ms)" value={num(workersAiSpot.aggregate.ttftP50Ms)} />
           <Stat label="TTFT p95 (ms)" value={num(workersAiSpot.aggregate.ttftP95Ms)} />
           <Stat
+            label="tokens p50"
+            value={num(
+              "tokensP50" in workersAiSpot.aggregate
+                ? (workersAiSpot.aggregate.tokensP50 as number | null)
+                : null,
+            )}
+          />
+          <Stat
             label="source quote rate"
             value={fmt(
               "sourceQuoteRate" in workersAiSpot.aggregate
