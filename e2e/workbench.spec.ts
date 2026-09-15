@@ -139,7 +139,7 @@ test("QA fail then gate reject records eval case", async ({ page }) => {
   await page.getByRole("button", { name: "수정 없이 계속" }).click();
   await expect(page.getByText("status:")).toContainText("awaiting_gate", { timeout: 25_000 });
   await expect(page.getByText("QA 실패", { exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "게이트 거절" }).click();
+  await page.getByRole("button", { name: "게이트 거절", exact: true }).click();
   await expect(page.getByText(/평가 데이터셋에 기록/)).toBeVisible({ timeout: 10_000 });
   await expect(page.getByText(/eval recorded: rw-027/)).toBeVisible();
 });
