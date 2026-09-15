@@ -46,12 +46,14 @@ async function runOne(scenarioId: string, fixture: FixtureId): Promise<{
   state: RunState;
   ttftMs: number | null;
   cancelLatencyMs: number | null;
+  workflowMs: number | null;
 }> {
   const run = createClientRun();
   let state = initialRunState();
   let firstDeltaAt: number | null = null;
   let startedAt: number | null = null;
   let cancelLatencyMs: number | null = null;
+  let workflowMs: number | null = null;
 
   const onEvent = (e: Parameters<typeof applyEvent>[1]) => {
     const ev = e as { type: string; ts: string };
@@ -114,14 +116,15 @@ async function runOne(scenarioId: string, fixture: FixtureId): Promise<{
         type: "run.completed",
         payload: { summary: "bench" },
       });
+      workflowMs = Date.now() - t0;
     }
   }
 
-  void t0;
   return {
     state,
     ttftMs: firstDeltaAt,
     cancelLatencyMs,
+    workflowMs,
   };
 }
 
@@ -135,6 +138,7 @@ async function main() {
   const cases: CaseRow[] = [];
   const ttfts: number[] = [];
   const cancels: number[] = [];
+  const workflows: number[] = [];
   let schemaValid = 0;
   let schemaTotal = 0;
   let conflictHits = 0;
@@ -150,9 +154,10 @@ async function main() {
       ? s.fixture
       : scenarioDefaultFixture(s.id)) as FixtureId;
 
-    const { state, ttftMs, cancelLatencyMs } = await runOne(s.id, fixture);
+    const { state, ttftMs, cancelLatencyMs, workflowMs } = await runOne(s.id, fixture);
     if (ttftMs != null) ttfts.push(ttftMs);
     if (cancelLatencyMs != null) cancels.push(cancelLatencyMs);
+    if (workflowMs != null) workflows.push(workflowMs);
 
     const invalid = state.status === "failed" && fixture === "invalid_requirements_json";
     const validStructuring =
@@ -234,6 +239,8 @@ async function main() {
       ttftP50Ms: percentile(ttfts, 50),
       ttftP95Ms: percentile(ttfts, 95),
       cancelLatencyP50Ms: percentile(cancels, 50),
+      workflowP50Ms: percentile(workflows, 50),
+      workflowP95Ms: percentile(workflows, 95),
       reconnectSuccessRate: pct(reconnectOk, reconnectN),
       duplicateSideEffects: dupSideEffects,
     },

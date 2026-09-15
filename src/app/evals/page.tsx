@@ -39,6 +39,22 @@ export default function EvalsPage() {
         <Stat label="TTFT p50 (ms)" value={num(aggregate.ttftP50Ms)} />
         <Stat label="TTFT p95 (ms)" value={num(aggregate.ttftP95Ms)} />
         <Stat label="취소 응답 p50 (ms)" value={num(aggregate.cancelLatencyP50Ms)} />
+        <Stat
+          label="워크플로 완료 p50 (ms)"
+          value={num(
+            "workflowP50Ms" in aggregate
+              ? (aggregate.workflowP50Ms as number | null)
+              : null,
+          )}
+        />
+        <Stat
+          label="워크플로 완료 p95 (ms)"
+          value={num(
+            "workflowP95Ms" in aggregate
+              ? (aggregate.workflowP95Ms as number | null)
+              : null,
+          )}
+        />
         <Stat label="재연결 성공률" value={fmt(aggregate.reconnectSuccessRate)} />
         <Stat label="중복 side effect" value={String(aggregate.duplicateSideEffects)} />
       </section>
