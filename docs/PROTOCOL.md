@@ -55,9 +55,9 @@ HTTP execute 경로: Worker `play()`는 첫 `tool.started` 이후 soft-timeout(�
 ## 관측
 
 - `metrics.sample`: `ttftMs`, `totalMs`, `tokens`, `costUsd` (`null` when unmetered), `provider`, `model`, `promptVersion`
-- `trace.span`: 구간명·시작/끝·attrs
+- `trace.span`: 구간명·시작/끝·attrs — execute 종료 시 `name: "run_persisted"`에 `toolNames`/`eventCount`/`mode` (SSE로 KV race 없이 증거 가능)
 - 중복 실행: KV `WORKBENCH_IDEMPOTENCY` + 인메모리 → `run.duplicate_blocked`
-- curl 평가 요약: `GET /workbench/api/evals`
+- curl 평가 요약: `GET /workbench/api/evals` (`fixtureCoverage` 포함)
 
 ## 주요 API
 

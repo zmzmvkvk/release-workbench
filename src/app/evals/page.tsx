@@ -27,6 +27,15 @@ export default function EvalsPage() {
         <Link href="/" className="text-emerald-400 hover:underline">
           ← 워크벤치
         </Link>
+        {" · "}
+        <a
+          href="/workbench/api/evals"
+          className="text-emerald-400 hover:underline"
+          target="_blank"
+          rel="noreferrer"
+        >
+          evals JSON (curl)
+        </a>
       </p>
       <p className="mt-4 rounded-lg border border-zinc-800 bg-zinc-900/50 p-3 text-xs text-zinc-400">
         라이브 HTTP HITL: execute 첫 도구에서 Worker가 일시정지 →{" "}
