@@ -10,7 +10,7 @@
 | 4 | 시스템 아키텍처 | ✅ | `docs/ARCHITECTURE.md` |
 | 5 | 이벤트·상태머신 문서 | ✅ | `docs/PROTOCOL.md` + wiki protocol |
 | 6 | 평가 데이터셋 30+ · 결과표 | ✅ | scenarios 32 + `/evals` + `pnpm bench` |
-| 7 | Playwright · Vitest CI | ✅ | monorepo `.github/workflows/workbench-ci.yml` + 공개 레포 `.github/workflows/ci.yml` |
+| 7 | Playwright · Vitest CI | ✅ | 공개 레포 CI green: https://github.com/zmzmvkvk/release-workbench/actions/runs/34978441108 · monorepo `workbench-ci.yml` |
 | 8 | 실패 사례 보고서 | ✅ | `docs/FAILURE_CASES.md` |
 | 9 | 보안·공개범위 | ✅ | `docs/SECURITY.md` |
 | 10 | 케이스스터디 | ✅ | wiki `concept-case-release-workbench` |
