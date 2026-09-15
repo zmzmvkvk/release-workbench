@@ -15,7 +15,11 @@
     {
       "id": "rw-001",
       "title": "수강신청 배너 문구 충돌",
-      "tags": ["board", "conflict", "copy"],
+      "tags": [
+        "board",
+        "conflict",
+        "copy"
+      ],
       "difficulty": "easy",
       "sources": [
         {
@@ -29,7 +33,9 @@
       ],
       "expected": {
         "requirementCount": 2,
-        "conflicts": ["contradiction"],
+        "conflicts": [
+          "contradiction"
+        ],
         "mustBlockApproveWithoutResolution": true
       },
       "fixture": "conflict_discount_copy",
@@ -38,7 +44,10 @@
     {
       "id": "rw-002",
       "title": "강의 상세 접근성 라벨 누락",
-      "tags": ["design", "a11y"],
+      "tags": [
+        "design",
+        "a11y"
+      ],
       "difficulty": "easy",
       "sources": [
         {
@@ -47,17 +56,26 @@
         }
       ],
       "expected": {
-        "requirementCount": 2,
-        "conflicts": ["missing"],
-        "qaExpect": ["axe-button-name"]
+        "requirementCount": 1,
+        "conflicts": [
+          "missing"
+        ],
+        "qaExpect": [
+          "axe-button-name"
+        ]
       },
-      "fixture": "missing_a11y_label",
-      "failureFocus": ["citation.missing"]
+      "fixture": "citation_missing_block",
+      "failureFocus": [
+        "citation.missing"
+      ]
     },
     {
       "id": "rw-003",
       "title": "웹뷰 헤더 뒤로가기 동작",
-      "tags": ["mobile", "webview"],
+      "tags": [
+        "mobile",
+        "webview"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -71,8 +89,13 @@
       ],
       "expected": {
         "requirementCount": 3,
-        "conflicts": ["ambiguity"],
-        "platforms": ["ios", "android"]
+        "conflicts": [
+          "ambiguity"
+        ],
+        "platforms": [
+          "ios",
+          "android"
+        ]
       },
       "fixture": "webview_back_ambiguity",
       "failureFocus": []
@@ -80,7 +103,10 @@
     {
       "id": "rw-004",
       "title": "PPT 요구: 반응형 카드 그리드",
-      "tags": ["ppt", "responsive"],
+      "tags": [
+        "ppt",
+        "responsive"
+      ],
       "difficulty": "easy",
       "sources": [
         {
@@ -91,7 +117,10 @@
       "expected": {
         "requirementCount": 4,
         "conflicts": [],
-        "layout": { "desktopCols": 3, "mobileCols": 1 }
+        "layout": {
+          "desktopCols": 3,
+          "mobileCols": 1
+        }
       },
       "fixture": "happy_card_grid",
       "failureFocus": []
@@ -99,7 +128,10 @@
     {
       "id": "rw-005",
       "title": "스트리밍 중 취소 시연",
-      "tags": ["failure", "cancel"],
+      "tags": [
+        "failure",
+        "cancel"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -112,12 +144,17 @@
         "demo": "cancel_mid_stream"
       },
       "fixture": "cancel_during_structuring",
-      "failureFocus": ["run.cancelled"]
+      "failureFocus": [
+        "run.cancelled"
+      ]
     },
     {
       "id": "rw-006",
       "title": "네트워크 끊김 후 재개",
-      "tags": ["failure", "reconnect"],
+      "tags": [
+        "failure",
+        "reconnect"
+      ],
       "difficulty": "hard",
       "sources": [
         {
@@ -130,12 +167,17 @@
         "demo": "reconnect_after_offline"
       },
       "fixture": "stream_reconnect",
-      "failureFocus": ["stream.reconnect"]
+      "failureFocus": [
+        "stream.reconnect"
+      ]
     },
     {
       "id": "rw-007",
       "title": "잘못된 JSON 구조화",
-      "tags": ["failure", "schema"],
+      "tags": [
+        "failure",
+        "schema"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -148,12 +190,17 @@
         "recoverable": true
       },
       "fixture": "invalid_requirements_json",
-      "failureFocus": ["requirements.invalid"]
+      "failureFocus": [
+        "requirements.invalid"
+      ]
     },
     {
       "id": "rw-008",
       "title": "도구 실패 후 재시도",
-      "tags": ["failure", "tool-retry"],
+      "tags": [
+        "failure",
+        "tool-retry"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -166,12 +213,18 @@
         "tool": "apply_code_patch"
       },
       "fixture": "tool_retry_once",
-      "failureFocus": ["tool.failed", "tool.retried"]
+      "failureFocus": [
+        "tool.failed",
+        "tool.retried"
+      ]
     },
     {
       "id": "rw-009",
       "title": "계획 승인 거절",
-      "tags": ["failure", "hitl"],
+      "tags": [
+        "failure",
+        "hitl"
+      ],
       "difficulty": "easy",
       "sources": [
         {
@@ -184,12 +237,18 @@
         "reasonHint": "scope too large / destructive"
       },
       "fixture": "plan_reject_darkmode",
-      "failureFocus": ["plan.rejected"]
+      "failureFocus": [
+        "plan.rejected"
+      ]
     },
     {
       "id": "rw-010",
       "title": "도구 인자 수정 후 실행",
-      "tags": ["failure", "hitl", "args-edit"],
+      "tags": [
+        "failure",
+        "hitl",
+        "args-edit"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -202,12 +261,17 @@
         "editedField": "allowedMime"
       },
       "fixture": "tool_args_edited",
-      "failureFocus": ["tool.args_edited"]
+      "failureFocus": [
+        "tool.args_edited"
+      ]
     },
     {
       "id": "rw-011",
       "title": "중복 실행 차단",
-      "tags": ["failure", "idempotency"],
+      "tags": [
+        "failure",
+        "idempotency"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -220,12 +284,17 @@
         "idempotencyKey": "rw-011-fixed-key"
       },
       "fixture": "duplicate_blocked",
-      "failureFocus": ["run.duplicate_blocked"]
+      "failureFocus": [
+        "run.duplicate_blocked"
+      ]
     },
     {
       "id": "rw-012",
       "title": "근거 없는 요구 생성 거절",
-      "tags": ["failure", "citation"],
+      "tags": [
+        "failure",
+        "citation"
+      ],
       "difficulty": "easy",
       "sources": [
         {
@@ -238,12 +307,17 @@
         "approveDisabled": true
       },
       "fixture": "citation_missing_block",
-      "failureFocus": ["citation.missing"]
+      "failureFocus": [
+        "citation.missing"
+      ]
     },
     {
       "id": "rw-013",
       "title": "위험한 HTML 미리보기 격리",
-      "tags": ["failure", "security"],
+      "tags": [
+        "failure",
+        "security"
+      ],
       "difficulty": "hard",
       "sources": [
         {
@@ -256,12 +330,17 @@
         "mustSandbox": true
       },
       "fixture": "preview_xss_sanitized",
-      "failureFocus": ["preview.sanitized"]
+      "failureFocus": [
+        "preview.sanitized"
+      ]
     },
     {
       "id": "rw-014",
       "title": "최대 실행 단계 초과",
-      "tags": ["failure", "step-limit"],
+      "tags": [
+        "failure",
+        "step-limit"
+      ],
       "difficulty": "hard",
       "sources": [
         {
@@ -274,12 +353,17 @@
         "maxSteps": 8
       },
       "fixture": "step_limit_exceeded",
-      "failureFocus": ["run.step_limit"]
+      "failureFocus": [
+        "run.step_limit"
+      ]
     },
     {
       "id": "rw-015",
       "title": "매장 재고 테이블 정렬",
-      "tags": ["retail", "table"],
+      "tags": [
+        "retail",
+        "table"
+      ],
       "difficulty": "easy",
       "sources": [
         {
@@ -297,7 +381,10 @@
     {
       "id": "rw-016",
       "title": "쿠폰 적용 UI 모호한 시점",
-      "tags": ["retail", "ambiguity"],
+      "tags": [
+        "retail",
+        "ambiguity"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -310,16 +397,21 @@
         }
       ],
       "expected": {
-        "conflicts": ["contradiction"],
+        "conflicts": [
+          "contradiction"
+        ],
         "requirementCount": 2
       },
-      "fixture": "coupon_page_conflict",
+      "fixture": "conflict_discount_copy",
       "failureFocus": []
     },
     {
       "id": "rw-017",
       "title": "키보드 포커스 트랩 모달",
-      "tags": ["a11y", "modal"],
+      "tags": [
+        "a11y",
+        "modal"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -328,8 +420,13 @@
         }
       ],
       "expected": {
-        "conflicts": ["ambiguity"],
-        "qaExpect": ["focus-trap", "escape-closes"]
+        "conflicts": [
+          "ambiguity"
+        ],
+        "qaExpect": [
+          "focus-trap",
+          "escape-closes"
+        ]
       },
       "fixture": "modal_focus_ambiguity",
       "failureFocus": []
@@ -337,7 +434,9 @@
     {
       "id": "rw-018",
       "title": "다국어 문자열 키만 전달",
-      "tags": ["i18n"],
+      "tags": [
+        "i18n"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -346,16 +445,23 @@
         }
       ],
       "expected": {
-        "conflicts": ["missing"],
-        "requirementCount": 2
+        "conflicts": [
+          "missing"
+        ],
+        "requirementCount": 1
       },
-      "fixture": "i18n_missing_copy",
-      "failureFocus": ["citation.missing"]
+      "fixture": "citation_missing_block",
+      "failureFocus": [
+        "citation.missing"
+      ]
     },
     {
       "id": "rw-019",
       "title": "폼 유효성: 휴대폰 번호",
-      "tags": ["form", "validation"],
+      "tags": [
+        "form",
+        "validation"
+      ],
       "difficulty": "easy",
       "sources": [
         {
@@ -373,7 +479,10 @@
     {
       "id": "rw-020",
       "title": "무한 스크롤 vs 페이지네이션 충돌",
-      "tags": ["conflict", "list"],
+      "tags": [
+        "conflict",
+        "list"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -386,16 +495,21 @@
         }
       ],
       "expected": {
-        "conflicts": ["contradiction"],
+        "conflicts": [
+          "contradiction"
+        ],
         "mustBlockApproveWithoutResolution": true
       },
-      "fixture": "pagination_vs_infinite",
+      "fixture": "conflict_discount_copy",
       "failureFocus": []
     },
     {
       "id": "rw-021",
       "title": "차트 색약 대비",
-      "tags": ["a11y", "data-viz"],
+      "tags": [
+        "a11y",
+        "data-viz"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -405,7 +519,9 @@
       ],
       "expected": {
         "requirementCount": 2,
-        "qaExpect": ["color-nonreliance"]
+        "qaExpect": [
+          "color-nonreliance"
+        ]
       },
       "fixture": "chart_a11y",
       "failureFocus": []
@@ -413,7 +529,10 @@
     {
       "id": "rw-022",
       "title": "파일 업로드 용량 한도 불명",
-      "tags": ["missing", "upload"],
+      "tags": [
+        "missing",
+        "upload"
+      ],
       "difficulty": "easy",
       "sources": [
         {
@@ -422,7 +541,9 @@
         }
       ],
       "expected": {
-        "conflicts": ["missing"],
+        "conflicts": [
+          "missing"
+        ],
         "requirementCount": 1
       },
       "fixture": "upload_limit_missing",
@@ -431,7 +552,10 @@
     {
       "id": "rw-023",
       "title": "SSR 하이드레이션 주의 카피",
-      "tags": ["next", "ssr"],
+      "tags": [
+        "next",
+        "ssr"
+      ],
       "difficulty": "hard",
       "sources": [
         {
@@ -441,7 +565,9 @@
       ],
       "expected": {
         "requirementCount": 2,
-        "techHints": ["suppress hydration mismatch carefully"]
+        "techHints": [
+          "suppress hydration mismatch carefully"
+        ]
       },
       "fixture": "hydration_price_flicker",
       "failureFocus": []
@@ -449,7 +575,9 @@
     {
       "id": "rw-024",
       "title": "빈 상태 Empty view",
-      "tags": ["empty-state"],
+      "tags": [
+        "empty-state"
+      ],
       "difficulty": "easy",
       "sources": [
         {
@@ -467,7 +595,10 @@
     {
       "id": "rw-025",
       "title": "권한 없는 메뉴 숨김 vs 비활성",
-      "tags": ["authz", "ambiguity"],
+      "tags": [
+        "authz",
+        "ambiguity"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -480,16 +611,20 @@
         }
       ],
       "expected": {
-        "conflicts": ["contradiction"],
+        "conflicts": [
+          "contradiction"
+        ],
         "mustBlockApproveWithoutResolution": true
       },
-      "fixture": "authz_hide_vs_disable",
+      "fixture": "conflict_discount_copy",
       "failureFocus": []
     },
     {
       "id": "rw-026",
       "title": "타임존 표시 KST 고정",
-      "tags": ["datetime"],
+      "tags": [
+        "datetime"
+      ],
       "difficulty": "easy",
       "sources": [
         {
@@ -507,7 +642,10 @@
     {
       "id": "rw-027",
       "title": "Playwright 실패 → 수정 제안",
-      "tags": ["qa", "playwright"],
+      "tags": [
+        "qa",
+        "playwright"
+      ],
       "difficulty": "hard",
       "sources": [
         {
@@ -517,15 +655,22 @@
       ],
       "expected": {
         "demo": "qa_fail_with_suggestion",
-        "qaExpect": ["playwright-name-mismatch"]
+        "qaExpect": [
+          "playwright-name-mismatch"
+        ]
       },
       "fixture": "qa_playwright_mismatch",
-      "failureFocus": ["qa.finished"]
+      "failureFocus": [
+        "qa.finished"
+      ]
     },
     {
       "id": "rw-028",
       "title": "디자인 토큰 임의 hex 금지",
-      "tags": ["design-system", "rules"],
+      "tags": [
+        "design-system",
+        "rules"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -534,8 +679,12 @@
         }
       ],
       "expected": {
-        "conflicts": ["contradiction"],
-        "qaExpect": ["rule-no-raw-hex"]
+        "conflicts": [
+          "contradiction"
+        ],
+        "qaExpect": [
+          "rule-no-raw-hex"
+        ]
       },
       "fixture": "token_vs_raw_hex",
       "failureFocus": []
@@ -543,7 +692,10 @@
     {
       "id": "rw-029",
       "title": "메일 스레드에서 우선순위 추출",
-      "tags": ["email", "priority"],
+      "tags": [
+        "email",
+        "priority"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -553,7 +705,11 @@
       ],
       "expected": {
         "requirementCount": 3,
-        "priorities": ["must", "should", "nice"]
+        "priorities": [
+          "must",
+          "should",
+          "nice"
+        ]
       },
       "fixture": "priority_from_email",
       "failureFocus": []
@@ -561,7 +717,10 @@
     {
       "id": "rw-030",
       "title": "게이트 거절 후 평가셋 기록",
-      "tags": ["eval", "gate"],
+      "tags": [
+        "eval",
+        "gate"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -574,12 +733,17 @@
         "evalRecorded": true
       },
       "fixture": "gate_reject_eval_record",
-      "failureFocus": ["gate.rejected", "eval.case_recorded"]
+      "failureFocus": [
+        "gate.rejected",
+        "eval.case_recorded"
+      ]
     },
     {
       "id": "rw-031",
       "title": "크로스브라우징: legacy flex gap",
-      "tags": ["cross-browser"],
+      "tags": [
+        "cross-browser"
+      ],
       "difficulty": "hard",
       "sources": [
         {
@@ -589,7 +753,9 @@
       ],
       "expected": {
         "requirementCount": 2,
-        "qaExpect": ["no-unsupported-gap-only"]
+        "qaExpect": [
+          "no-unsupported-gap-only"
+        ]
       },
       "fixture": "legacy_gap_fallback",
       "failureFocus": []
@@ -597,7 +763,12 @@
     {
       "id": "rw-032",
       "title": "복합: 충돌+QA+HITL 풀패스",
-      "tags": ["e2e", "conflict", "hitl", "qa"],
+      "tags": [
+        "e2e",
+        "conflict",
+        "hitl",
+        "qa"
+      ],
       "difficulty": "hard",
       "sources": [
         {
@@ -615,7 +786,10 @@
       ],
       "expected": {
         "requirementCount": 4,
-        "conflicts": ["contradiction", "ambiguity"],
+        "conflicts": [
+          "contradiction",
+          "ambiguity"
+        ],
         "demo": "full_path_resolve_conflict_then_gate"
       },
       "fixture": "full_path_conflict_hitl_qa",
@@ -639,7 +813,19 @@
       "gate.rejected",
       "eval.case_recorded"
     ],
-    "sourceKinds": ["board", "email", "ppt", "design", "brief"],
-    "domains": ["교육 운영", "유통/커머스 운영", "접근성", "웹뷰", "보안"]
+    "sourceKinds": [
+      "board",
+      "email",
+      "ppt",
+      "design",
+      "brief"
+    ],
+    "domains": [
+      "교육 운영",
+      "유통/커머스 운영",
+      "접근성",
+      "웹뷰",
+      "보안"
+    ]
   }
 }

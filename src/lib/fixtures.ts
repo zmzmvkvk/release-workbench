@@ -52,7 +52,7 @@ export function buildFixtureSteps(fixture: FixtureId, scenarioId: string): Step[
             payload: { channel: "structuring", text: "필터·기간·키워드 필드를 구조화…" },
           },
         },
-        { kind: "waitCancel", delayMs: 8000 },
+        { kind: "waitCancel", delayMs: 2_000 },
         {
           kind: "event",
           delayMs: 400,
@@ -188,6 +188,12 @@ export function buildFixtureSteps(fixture: FixtureId, scenarioId: string): Step[
                   text: "수강중 강의 진행률 바",
                   priority: "must",
                   citations: [{ quote: "진행률 바", sourceIndex: 0, start: 10, end: 15 }],
+                },
+                {
+                  id: "r2",
+                  text: "완료 숫자 표시",
+                  priority: "should",
+                  citations: [{ quote: "숫자로 표시", sourceIndex: 0, start: 16, end: 22 }],
                 },
               ],
               conflicts: [],
