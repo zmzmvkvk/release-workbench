@@ -6,6 +6,9 @@
 const runs = new Map();
 /** @type {Map<string, string>} idempotencyKey -> runId */
 const idempotency = new Map();
+/** Soft per-isolate concurrency cap (hiring evidence: overload guard). */
+const MAX_ACTIVE_STREAMS = 8;
+let activeStreams = 0;
 
 function sse(data, id) {
   const idLine = id ? `id: ${id}\n` : "";
@@ -906,6 +909,8 @@ export default {
         kv: Boolean(env.WORKBENCH_IDEMPOTENCY),
         ai: Boolean(env.AI),
         protocol: "/workbench/api/protocol",
+        maxActiveStreams: MAX_ACTIVE_STREAMS,
+        activeStreams,
         ts: new Date().toISOString(),
       });
     }
@@ -1037,6 +1042,23 @@ export default {
       const key = body.idempotencyKey ?? `${scenarioId}-key`;
       const mode = body.mode === "workers-ai" ? "workers-ai" : "mock";
 
+      if (activeStreams >= MAX_ACTIVE_STREAMS) {
+        return Response.json(
+          {
+            error: "too_many_streams",
+            message: `Max ${MAX_ACTIVE_STREAMS} concurrent streams on this isolate`,
+            activeStreams,
+          },
+          {
+            status: 429,
+            headers: {
+              "Retry-After": "2",
+              "X-Workbench-Active-Streams": String(activeStreams),
+            },
+          },
+        );
+      }
+
       if (fixture === "duplicate_blocked") {
         const existing = "run_existing_demo";
         const event = {
@@ -1129,6 +1151,7 @@ export default {
 
       const stream = new ReadableStream({
         async start(controller) {
+          activeStreams += 1;
           request.signal.addEventListener("abort", () => {
             // Client closed the structuring SSE — do NOT mark run.cancelled
             // (HITL continue / args gate still need this run across isolates).
@@ -1165,6 +1188,8 @@ export default {
             } catch {
               /* already closed */
             }
+          } finally {
+            activeStreams = Math.max(0, activeStreams - 1);
           }
         },
       });
