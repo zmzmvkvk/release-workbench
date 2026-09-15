@@ -1,15 +1,17 @@
 {
   "meta": {
     "title": "Release Workbench synthetic eval results",
-    "version": "0.2.0-mock-bench",
+    "version": "0.3.0-mock-bench",
     "updated": "2026-09-15",
     "model": "deterministic-mock",
     "promptVersion": "none-mock",
     "runsPerCase": 1,
     "notes": [
       "회사 생산성 수치 아님. client mock fixture 재생.",
-      "TTFT는 mock delay 기준(실 LLM 아님).",
-      "live LLM 측정은 동일 스키마로 덮어쓴다."
+      "TTFT·cancel·workflow는 mock delay 기준(실 LLM 아님).",
+      "extractionAccuracy: expected.requirementCount vs 추출 개수(매핑된 fixture만).",
+      "toolSelectionAccuracy: happy/tool_retry에서 apply_code_patch(또는 expected.tool).",
+      "live LLM 측정은 동일 스키마로 덮어쓴다. tokens/cost는 provider가 주면 기록."
     ]
   },
   "aggregate": {
@@ -18,11 +20,13 @@
     "workflowCompletionRate": 1,
     "schemaValidRate": 0.969,
     "conflictRecall": 1,
+    "extractionAccuracy": 0.333,
+    "toolSelectionAccuracy": 1,
     "ttftP50Ms": 201,
-    "ttftP95Ms": 202,
-    "cancelLatencyP50Ms": 0,
-    "workflowP50Ms": 6348,
-    "workflowP95Ms": 6353,
+    "ttftP95Ms": 215,
+    "cancelLatencyP50Ms": 1,
+    "workflowP50Ms": 3373,
+    "workflowP95Ms": 3397,
     "reconnectSuccessRate": 1,
     "duplicateSideEffects": 0,
     "a11yDefectDetectionRate": 1,
@@ -35,14 +39,14 @@
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 210
+      "ttftMs": 215
     },
     {
       "scenarioId": "rw-002",
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202,
+      "ttftMs": 200,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -72,14 +76,14 @@
       "fixture": "stream_reconnect",
       "outcome": "awaiting_plan_review",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 215
     },
     {
       "scenarioId": "rw-007",
       "fixture": "invalid_requirements_json",
       "outcome": "failed",
       "schemaValid": false,
-      "ttftMs": 202
+      "ttftMs": 200
     },
     {
       "scenarioId": "rw-008",
@@ -113,7 +117,7 @@
       "fixture": "citation_missing_block",
       "outcome": "approve_blocked",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-013",
@@ -128,14 +132,14 @@
       "fixture": "step_limit_exceeded",
       "outcome": "failed",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-015",
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202,
+      "ttftMs": 201,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -143,7 +147,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 200,
+      "ttftMs": 201,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -151,7 +155,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202,
+      "ttftMs": 201,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -167,7 +171,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201,
+      "ttftMs": 215,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -175,7 +179,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201,
+      "ttftMs": 215,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -223,7 +227,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202,
+      "ttftMs": 200,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -231,7 +235,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201,
+      "ttftMs": 215,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -239,7 +243,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 200,
+      "ttftMs": 201,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {
@@ -247,7 +251,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202,
+      "ttftMs": 216,
       "notes": "mapped via scenarioDefaultFixture"
     },
     {

@@ -43,6 +43,22 @@ export default function EvalsPage() {
         <Stat label="workflow completion" value={fmt(aggregate.workflowCompletionRate)} />
         <Stat label="schema valid rate" value={fmt(aggregate.schemaValidRate)} />
         <Stat label="conflict recall" value={fmt(aggregate.conflictRecall)} />
+        <Stat
+          label="요구사항 추출 정확도"
+          value={fmt(
+            "extractionAccuracy" in aggregate
+              ? (aggregate.extractionAccuracy as number | null)
+              : null,
+          )}
+        />
+        <Stat
+          label="도구 선택 정확도"
+          value={fmt(
+            "toolSelectionAccuracy" in aggregate
+              ? (aggregate.toolSelectionAccuracy as number | null)
+              : null,
+          )}
+        />
         <Stat label="TTFT p50 (ms)" value={num(aggregate.ttftP50Ms)} />
         <Stat label="TTFT p95 (ms)" value={num(aggregate.ttftP95Ms)} />
         <Stat label="취소 응답 p50 (ms)" value={num(aggregate.cancelLatencyP50Ms)} />

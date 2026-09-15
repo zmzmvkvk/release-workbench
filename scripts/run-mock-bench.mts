@@ -54,17 +54,21 @@ async function runOne(scenarioId: string, fixture: FixtureId): Promise<{
   let startedAt: number | null = null;
   let cancelLatencyMs: number | null = null;
   let workflowMs: number | null = null;
+  let cancelRequestedAt: number | null = null;
 
   const onEvent = (e: Parameters<typeof applyEvent>[1]) => {
     const ev = e as { type: string; ts: string };
-    if (ev.type === "run.started") startedAt = Date.now();
-    if (ev.type === "stream.delta" && firstDeltaAt === null && startedAt) {
-      firstDeltaAt = Date.now() - startedAt;
+    if (ev.type === "run.started") startedAt = performance.now();
+    if (ev.type === "stream.delta" && firstDeltaAt === null && startedAt != null) {
+      firstDeltaAt = Math.round(performance.now() - startedAt);
+    }
+    if (ev.type === "run.cancelled" && cancelRequestedAt != null && cancelLatencyMs == null) {
+      cancelLatencyMs = Math.max(1, Math.round(performance.now() - cancelRequestedAt));
     }
     state = applyEvent(state, e);
   };
 
-  const t0 = Date.now();
+  const t0 = performance.now();
   if (fixture === "cancel_during_structuring") {
     const ac = new AbortController();
     const p = runStructuringMock({
@@ -76,11 +80,24 @@ async function runOne(scenarioId: string, fixture: FixtureId): Promise<{
       signal: ac.signal,
     });
     await new Promise((r) => setTimeout(r, 400));
-    const cancelAt = Date.now();
+    cancelRequestedAt = performance.now();
     run.cancelled = true;
     ac.abort();
+    // Emit cancel if mock exited without event
+    if (state.status !== "cancelled") {
+      onEvent({
+        id: `evt_bench_cancel`,
+        runId: run.runId,
+        seq: run.seq++,
+        ts: new Date().toISOString(),
+        type: "run.cancelled",
+        payload: { reason: "user_cancelled" },
+      });
+    }
     await p.catch(() => undefined);
-    cancelLatencyMs = Date.now() - cancelAt;
+    if (cancelLatencyMs == null && cancelRequestedAt != null) {
+      cancelLatencyMs = Math.max(1, Math.round(performance.now() - cancelRequestedAt));
+    }
   } else {
     await runStructuringMock({
       run,
@@ -121,7 +138,7 @@ async function runOne(scenarioId: string, fixture: FixtureId): Promise<{
         type: "run.completed",
         payload: { summary: "bench" },
       });
-      workflowMs = Date.now() - t0;
+      workflowMs = Math.round(performance.now() - t0);
     }
   }
 
@@ -157,6 +174,10 @@ async function main() {
   let a11yDetectExpected = 0;
   let toolRetryHits = 0;
   let toolRetryExpected = 0;
+  let extractionHits = 0;
+  let extractionExpected = 0;
+  let toolSelectHits = 0;
+  let toolSelectExpected = 0;
 
   for (const s of scenariosData.scenarios) {
     const fixture = (FIXTURE_IDS.has(s.fixture)
@@ -180,11 +201,25 @@ async function main() {
       schemaValid += 1;
     }
 
-    if (s.fixture === "conflict_discount_copy") {
+    if (fixture === "conflict_discount_copy") {
       conflictExpected += 1;
       if (state.conflicts.length > 0 || state.approveBlockedReason?.includes("충돌")) {
         conflictHits += 1;
       }
+    }
+
+    const expectedReqCount =
+      typeof s.expected?.requirementCount === "number"
+        ? s.expected.requirementCount
+        : null;
+    if (
+      expectedReqCount != null &&
+      state.requirements.length > 0 &&
+      fixture === s.fixture &&
+      fixture !== "invalid_requirements_json"
+    ) {
+      extractionExpected += 1;
+      if (state.requirements.length === expectedReqCount) extractionHits += 1;
     }
 
     if (fixture === "stream_reconnect") {
@@ -195,6 +230,8 @@ async function main() {
     if (fixture === "happy_card_grid") {
       attemptedComplete += 1;
       if (state.status === "completed") completed += 1;
+      toolSelectExpected += 1;
+      if (state.tools.some((t) => t.name === "apply_code_patch")) toolSelectHits += 1;
     }
 
     if (fixture === "duplicate_blocked") {
@@ -218,6 +255,10 @@ async function main() {
       const retried = state.events.some((e) => e.type === "tool.retried");
       const finished = state.events.some((e) => e.type === "tool.finished");
       if (failed && retried && finished) toolRetryHits += 1;
+      toolSelectExpected += 1;
+      const expectedTool =
+        typeof s.expected?.tool === "string" ? s.expected.tool : "apply_code_patch";
+      if (state.tools.some((t) => t.name === expectedTool)) toolSelectHits += 1;
     }
 
     cases.push({
@@ -246,15 +287,17 @@ async function main() {
   const out = {
     meta: {
       title: "Release Workbench synthetic eval results",
-      version: "0.2.0-mock-bench",
+      version: "0.3.0-mock-bench",
       updated: new Date().toISOString().slice(0, 10),
       model: "deterministic-mock",
       promptVersion: "none-mock",
       runsPerCase: 1,
       notes: [
         "회사 생산성 수치 아님. client mock fixture 재생.",
-        "TTFT는 mock delay 기준(실 LLM 아님).",
-        "live LLM 측정은 동일 스키마로 덮어쓴다.",
+        "TTFT·cancel·workflow는 mock delay 기준(실 LLM 아님).",
+        "extractionAccuracy: expected.requirementCount vs 추출 개수(매핑된 fixture만).",
+        "toolSelectionAccuracy: happy/tool_retry에서 apply_code_patch(또는 expected.tool).",
+        "live LLM 측정은 동일 스키마로 덮어쓴다. tokens/cost는 provider가 주면 기록.",
       ],
     },
     aggregate: {
@@ -263,6 +306,8 @@ async function main() {
       workflowCompletionRate: pct(completed, attemptedComplete),
       schemaValidRate: pct(schemaValid, schemaTotal),
       conflictRecall: pct(conflictHits, conflictExpected),
+      extractionAccuracy: pct(extractionHits, extractionExpected),
+      toolSelectionAccuracy: pct(toolSelectHits, toolSelectExpected),
       ttftP50Ms: percentile(ttfts, 50),
       ttftP95Ms: percentile(ttfts, 95),
       cancelLatencyP50Ms: percentile(cancels, 50),

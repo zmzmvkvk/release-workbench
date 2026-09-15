@@ -65,6 +65,7 @@ async function playSteps(
   steps: Step[],
   onEvent: (e: WorkbenchEvent) => void,
   signal?: AbortSignal,
+  autoReleaseArgsMs?: number,
 ) {
   for (const step of steps) {
     if (signal?.aborted || run.cancelled) {
@@ -82,8 +83,9 @@ async function playSteps(
       continue;
     }
     if (step.kind === "waitArgsEdit") {
+      const waitMs = autoReleaseArgsMs ?? step.timeoutMs;
       await new Promise<void>((resolve) => {
-        const timer = setTimeout(resolve, step.timeoutMs);
+        const timer = setTimeout(resolve, waitMs);
         run.notifyArgsEdited = () => {
           clearTimeout(timer);
           resolve();
@@ -170,20 +172,13 @@ export async function runExecuteMock(opts: {
   autoReleaseArgsMs?: number;
 }) {
   opts.onEvent(nextEvent(opts.run, "plan.approved", { by: "user" }));
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  if (opts.autoReleaseArgsMs != null) {
-    timer = setTimeout(() => opts.run.notifyArgsEdited?.(), opts.autoReleaseArgsMs);
-  }
-  try {
-    await playSteps(
-      opts.run,
-      buildExecuteSteps(opts.scenarioId),
-      opts.onEvent,
-      opts.signal,
-    );
-  } finally {
-    if (timer) clearTimeout(timer);
-  }
+  await playSteps(
+    opts.run,
+    buildExecuteSteps(opts.scenarioId),
+    opts.onEvent,
+    opts.signal,
+    opts.autoReleaseArgsMs,
+  );
 }
 
 export function emitClientEvent(
