@@ -60,7 +60,20 @@ export default function EvalsPage() {
             label="schemaInvalid observed"
             value={String(workersAiSpot.aggregate.schemaInvalidObserved)}
           />
-          <Stat label="TTFT / cost" value="— (미계측)" />
+          <Stat
+            label="fallback rate"
+            value={fmt(workersAiSpot.aggregate.fallbackRate ?? null)}
+          />
+          <Stat label="TTFT p50 (ms)" value={num(workersAiSpot.aggregate.ttftP50Ms)} />
+          <Stat label="TTFT p95 (ms)" value={num(workersAiSpot.aggregate.ttftP95Ms)} />
+          <Stat
+            label="cost / request"
+            value={
+              workersAiSpot.aggregate.costUsdPerRequest == null
+                ? "— (미계측)"
+                : String(workersAiSpot.aggregate.costUsdPerRequest)
+            }
+          />
         </div>
         <ul className="mt-3 list-disc space-y-1 pl-5 text-xs text-sky-200/60">
           {workersAiSpot.meta.notes.map((n) => (

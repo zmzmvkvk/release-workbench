@@ -1,31 +1,40 @@
 {
   "meta": {
-    "title": "Workers AI spot check (manual)",
-    "updated": "2026-09-15T13:50:00Z",
+    "title": "Workers AI spot check",
+    "updated": "2026-09-15T14:03:00Z",
     "model": "@cf/meta/llama-3.2-3b-instruct",
     "promptVersion": "workers-ai-struct-v2",
     "runsPerCase": 1,
-    "sampleSize": 5,
+    "sampleSize": 10,
     "endpoint": "https://roomy-page-workbench.hommy.workers.dev/workbench/api/runs/stream",
     "notes": [
-      "소량 수동 스팟 체크. mock 벤치 n=32와 섞지 않음.",
-      "스키마 실패 시 휴리스틱 폴백으로 requirements.ready가 날 수 있음.",
-      "TTFT/token/cost는 Workers AI 응답에 미포함 → null."
+      "소량 스팟. mock 벤치 n=32와 합산하지 않음.",
+      "ttftMs = Worker에서 AI.run 반환까지 wall time (첫 토큰 스트리밍 아님; non-stream API).",
+      "tokens·costUsd는 Workers AI 응답에 없어 null.",
+      "스키마 실패 시 휴리스틱 폴백으로 requirements.ready가 날 수 있음(이번 표본 fallback=0)."
     ]
   },
   "aggregate": {
-    "sampleSize": 5,
+    "sampleSize": 10,
     "requirementsReadyRate": 1,
     "schemaInvalidObserved": 0,
-    "ttftP50Ms": null,
-    "ttftP95Ms": null,
+    "fallbackRate": 0,
+    "ttftP50Ms": 451,
+    "ttftP95Ms": 524,
+    "totalP50Ms": 451,
+    "totalP95Ms": 524,
     "costUsdPerRequest": null
   },
   "cases": [
-    { "scenarioId": "rw-001", "requirementsReady": true, "schemaInvalid": false },
-    { "scenarioId": "rw-004", "requirementsReady": true, "schemaInvalid": false },
-    { "scenarioId": "rw-007", "requirementsReady": true, "schemaInvalid": false },
-    { "scenarioId": "rw-012", "requirementsReady": true, "schemaInvalid": false },
-    { "scenarioId": "rw-002", "requirementsReady": true, "schemaInvalid": false }
+    { "scenarioId": "rw-001", "requirementsReady": true, "schemaInvalid": false, "ttftMs": 451, "totalMs": 451 },
+    { "scenarioId": "rw-002", "requirementsReady": true, "schemaInvalid": false, "ttftMs": 469, "totalMs": 469 },
+    { "scenarioId": "rw-003", "requirementsReady": true, "schemaInvalid": false, "ttftMs": 498, "totalMs": 498 },
+    { "scenarioId": "rw-004", "requirementsReady": true, "schemaInvalid": false, "ttftMs": 478, "totalMs": 478 },
+    { "scenarioId": "rw-005", "requirementsReady": true, "schemaInvalid": false, "ttftMs": 422, "totalMs": 422 },
+    { "scenarioId": "rw-007", "requirementsReady": true, "schemaInvalid": false, "ttftMs": 458, "totalMs": 458 },
+    { "scenarioId": "rw-008", "requirementsReady": true, "schemaInvalid": false, "ttftMs": 411, "totalMs": 411 },
+    { "scenarioId": "rw-011", "requirementsReady": true, "schemaInvalid": false, "ttftMs": 378, "totalMs": 378 },
+    { "scenarioId": "rw-012", "requirementsReady": true, "schemaInvalid": false, "ttftMs": 399, "totalMs": 399 },
+    { "scenarioId": "rw-014", "requirementsReady": true, "schemaInvalid": false, "ttftMs": 524, "totalMs": 524 }
   ]
 }

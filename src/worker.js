@@ -450,6 +450,8 @@ async function play(run, steps, controller, signal) {
 
 async function playWorkersAiStructuring(run, env, controller, signal, sourceText) {
   const enc = new TextEncoder();
+  const t0 = Date.now();
+  let ttftMs = null;
   const push = (type, payload) => {
     const event = append(run, type, payload);
     controller.enqueue(enc.encode(sse(event, event.id)));
@@ -486,6 +488,7 @@ ${(sourceText || "card grid desktop 3 mobile 1 CTA detail").slice(0, 800)}`;
       max_tokens: 400,
       temperature: 0.2,
     });
+    ttftMs = Date.now() - t0;
     raw =
       typeof result === "string"
         ? result
@@ -540,6 +543,7 @@ ${(sourceText || "card grid desktop 3 mobile 1 CTA detail").slice(0, 800)}`;
   }
 
   let parsed;
+  let usedFallback = false;
   try {
     parsed = tryParse(raw.trim());
   } catch {
@@ -558,6 +562,7 @@ ${(sourceText || "card grid desktop 3 mobile 1 CTA detail").slice(0, 800)}`;
         channel: "structuring",
         text: "스키마 실패 → 휴리스틱 폴백(HITL 검토 필요)",
       });
+      usedFallback = true;
       const src = (sourceText || "desktop 3 columns").slice(0, 120);
       parsed = {
         requirements: [
@@ -593,16 +598,26 @@ ${(sourceText || "card grid desktop 3 mobile 1 CTA detail").slice(0, 800)}`;
   push("requirements.ready", {
     requirements: parsed.requirements,
     conflicts: Array.isArray(parsed.conflicts) ? parsed.conflicts : [],
+    fallback: usedFallback || parsed.fallback || null,
   });
   push("plan.proposed", {
     steps: ["코드 패치", "미리보기", "QA"],
   });
+  const totalMs = Date.now() - t0;
+  push("trace.span", {
+    name: "workers_ai_structuring",
+    start: 0,
+    end: totalMs,
+    attrs: { ttftMs, usedFallback },
+  });
   push("metrics.sample", {
-    ttftMs: null,
+    ttftMs,
+    totalMs,
     tokens: null,
     costUsd: null,
     provider: "workers-ai",
     model: "@cf/meta/llama-3.2-3b-instruct",
+    promptVersion: "workers-ai-struct-v2",
   });
   controller.close();
 }
