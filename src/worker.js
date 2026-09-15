@@ -433,7 +433,12 @@ function executeSteps(scenarioId, fixture) {
 async function persistRun(env, run) {
   if (!env.WORKBENCH_IDEMPOTENCY) return;
   try {
-    const eventTypes = (run.events ?? []).map((e) => e.type);
+    const events = run.events ?? [];
+    const eventTypes = events.map((e) => e.type);
+    const toolNames = events
+      .filter((e) => e.type === "tool.started" || e.type === "tool.finished")
+      .map((e) => e.payload?.name)
+      .filter(Boolean);
     await env.WORKBENCH_IDEMPOTENCY.put(
       `run:${run.runId}`,
       JSON.stringify({
@@ -444,6 +449,7 @@ async function persistRun(env, run) {
         idempotencyKey: run.idempotencyKey,
         eventCount: eventTypes.length,
         eventTypes: eventTypes.slice(-40),
+        toolNames: [...new Set(toolNames)].slice(-20),
         updatedAt: new Date().toISOString(),
       }),
       { expirationTtl: 3600 },
@@ -570,6 +576,7 @@ async function play(run, steps, controller, signal, env) {
       controller.enqueue(enc.encode(sse(last, last.id)));
     }
   }
+  await persistRun(env, run);
   controller.close();
 }
 
@@ -653,6 +660,7 @@ async function playWorkersAiPatchPlan(run, env, controller, signal) {
     end: Date.now() - t0,
     attrs: { tokens, promptVersion: "workers-ai-patch-v1" },
   });
+  await persistRun(env, run);
 }
 
 async function playWorkersAiStructuring(run, env, controller, signal, sourceText) {
@@ -989,6 +997,10 @@ export default {
       const mem = runs.get(runId);
       if (mem) {
         const eventTypes = (mem.events ?? []).map((e) => e.type);
+        const toolNames = (mem.events ?? [])
+          .filter((e) => e.type === "tool.started" || e.type === "tool.finished")
+          .map((e) => e.payload?.name)
+          .filter(Boolean);
         return Response.json({
           runId: mem.runId,
           scenarioId: mem.scenarioId,
@@ -996,6 +1008,7 @@ export default {
           mode: mem.mode,
           eventCount: eventTypes.length,
           eventTypes: eventTypes.slice(-40),
+          toolNames: [...new Set(toolNames)].slice(-20),
           source: "memory",
         });
       }

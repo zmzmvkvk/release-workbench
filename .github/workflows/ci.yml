@@ -106,3 +106,4 @@ jobs:
           echo "$snap"
           echo "$snap" | grep -q '"mode":"workers-ai"'
           echo "$snap" | grep -q 'propose_patch_plan'
+          echo "$snap" | grep -q '"toolNames"'

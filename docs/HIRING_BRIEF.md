@@ -13,6 +13,7 @@ AI가 페이지를 만드는 데모가 아니라, **불완전 출력을 검토·
 | 라이브 | https://roomy.page/workbench/ |
 | Worker health | https://roomy.page/workbench/api/health |
 | Event protocol (curl) | https://roomy.page/workbench/api/protocol |
+| Run snapshot (KV) | `GET /workbench/api/runs/:id` (mode · eventTypes) |
 | CI (unit/e2e + prod health/AI smoke) | https://github.com/zmzmvkvk/release-workbench/actions |
 | 90초 데모 | https://roomy.page/workbench/demo/release-workbench-90s.webm |
 | QA 실패→거절→eval (자동실행) | https://roomy.page/workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1 |
