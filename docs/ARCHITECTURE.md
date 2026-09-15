@@ -63,8 +63,10 @@ KV: `idem:*` duplicate · `run:*` resume after SSE disconnect (`waitUntil`) · `
 ## Observability
 
 - `metrics.sample` — ttftMs, totalMs, tokens, costUsd, provider, model, promptVersion
+- Workers AI: `usage.total_tokens` 파싱 시 tokens 기록. **costUsd는 provider 미제공 → null** (추정 금지)
+- HITL/gate 감사 로그 UI + trace JSON 다운로드
 - `trace.span` — named intervals
-- `/evals` dashboard — mock n=32 + Workers AI spot (separate tables)
+- `/evals` dashboard — mock n=32 + Workers AI spot (separate tables; tokens p50 when present)
 
 ## Security
 
