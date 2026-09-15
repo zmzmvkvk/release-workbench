@@ -20,7 +20,7 @@
 | 기능 | 상태 |
 | --- | --- |
 | deterministic mock | ✅ |
-| HTTP SSE (Worker) | ✅ roomy.page same-origin · health badge · CI smoke |
+| HTTP SSE (Worker) | ✅ roomy.page same-origin · health badge · CI smoke · `/api/protocol` |
 | Workers AI 구조화 | ✅ prompt v3 · source-bound citations · CI AI SSE smoke |
 | 도구 호출 UI | ✅ |
 | 승인·수정·거절 | ✅ plan / gate / **인자 수정·수정 없이 계속** (HTTP KV `args_*`) |

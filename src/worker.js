@@ -811,7 +811,86 @@ export default {
         sse: true,
         kv: Boolean(env.WORKBENCH_IDEMPOTENCY),
         ai: Boolean(env.AI),
+        protocol: "/workbench/api/protocol",
         ts: new Date().toISOString(),
+      });
+    }
+
+    if (
+      url.pathname === "/workbench/api/protocol" &&
+      request.method === "GET"
+    ) {
+      return Response.json({
+        service: "release-workbench",
+        promptVersions: {
+          mock: "none-mock",
+          workersAiStructuring: "workers-ai-struct-v3",
+        },
+        states: [
+          "idle",
+          "structuring",
+          "awaiting_plan_review",
+          "executing",
+          "awaiting_gate",
+          "completed",
+          "failed",
+          "cancelled",
+          "rejected_at_plan",
+        ],
+        terminalStates: [
+          "completed",
+          "cancelled",
+          "rejected_at_plan",
+          "failed",
+        ],
+        eventTypes: [
+          "run.started",
+          "run.cancelled",
+          "run.completed",
+          "run.failed",
+          "run.duplicate_blocked",
+          "run.step_limit",
+          "stream.reconnect",
+          "requirements.ready",
+          "requirements.invalid",
+          "citation.missing",
+          "plan.proposed",
+          "plan.approved",
+          "plan.rejected",
+          "tool.started",
+          "tool.finished",
+          "tool.failed",
+          "tool.retried",
+          "tool.args_edited",
+          "diff.ready",
+          "preview.sanitized",
+          "qa.finished",
+          "gate.approved",
+          "gate.rejected",
+          "eval.case_recorded",
+          "metrics.sample",
+          "trace.span",
+        ],
+        hitl: [
+          "plan approve/reject",
+          "tool args_continue / args_edit",
+          "gate approve/reject/edit",
+        ],
+        metricsFields: [
+          "ttftMs",
+          "totalMs",
+          "tokens",
+          "costUsd",
+          "provider",
+          "model",
+          "promptVersion",
+          "cancelLatencyMs",
+          "reconnectOk",
+        ],
+        docs: {
+          protocol: "docs/PROTOCOL.md",
+          architecture: "docs/ARCHITECTURE.md",
+        },
       });
     }
 

@@ -2,16 +2,17 @@
 
 [![ci](https://github.com/zmzmvkvk/release-workbench/actions/workflows/ci.yml/badge.svg)](https://github.com/zmzmvkvk/release-workbench/actions/workflows/ci.yml)
 
-?? ??? **?? ?? ? ??? ???** ????. ???? AX / AX ????? ?? ??? ???????.
+Public **request â†’ verified release** workbench. Flagship hiring evidence for internal-ops AX / AX frontend roles.
 
-AI? ???? ??? ??? ???, ??? ??? **?? · ?? QA · ???? ?? ???**?? ?? ??????.
+Not an "AI builds a page" demo â€” a work system where incomplete model output is **reviewed, auto-QA'd, and gated** before release.
 
 ## Live evidence
 
-| ?? | URL |
+| Evidence | URL |
 | --- | --- |
 | App | https://roomy.page/workbench/ |
 | Worker health | https://roomy.page/workbench/api/health |
+| Event protocol (JSON) | https://roomy.page/workbench/api/protocol |
 | Evals | https://roomy.page/workbench/evals |
 | 90s demo | https://roomy.page/workbench/demo/release-workbench-90s.webm |
 | Failure deep link | https://roomy.page/workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1 |
@@ -22,7 +23,7 @@ AI? ???? ??? ??? ???, ??? ??? **?? · ?? QA · ???? ?? ???**?? ?? ??????.
 | Hiring brief (1p) | [`docs/HIRING_BRIEF.md`](./docs/HIRING_BRIEF.md) |
 | Internal automation (2nd case) | [`docs/CASE_INTERNAL_AUTOMATION.md`](./docs/CASE_INTERNAL_AUTOMATION.md) |
 
-> On roomy.page always use a **trailing slash**: `/workbench/??`. Bare `/workbench??` can 522.
+> On roomy.page always use a **trailing slash**: `/workbench/?â€¦`. Bare `/workbench?â€¦` can 522.
 
 Transport: **HTTP SSE** (Cloudflare Worker) + **client mock** fallback. Same event protocol. Optional **Workers AI** structuring (`mode=workers-ai`, prompt `workers-ai-struct-v3`). Metrics show `promptVersion` / tokens; **costUsd stays null** when the provider does not meter cost (no invented estimates).
 
@@ -33,13 +34,13 @@ HITL: plan approve/reject, **tool args edit / continue** (client-mock + HTTP Wor
 1. SSE streaming + cancel  
 2. Tool call timeline + fail/retry  
 3. HITL: plan approve/reject, tool arg edit/continue, gate  
-4. Failure demos: schema invalid, citation block, duplicate (KV), XSS sandbox, step limit, reconnect, QA fail ? gate reject ? eval  
+4. Failure demos: schema invalid, citation block, duplicate (KV), XSS sandbox, step limit, reconnect, QA fail â†’ gate reject â†’ eval  
 5. Synthetic evals n=32 (mock) + Workers AI spot (separate table, source-bound citations)  
-6. Playwright · Vitest · axe in CI + live Workers AI structuring smoke  
+6. Playwright Â· Vitest Â· axe in CI + live Workers AI structuring smoke  
 
 ## Stack
 
-Next.js (static export) · React · TypeScript · Zod · Playwright · Vitest · Cloudflare Workers · Workers AI · KV idempotency
+Next.js (static export) Â· React Â· TypeScript Â· Zod Â· Playwright Â· Vitest Â· Cloudflare Workers Â· Workers AI Â· KV idempotency
 
 ## Run
 
