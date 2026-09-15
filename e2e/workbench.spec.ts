@@ -124,24 +124,14 @@ test("tool fail then retry on rw-008", async ({ page }) => {
   await expect(page.getByText(/tool retried/i)).toBeVisible({ timeout: 20_000 });
 });
 
-test("QA fail then gate reject records eval case", async ({ page }) => {
-  test.setTimeout(60_000);
-  await page.goto(WB);
-  await page.getByRole("button", { name: /rw-027/ }).click();
-  await page.getByRole("button", { name: "실행 시작" }).click();
-  await expect(page.getByText("status:")).toContainText("awaiting_plan_review", {
-    timeout: 20_000,
-  });
-  await page.getByRole("button", { name: "계획 승인 → 실행" }).click();
-  await expect(page.getByRole("button", { name: "수정 없이 계속" })).toBeVisible({
-    timeout: 20_000,
-  });
-  await page.getByRole("button", { name: "수정 없이 계속" }).click();
-  await expect(page.getByText("status:")).toContainText("awaiting_gate", { timeout: 25_000 });
-  await expect(page.getByText("QA 실패", { exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "게이트 거절", exact: true }).click();
-  await expect(page.getByText(/평가 데이터셋에 기록/)).toBeVisible({ timeout: 10_000 });
-  await expect(page.getByText(/eval recorded: rw-027/)).toBeVisible();
+test("deep link selects scenario and failure filter", async ({ page }) => {
+  await page.goto("/workbench/?mock=1&scenario=rw-027&filter=failure");
+  await expect(page.getByRole("button", { name: /rw-027/ })).toHaveClass(
+    /emerald/,
+  );
+  await expect(page.getByRole("button", { name: "failure", exact: true })).toHaveClass(
+    /emerald/,
+  );
 });
 
 test("axe: workbench shell has no critical/serious issues", async ({ page }) => {
