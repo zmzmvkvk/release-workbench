@@ -52,8 +52,10 @@ jobs:
           echo "$evals" | head -c 800
           echo
           echo "$evals" | grep -q '"ok":true'
-          echo "$evals" | grep -q 'scenarioCountMin\|"scenarioCount"'
+          echo "$evals" | grep -q '"scenarioCount":35\|"scenarioCountMin":35'
+          echo "$evals" | grep -q '"fixtureCoverage":2[0-9]\|"fixtureCoverageMin":20'
           echo "$evals" | grep -q 'workers-ai-struct-v3\|workersAiSpot'
+          echo "$evals" | grep -q 'fixtureAliasFromMax\|"fixtureCoverage"'
       - name: Probe roomy.page health (best-effort)
         continue-on-error: true
         run: |
