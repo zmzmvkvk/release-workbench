@@ -635,10 +635,29 @@ export function WorkbenchApp() {
             <span className="block font-medium">{s.title}</span>
             <span className="mt-1 block text-xs text-zinc-500">
               {s.id} · {s.fixture}
+              {"fixtureAliasFrom" in s &&
+              typeof (s as { fixtureAliasFrom?: string }).fixtureAliasFrom ===
+                "string"
+                ? ` ← alias:${(s as { fixtureAliasFrom: string }).fixtureAliasFrom}`
+                : ""}
             </span>
           </button>
         ))}
       </section>
+
+      {"fixtureAliasFrom" in selected &&
+      typeof (selected as { fixtureAliasFrom?: string }).fixtureAliasFrom ===
+        "string" ? (
+        <p className="rounded-md border border-amber-900/50 bg-amber-950/30 px-3 py-2 text-xs text-amber-100/90">
+          정직성: 요청 fixture{" "}
+          <code className="text-amber-50">
+            {(selected as { fixtureAliasFrom: string }).fixtureAliasFrom}
+          </code>
+          는 아직 네이티브 재생이 없어{" "}
+          <code className="text-amber-50">{fixture}</code> 로 매핑됩니다
+          (시나리오 원문·기대값은 유지).
+        </p>
+      ) : null}
 
       <section className="rounded-xl border border-zinc-800 bg-zinc-950/80 p-4">
         <h2 className="mb-2 text-sm font-medium text-zinc-200">원문 자료</h2>
