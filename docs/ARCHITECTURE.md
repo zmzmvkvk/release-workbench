@@ -18,16 +18,18 @@ Browser (React / Next static export, basePath /workbench)
         │                                                           ▼
         │              Cloudflare Worker `roomy-page-workbench`
         │                GET  /workbench/api/health
+        │                GET  /workbench/api/evals     (curl gate summary)
         │                GET  /workbench/api/protocol  (event/state catalog)
-        │                GET  /workbench/api/runs/:id  (KV snapshot · eventTypes · toolNames)
+        │                GET  /workbench/api/runs/:id  (KV-first snapshot · eventTypes · toolNames)
         │                POST /workbench/api/runs/stream
         │                POST /workbench/api/runs/:id/continue
         │                POST /workbench/api/runs/:id/cancel
-        │                ├─ mock fixtures (deterministic)
+        │                ├─ mock fixtures (deterministic · 26 native)
         │                ├─ mode=workers-ai
         │                │     ├─ struct-v3 (requirements + citations)
         │                │     └─ on plan approve: patch-v1 `propose_patch_plan`
         │                │         then deterministic execute fixtures
+        │                │         SSE ends with trace.span run_persisted (toolNames)
         │                ├─ KV WORKBENCH_IDEMPOTENCY (duplicate · run resume · args gate)
         │                └─ ASSETS (SPA)
         │
@@ -38,6 +40,7 @@ Public URLs:
 
 - https://roomy.page/workbench/
 - https://roomy.page/workbench/api/health
+- https://roomy.page/workbench/api/evals
 - https://roomy.page/workbench/api/protocol
 - https://roomy-page-workbench.hommy.workers.dev/workbench/
 - https://github.com/zmzmvkvk/release-workbench
@@ -70,17 +73,16 @@ KV: `idem:*` duplicate · `run:*` resume after SSE disconnect (`waitUntil`) · `
 ## Observability
 
 - `GET /workbench/api/health` — `{ ok, sse, kv, ai, protocol, evals }` (UI header badge)
-- `GET /workbench/api/evals` — curlable mock + Workers AI spot gate summary (`public/data/eval-summary.json`)
-- `GET /workbench/api/runs/:id` — run snapshot (memory/KV); client recovers after SSE drop via `stream.reconnect`
-- `GET /workbench/api/protocol` — states, eventTypes, HITL, promptVersions (curl hiring evidence)
-- `GET /workbench/api/runs/:id` — KV/memory snapshot (`mode`, `eventTypes`, `toolNames`)
+- `GET /workbench/api/evals` — curlable mock + Workers AI spot (`fixtureCoverage`, alias=0 gates)
+- `GET /workbench/api/runs/:id` — **KV-first** snapshot; client SSE-drop → `stream.reconnect`
+- `GET /workbench/api/protocol` — states, eventTypes, HITL, promptVersions
 - `metrics.sample` — ttftMs, totalMs, tokens, costUsd, provider, model, promptVersion
 - Workers AI: `usage.total_tokens` 파싱 시 tokens 기록. **costUsd는 provider 미제공 → null** (추정 금지)
 - Hybrid execute: `propose_patch_plan` tool (prompt `workers-ai-patch-v1`) before mock fixtures
 - HITL/gate 감사 로그 UI + trace JSON 다운로드
-- `trace.span` — named intervals (`workers_ai_structuring`, `workers_ai_patch_plan`, …)
-- `/evals` dashboard — mock n=32 + Workers AI spot (separate tables; tokens p50 when present)
-- CI `prod-smoke` — health + protocol + live Workers AI structuring SSE
+- `trace.span` — `workers_ai_structuring`, `workers_ai_patch_plan`, **`run_persisted`** (toolNames in SSE)
+- `/evals` dashboard — mock **n=35** · fixtureCoverage **26** + Workers AI spot
+- CI `prod-smoke` — health + protocol + evals + live Workers AI + hybrid (`run_persisted` / KV retry)
 
 ## Security
 

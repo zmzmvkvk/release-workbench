@@ -32,8 +32,9 @@
 | 평가 대시보드 | ✅ `/evals` + 실패 매트릭스 딥링크 |
 | KV idempotency | ✅ + run resume across isolates |
 | Stream concurrency | ✅ per-isolate max 8 → 429 · client 1회 재시도 · health cap |
-| Run snapshot 링크 | ✅ http-sse `runId` → `GET /api/runs/:id` |
+| Run snapshot 링크 | ✅ http-sse `runId` → KV-first `GET /api/runs/:id` |
 | fixture 정합성 | ✅ 시나리오별 네이티브 fixture **26** · `fixtureAliasFrom` **0** (CI gate) |
+| SSE drop → snapshot resume | ✅ client `recovered` + Vitest · `run_persisted` SSE |
 | args soft-timeout UX | ✅ http-sse 도구 running 9s 배너 |
 | QA fail → eval | ✅ rw-027 E2E · gate reject → `eval.case_recorded` |
 | costUsd 정직성 | ✅ provider 미제공 → `null` / UI `— (미계측)` · mock도 `$0` 미표기 |

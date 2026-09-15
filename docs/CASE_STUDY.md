@@ -6,6 +6,7 @@ Public hiring evidence for internal-ops AX frontend.
 
 - Live: https://roomy.page/workbench/
 - Evals: https://roomy.page/workbench/evals
+- Evals JSON: https://roomy.page/workbench/api/evals
 - Demo (90s): https://roomy.page/workbench/demo/release-workbench-90s.webm
 - QA fail deep link: https://roomy.page/workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1
 - Failure matrix: https://roomy.page/workbench/evals#failures
@@ -28,12 +29,13 @@ Ship a **public work system**: request → structure with citations → HITL app
 | Protocol catalog API | yes (`GET /workbench/api/protocol`) |
 | Workers AI structure + patch tool | yes (struct-v3 + patch-v1 → `apply_code_patch` args + diff `AI plan:`) |
 | HTTP HITL args gate | yes (KV resume + `waitUntil` persist) |
-| Synthetic scenarios | yes (**35**) |
-| Failure demos (10+) + E2E | yes (incl. QA fail → gate reject → eval) |
-| Playwright / Vitest / axe CI | yes (public Actions) |
-| Prod health + Workers AI SSE + hybrid smoke | yes (CI `prod-smoke` on push to main) |
+| Synthetic scenarios | yes (**35** · native fixtures **26** · `fixtureAliasFrom` 0) |
+| Failure demos (10+) + E2E | yes (incl. QA fail → gate reject → eval · SSE-drop recovered Vitest) |
+| Playwright / Vitest / axe CI | yes (public Actions · eval gates) |
+| Prod health + Workers AI SSE + hybrid smoke | yes (`run_persisted` SSE + KV snapshot retry) |
 | Mock bench n=35 + Workers AI spot | yes (extraction/toolSelection/conflict = 1; tokens p50≈232) |
-| Run snapshot API | yes (`GET /workbench/api/runs/:id` · UI link on http-sse) |
+| Eval summary API | yes (`GET /workbench/api/evals` · fixtureCoverage) |
+| Run snapshot API | yes (KV-first `GET /workbench/api/runs/:id` · UI link on http-sse) |
 | Architecture / protocol / security / failures | yes (`docs/`) |
 | 60–90s demo | yes (includes QA fail + eval record) |
 | Metrics honesty | yes (`promptVersion` in UI; costUsd null when unmetered) |
