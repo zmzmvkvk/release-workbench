@@ -6,6 +6,7 @@ export type FixtureId =
   | "happy_table_sort"
   | "happy_phone_mask"
   | "happy_kst_display"
+  | "chart_a11y"
   | "cancel_during_structuring"
   | "conflict_discount_copy"
   | "invalid_requirements_json"
@@ -214,6 +215,110 @@ export function buildFixtureSteps(fixture: FixtureId, scenarioId: string): Step[
           partial: {
             type: "run.duplicate_blocked",
             payload: { existingRunId: "run_existing_demo" },
+          },
+        },
+      ];
+    case "chart_a11y":
+      return [
+        ...baseSteps(scenarioId),
+        {
+          kind: "event",
+          delayMs: 280,
+          partial: {
+            type: "stream.delta",
+            payload: {
+              channel: "structuring",
+              text: "차트 색약·라벨 병행 요구 구조화…",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 400,
+          partial: {
+            type: "requirements.ready",
+            payload: {
+              requirements: [
+                {
+                  id: "r1",
+                  text: "출석률 라인 차트",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "출석률 라인 차트",
+                      sourceIndex: 0,
+                      start: 0,
+                      end: 9,
+                    },
+                  ],
+                },
+                {
+                  id: "r2",
+                  text: "색만으로 구분하지 않음(패턴/점선)",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "빨강/초록만 구분",
+                      sourceIndex: 0,
+                      start: 11,
+                      end: 20,
+                    },
+                  ],
+                },
+                {
+                  id: "r3",
+                  text: "시리즈 라벨 병행",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "패턴이나 라벨 병행",
+                      sourceIndex: 0,
+                      start: 22,
+                      end: 33,
+                    },
+                  ],
+                },
+                {
+                  id: "r4",
+                  text: "QA: color-nonreliance",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "패턴이나 라벨 병행 요청",
+                      sourceIndex: 0,
+                      start: 22,
+                      end: 36,
+                    },
+                  ],
+                },
+              ],
+              conflicts: [],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 200,
+          partial: {
+            type: "plan.proposed",
+            payload: {
+              steps: ["차트 시리즈 스타일", "라벨", "axe color-nonreliance"],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 100,
+          partial: {
+            type: "metrics.sample",
+            payload: {
+              ttftMs: 172,
+              tokens: 380,
+              costUsd: null,
+              provider: "mock",
+              model: "deterministic",
+              promptVersion: "none-mock",
+            },
           },
         },
       ];

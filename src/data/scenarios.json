@@ -526,9 +526,8 @@
           "color-nonreliance"
         ]
       },
-      "fixture": "happy_card_grid",
-      "failureFocus": [],
-      "fixtureAliasFrom": "chart_a11y"
+      "fixture": "chart_a11y",
+      "failureFocus": []
     },
     {
       "id": "rw-022",
