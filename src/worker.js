@@ -1176,6 +1176,8 @@ export default {
           Connection: "keep-alive",
           "X-Run-Id": runId,
           "X-Workbench-Mode": mode,
+          "X-Workbench-Prompt-Version":
+            mode === "workers-ai" ? "workers-ai-struct-v3" : "none-mock",
         },
       });
     }
