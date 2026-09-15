@@ -419,7 +419,13 @@ export function applyEvent(state: RunState, raw: unknown): RunState {
             typeof payload.cancelLatencyMs === "number"
               ? payload.cancelLatencyMs
               : next.metrics?.cancelLatencyMs,
+          reconnectOk: next.metrics?.reconnectOk,
         },
+      };
+    case "stream.reconnect":
+      return {
+        ...next,
+        metrics: { ...(next.metrics ?? {}), reconnectOk: true },
       };
     case "trace.span":
       return {
