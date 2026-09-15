@@ -26,7 +26,8 @@ AI가 페이지를 만드는 데모가 아니라, **불완전 출력을 검토·
 - 도구 인자 수정 / 수정 없이 계속 (HTTP KV, isolate-safe)
 - 근거(citation) 없으면 승인 차단
 - 실패를 평가 데이터셋에 기록 (`eval.case_recorded`)
-- 관찰성: TTFT · cancel latency · reconnect · trace JSON 다운로드
+- 관찰성: TTFT · tokens(있을 때) · cancel latency · reconnect · 감사 로그 · trace JSON
+- Workers AI costUsd는 provider 미제공 → null (추정 안 함)
 
 ## 하지 않는 주장
 
