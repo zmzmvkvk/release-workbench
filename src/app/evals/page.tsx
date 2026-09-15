@@ -15,8 +15,13 @@ export default function EvalsPage() {
       <p className="mt-2 text-sm text-zinc-400">
         모델 <code className="text-zinc-300">{meta.model}</code> · prompt{" "}
         <code className="text-zinc-300">{meta.promptVersion}</code> · runs/case{" "}
-        {meta.runsPerCase} · updated {meta.updated}
+        {meta.runsPerCase} · n={aggregate.scenarioCount} · updated {meta.updated}
       </p>
+      <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-zinc-500">
+        {meta.notes.map((n) => (
+          <li key={n}>{n}</li>
+        ))}
+      </ul>
       <p className="mt-2 text-sm text-zinc-500">
         <Link href="/" className="text-emerald-400 hover:underline">
           ← 워크벤치
@@ -24,16 +29,22 @@ export default function EvalsPage() {
       </p>
 
       <section className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <Stat label="시나리오" value={String(aggregate.scenarioCount)} />
+        <Stat label="시나리오 (n)" value={String(aggregate.scenarioCount)} />
         <Stat label="fixture 커버" value={String(aggregate.fixtureCoverage)} />
         <Stat label="실패 시연 시나리오" value={String(failureScenarios.length)} />
-        <Stat label="중복 side effect" value={String(aggregate.duplicateSideEffects)} />
         <Stat label="workflow completion" value={fmt(aggregate.workflowCompletionRate)} />
         <Stat label="schema valid rate" value={fmt(aggregate.schemaValidRate)} />
+        <Stat label="conflict recall" value={fmt(aggregate.conflictRecall)} />
+        <Stat label="TTFT p50 (ms)" value={num(aggregate.ttftP50Ms)} />
+        <Stat label="TTFT p95 (ms)" value={num(aggregate.ttftP95Ms)} />
+        <Stat label="취소 응답 p50 (ms)" value={num(aggregate.cancelLatencyP50Ms)} />
+        <Stat label="재연결 성공률" value={fmt(aggregate.reconnectSuccessRate)} />
+        <Stat label="중복 side effect" value={String(aggregate.duplicateSideEffects)} />
       </section>
 
       <p className="mt-4 text-xs text-zinc-500">
-        null 지표는 live/자동 러너 전. mock 케이스는 아래 표만 확정.
+        mock TTFT는 fixture delay 기준. Workers AI 라이브는 워크벤치에서 mode 전환으로
+        시연하며, 별도 표본 표는 아직 소량 수동 검증만 문서화.
       </p>
 
       <div className="mt-8 overflow-x-auto rounded-xl border border-zinc-800">
@@ -44,6 +55,7 @@ export default function EvalsPage() {
               <th className="px-3 py-2">fixture</th>
               <th className="px-3 py-2">outcome</th>
               <th className="px-3 py-2">schema</th>
+              <th className="px-3 py-2">ttftMs</th>
             </tr>
           </thead>
           <tbody>
@@ -53,6 +65,9 @@ export default function EvalsPage() {
                 <td className="px-3 py-2 text-xs">{c.fixture}</td>
                 <td className="px-3 py-2">{c.outcome}</td>
                 <td className="px-3 py-2">{c.schemaValid ? "valid" : "invalid"}</td>
+                <td className="px-3 py-2 font-mono text-xs">
+                  {"ttftMs" in c && c.ttftMs != null ? c.ttftMs : "—"}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -73,4 +88,8 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 function fmt(v: number | null) {
   return v === null ? "—" : `${Math.round(v * 1000) / 10}%`;
+}
+
+function num(v: number | null) {
+  return v === null ? "—" : String(v);
 }

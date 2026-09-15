@@ -10,7 +10,8 @@ export type FixtureStep =
         payload: unknown;
       };
     }
-  | { kind: "waitCancel"; delayMs: number };
+  | { kind: "waitCancel"; delayMs: number }
+  | { kind: "waitArgsEdit"; timeoutMs: number };
 
 /** Happy-path execute phase after plan.approved (tools → diff → preview → qa → gate). */
 export function buildExecuteSteps(scenarioId: string): FixtureStep[] {
@@ -23,13 +24,14 @@ export function buildExecuteSteps(scenarioId: string): FixtureStep[] {
         payload: {
           callId: "t_patch",
           name: "apply_code_patch",
-          args: { project: "cleanroom-react", scenarioId },
+          args: { project: "cleanroom-react", scenarioId, allowedMime: ["*/*"] },
         },
       },
     },
+    { kind: "waitArgsEdit", timeoutMs: 3_000 },
     {
       kind: "event",
-      delayMs: 350,
+      delayMs: 200,
       partial: {
         type: "tool.finished",
         payload: { callId: "t_patch", result: { filesChanged: 2 } },

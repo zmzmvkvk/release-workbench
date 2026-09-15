@@ -66,6 +66,7 @@ export function WorkbenchApp() {
   const httpRunIdRef = useRef<string | null>(null);
   const [transport, setTransport] = useState<"http-sse" | "client-mock">("client-mock");
   const [llmMode, setLlmMode] = useState<"mock" | "workers-ai">("mock");
+  const [toolArgsDraft, setToolArgsDraft] = useState("");
 
   const visible = useMemo(() => {
     return scenarios.filter((s) => {
@@ -86,6 +87,50 @@ export function WorkbenchApp() {
     if (event.type === "run.duplicate_blocked") {
       setBanner("동일 idempotencyKey 실행이 이미 진행 중");
     }
+    if (event.type === "tool.started") {
+      const payload = event.payload as { args?: unknown };
+      try {
+        setToolArgsDraft(JSON.stringify(payload.args ?? {}, null, 2));
+      } catch {
+        setToolArgsDraft("{}");
+      }
+    }
+  }
+
+  function applyToolArgsEdit() {
+    const run = clientRunRef.current;
+    const pending = state.tools.find((t) => t.status === "running");
+    if (!pending) {
+      setBanner("실행 중인 도구가 없습니다");
+      return;
+    }
+    let args: unknown;
+    try {
+      args = JSON.parse(toolArgsDraft);
+    } catch {
+      setBanner("인자 JSON이 올바르지 않습니다");
+      return;
+    }
+    if (run) {
+      emitClientEvent(
+        run,
+        "tool.args_edited",
+        { callId: pending.callId, args },
+        push,
+      );
+      setBanner(`도구 인자 수정: ${pending.callId}`);
+      return;
+    }
+    // HTTP path: local UI evidence + timeline event
+    push({
+      id: `evt_local_args_${Date.now().toString(36)}`,
+      runId: state.runId ?? "local",
+      seq: state.timeline.length,
+      ts: new Date().toISOString(),
+      type: "tool.args_edited",
+      payload: { callId: pending.callId, args },
+    });
+    setBanner(`도구 인자 수정(로컬): ${pending.callId}`);
   }
 
   async function startRun() {
@@ -517,6 +562,24 @@ export function WorkbenchApp() {
               ))}
             </ul>
           )}
+          {state.tools.some((t) => t.status === "running") ? (
+            <div className="mt-3 space-y-2 border-t border-zinc-800 pt-3">
+              <p className="text-xs text-zinc-500">승인 전 인자 수정 (HITL)</p>
+              <textarea
+                aria-label="도구 인자 JSON"
+                value={toolArgsDraft}
+                onChange={(e) => setToolArgsDraft(e.target.value)}
+                className="h-24 w-full rounded-md border border-zinc-700 bg-zinc-950 p-2 font-mono text-xs text-zinc-200"
+              />
+              <button
+                type="button"
+                onClick={() => applyToolArgsEdit()}
+                className="rounded-md border border-sky-500/40 bg-sky-500/10 px-3 py-1.5 text-xs text-sky-100"
+              >
+                인자 수정 적용
+              </button>
+            </div>
+          ) : null}
         </Panel>
 
         <Panel title="코드 diff">

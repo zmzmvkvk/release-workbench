@@ -65,6 +65,35 @@ test("xss fixture shows sanitized note", async ({ page }) => {
   await expect(page.getByText(/sanitized:/i)).toBeVisible({ timeout: 20_000 });
 });
 
+test("plan reject reaches rejected_at_plan", async ({ page }) => {
+  await page.goto("/workbench");
+  await page.getByRole("button", { name: /rw-009/ }).click();
+  await page.getByRole("button", { name: "실행 시작" }).click();
+  await expect(page.getByText("status:")).toContainText("awaiting_plan_review", {
+    timeout: 20_000,
+  });
+  await page.getByRole("button", { name: "계획 거절" }).click();
+  await expect(page.getByText("status:")).toContainText("rejected_at_plan", {
+    timeout: 10_000,
+  });
+});
+
+test("tool args edit HITL control appears during execute", async ({ page }) => {
+  await page.goto("/workbench");
+  await page.getByRole("button", { name: /rw-004/ }).click();
+  await page.getByRole("button", { name: "실행 시작" }).click();
+  await expect(page.getByText("status:")).toContainText("awaiting_plan_review", {
+    timeout: 20_000,
+  });
+  await page.getByRole("button", { name: "계획 승인 → 실행" }).click();
+  await expect(page.getByRole("button", { name: "인자 수정 적용" })).toBeVisible({
+    timeout: 20_000,
+  });
+  await page.getByLabel("도구 인자 JSON").fill('{"allowedMime":["application/pdf"]}');
+  await page.getByRole("button", { name: "인자 수정 적용" }).click();
+  await expect(page.getByText("도구 인자 수정: t_patch")).toBeVisible({ timeout: 10_000 });
+});
+
 test("axe: workbench shell has no critical/serious issues", async ({ page }) => {
   await page.goto("/workbench");
   await expect(page.getByRole("heading", { name: /검증된 릴리즈/ })).toBeVisible();

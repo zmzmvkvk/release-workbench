@@ -8,7 +8,8 @@ type Step =
       delayMs: number;
       partial: { type: WorkbenchEvent["type"]; payload: unknown };
     }
-  | { kind: "waitCancel"; delayMs: number };
+  | { kind: "waitCancel"; delayMs: number }
+  | { kind: "waitArgsEdit"; timeoutMs: number };
 
 function sleep(ms: number, signal?: AbortSignal) {
   return new Promise<void>((resolve, reject) => {
@@ -30,6 +31,8 @@ export type ClientRun = {
   runId: string;
   seq: number;
   cancelled: boolean;
+  /** Resolve when HITL edits tool args (or timeout). */
+  notifyArgsEdited?: () => void;
 };
 
 export function createClientRun(): ClientRun {
@@ -76,6 +79,30 @@ async function playSteps(
         onEvent(nextEvent(run, "run.cancelled", { reason: "user_cancelled" }));
         return;
       }
+      continue;
+    }
+    if (step.kind === "waitArgsEdit") {
+      await new Promise<void>((resolve) => {
+        const timer = setTimeout(resolve, step.timeoutMs);
+        run.notifyArgsEdited = () => {
+          clearTimeout(timer);
+          resolve();
+        };
+        if (signal?.aborted) {
+          clearTimeout(timer);
+          resolve();
+        } else {
+          signal?.addEventListener(
+            "abort",
+            () => {
+              clearTimeout(timer);
+              resolve();
+            },
+            { once: true },
+          );
+        }
+      });
+      run.notifyArgsEdited = undefined;
       continue;
     }
     try {
@@ -156,4 +183,7 @@ export function emitClientEvent(
   onEvent: (e: WorkbenchEvent) => void,
 ) {
   onEvent(nextEvent(run, type, payload));
+  if (type === "tool.args_edited") {
+    run.notifyArgsEdited?.();
+  }
 }

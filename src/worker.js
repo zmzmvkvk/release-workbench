@@ -622,8 +622,8 @@ export default {
       const key = body.idempotencyKey ?? `${scenarioId}-key`;
       const mode = body.mode === "workers-ai" ? "workers-ai" : "mock";
 
-      if (fixture === "duplicate_blocked" || idempotency.has(key)) {
-        const existing = idempotency.get(key) ?? "run_existing_demo";
+      if (fixture === "duplicate_blocked") {
+        const existing = "run_existing_demo";
         const event = {
           id: `evt_dup_${Date.now().toString(36)}`,
           runId: existing,
@@ -648,6 +648,43 @@ export default {
         });
       }
 
+      let existingFromStore = idempotency.get(key) ?? null;
+      if (!existingFromStore && env.WORKBENCH_IDEMPOTENCY) {
+        try {
+          existingFromStore = await env.WORKBENCH_IDEMPOTENCY.get(`idem:${key}`);
+        } catch {
+          existingFromStore = null;
+        }
+      }
+      if (existingFromStore) {
+        const event = {
+          id: `evt_dup_${Date.now().toString(36)}`,
+          runId: existingFromStore,
+          seq: 0,
+          ts: new Date().toISOString(),
+          type: "run.duplicate_blocked",
+          payload: {
+            existingRunId: existingFromStore,
+            idempotencyKey: key,
+            store: "kv+memory",
+          },
+        };
+        const stream = new ReadableStream({
+          start(controller) {
+            const enc = new TextEncoder();
+            controller.enqueue(enc.encode(sse(event, event.id)));
+            controller.close();
+          },
+        });
+        return new Response(stream, {
+          headers: {
+            "Content-Type": "text/event-stream; charset=utf-8",
+            "Cache-Control": "no-cache",
+            "X-Run-Id": existingFromStore,
+          },
+        });
+      }
+
       const runId = `run_${Date.now().toString(36)}`;
       const ac = new AbortController();
       const run = {
@@ -662,6 +699,15 @@ export default {
       };
       runs.set(runId, run);
       idempotency.set(key, runId);
+      if (env.WORKBENCH_IDEMPOTENCY) {
+        try {
+          await env.WORKBENCH_IDEMPOTENCY.put(`idem:${key}`, runId, {
+            expirationTtl: 3600,
+          });
+        } catch {
+          /* memory still holds */
+        }
+      }
 
       const stream = new ReadableStream({
         async start(controller) {

@@ -7,6 +7,12 @@
   "ai": {
     "binding": "AI"
   },
+  "kv_namespaces": [
+    {
+      "binding": "WORKBENCH_IDEMPOTENCY",
+      "id": "d98de5da257a43a59941ed6945e53bf5"
+    }
+  ],
   "assets": {
     "directory": "./out",
     "binding": "ASSETS",
