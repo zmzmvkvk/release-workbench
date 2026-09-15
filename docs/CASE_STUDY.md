@@ -26,7 +26,7 @@ Ship a **public work system**: request → structure with citations → HITL app
 | --- | --- |
 | Live app + HTTP SSE | yes (`roomy.page` same-origin) |
 | Protocol catalog API | yes (`GET /workbench/api/protocol`) |
-| Workers AI structure + patch tool | yes (struct-v3 + `propose_patch_plan` patch-v1 on execute) |
+| Workers AI structure + patch tool | yes (struct-v3 + patch-v1 → `apply_code_patch` args + diff `AI plan:`) |
 | HTTP HITL args gate | yes (KV resume + `waitUntil` persist) |
 | Synthetic scenarios | yes (**35**) |
 | Failure demos (10+) + E2E | yes (incl. QA fail → gate reject → eval) |
