@@ -10,7 +10,7 @@
 | 4 | 시스템 아키텍처 | ✅ | `docs/ARCHITECTURE.md` |
 | 5 | 이벤트·상태머신 | ✅ | `docs/PROTOCOL.md` |
 | 6 | 평가 30+ · 결과표 | ✅ | scenarios 32 · `/evals` · mock + Workers AI spot v3 · 실패 매트릭스 |
-| 7 | Playwright · Vitest CI | ✅ | https://github.com/zmzmvkvk/release-workbench/actions |
+| 7 | Playwright · Vitest CI | ✅ | https://github.com/zmzmvkvk/release-workbench/actions · prod health smoke |
 | 8 | 실패 사례 보고서 | ✅ | `docs/FAILURE_CASES.md` · `/evals#failures` 딥링크 |
 | 9 | 보안·공개범위 | ✅ | `docs/SECURITY.md` (trailing-slash URL 주의) |
 | 10 | 케이스스터디 | ✅ | `docs/CASE_STUDY.md` · wiki `concept-case-release-workbench` |

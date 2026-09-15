@@ -21,3 +21,24 @@ jobs:
       - run: pnpm exec playwright install chromium --with-deps
       - run: pnpm test:e2e
       - run: pnpm build
+
+  # Hiring evidence: production Worker is reachable (same-origin API, not SPA HTML).
+  prod-smoke:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Probe roomy.page health
+        run: |
+          set -euo pipefail
+          body=$(curl -fsS "https://roomy.page/workbench/api/health")
+          echo "$body"
+          echo "$body" | grep -q '"ok":true'
+          echo "$body" | grep -q '"sse":true'
+          echo "$body" | grep -q '"kv":true'
+          echo "$body" | grep -q '"ai":true'
+      - name: Probe workers.dev health
+        run: |
+          set -euo pipefail
+          body=$(curl -fsS "https://roomy-page-workbench.hommy.workers.dev/workbench/api/health")
+          echo "$body"
+          echo "$body" | grep -q '"ok":true'
