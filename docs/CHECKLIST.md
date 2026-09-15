@@ -10,7 +10,7 @@
 | 4 | 시스템 아키텍처 | ✅ | `docs/ARCHITECTURE.md` |
 | 5 | 이벤트·상태머신 문서 | ✅ | `docs/PROTOCOL.md` + wiki protocol |
 | 6 | 평가 데이터셋 30+ · 결과표 | ✅ | scenarios 32 + `/evals` + `pnpm bench` |
-| 7 | Playwright · Vitest CI | ✅ | e2e + vitest + `.github/workflows/workbench-ci.yml` |
+| 7 | Playwright · Vitest CI | ✅ | monorepo `.github/workflows/workbench-ci.yml` + 공개 레포 `.github/workflows/ci.yml` |
 | 8 | 실패 사례 보고서 | ✅ | `docs/FAILURE_CASES.md` |
 | 9 | 보안·공개범위 | ✅ | `docs/SECURITY.md` |
 | 10 | 케이스스터디 | ✅ | wiki `concept-case-release-workbench` |
@@ -38,12 +38,12 @@
 | 취소 | rw-005 + E2E |
 | 재연결 | rw-006 + Worker `network_resume` + E2E |
 | 잘못된 구조화 | rw-007 + E2E |
-| 도구 실패·재시도 | rw-008 + Worker `tool_fail_retry` |
+| 도구 실패·재시도 | rw-008 + Worker `tool_fail_retry` + E2E |
 | 승인 거절 | rw-009 + E2E |
 | 인자 수정 | rw-010 + HITL UI `인자 수정 적용` + E2E |
 | 중복 차단 | rw-011 + E2E + Worker KV `WORKBENCH_IDEMPOTENCY` |
 | 근거 없음 | rw-012 + E2E |
-| HTML 격리 | rw-013 + Worker `unsafe_html_isolated` |
+| HTML 격리 | rw-013 + E2E + Worker `unsafe_html_isolated` |
 | 단계 초과 | rw-014 + Worker `max_steps_exceeded` + E2E |
 
 목표 완료로 보지 않음: OpenAI/Anthropic 키 경로 고도화, FDE용 BE/DB·인증, Workers AI 대량 벤치 표본은 이후. KV idempotency·HITL 인자 수정 UI는 반영됨.
