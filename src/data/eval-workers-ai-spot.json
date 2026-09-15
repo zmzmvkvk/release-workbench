@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "title": "Workers AI spot check (manual)",
+    "updated": "2026-09-15T13:50:00Z",
+    "model": "@cf/meta/llama-3.2-3b-instruct",
+    "promptVersion": "workers-ai-struct-v2",
+    "runsPerCase": 1,
+    "sampleSize": 5,
+    "endpoint": "https://roomy-page-workbench.hommy.workers.dev/workbench/api/runs/stream",
+    "notes": [
+      "소량 수동 스팟 체크. mock 벤치 n=32와 섞지 않음.",
+      "스키마 실패 시 휴리스틱 폴백으로 requirements.ready가 날 수 있음.",
+      "TTFT/token/cost는 Workers AI 응답에 미포함 → null."
+    ]
+  },
+  "aggregate": {
+    "sampleSize": 5,
+    "requirementsReadyRate": 1,
+    "schemaInvalidObserved": 0,
+    "ttftP50Ms": null,
+    "ttftP95Ms": null,
+    "costUsdPerRequest": null
+  },
+  "cases": [
+    { "scenarioId": "rw-001", "requirementsReady": true, "schemaInvalid": false },
+    { "scenarioId": "rw-004", "requirementsReady": true, "schemaInvalid": false },
+    { "scenarioId": "rw-007", "requirementsReady": true, "schemaInvalid": false },
+    { "scenarioId": "rw-012", "requirementsReady": true, "schemaInvalid": false },
+    { "scenarioId": "rw-002", "requirementsReady": true, "schemaInvalid": false }
+  ]
+}

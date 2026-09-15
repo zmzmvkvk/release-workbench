@@ -1,5 +1,6 @@
 import Link from "next/link";
 import evalResults from "@/data/eval-results.json";
+import workersAiSpot from "@/data/eval-workers-ai-spot.json";
 import scenariosData from "@/data/scenarios.json";
 
 export default function EvalsPage() {
@@ -42,9 +43,34 @@ export default function EvalsPage() {
         <Stat label="중복 side effect" value={String(aggregate.duplicateSideEffects)} />
       </section>
 
+      <section className="mt-10 rounded-xl border border-sky-900/50 bg-sky-950/20 p-4">
+        <h2 className="text-lg font-medium text-sky-100">Workers AI spot (별도 표본)</h2>
+        <p className="mt-1 text-xs text-sky-200/70">
+          model <code>{workersAiSpot.meta.model}</code> · prompt{" "}
+          <code>{workersAiSpot.meta.promptVersion}</code> · n=
+          {workersAiSpot.meta.sampleSize} · runs/case {workersAiSpot.meta.runsPerCase} ·{" "}
+          {workersAiSpot.meta.updated}
+        </p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          <Stat
+            label="requirements.ready rate"
+            value={fmt(workersAiSpot.aggregate.requirementsReadyRate)}
+          />
+          <Stat
+            label="schemaInvalid observed"
+            value={String(workersAiSpot.aggregate.schemaInvalidObserved)}
+          />
+          <Stat label="TTFT / cost" value="— (미계측)" />
+        </div>
+        <ul className="mt-3 list-disc space-y-1 pl-5 text-xs text-sky-200/60">
+          {workersAiSpot.meta.notes.map((n) => (
+            <li key={n}>{n}</li>
+          ))}
+        </ul>
+      </section>
+
       <p className="mt-4 text-xs text-zinc-500">
-        mock TTFT는 fixture delay 기준. Workers AI 라이브는 워크벤치에서 mode 전환으로
-        시연하며, 별도 표본 표는 아직 소량 수동 검증만 문서화.
+        mock TTFT는 fixture delay 기준. Workers AI 표는 mock n=32와 합산하지 않음.
       </p>
 
       <div className="mt-8 overflow-x-auto rounded-xl border border-zinc-800">
