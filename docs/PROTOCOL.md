@@ -10,14 +10,17 @@
 
 ## HITL
 
-| 액션 | 이벤트 |
+| 액션 | 이벤트 / API |
 | --- | --- |
 | 계획 승인 | `plan.approved` → execute |
 | 계획 거절 | `plan.rejected` |
-| 도구 인자 수정 | `tool.args_edited` (execute 중 HITL) |
+| 도구 인자 수정 | `tool.args_edited` — client-mock `waitArgsEdit` 또는 HTTP `POST …/continue` `action=args_edit` |
+| 인자 확인 후 계속 | HTTP `action=args_continue` (Worker `play`가 첫 `tool.started` 후 게이트 해제) |
 | 게이트 승인 | `gate.approved` + `run.completed` |
 | 게이트 거절 | `gate.rejected` |
 | 취소 | `run.cancelled` |
+
+HTTP execute 경로: Worker `play()`는 첫 `tool.started` 이후 soft-timeout(기본 12s) 또는 `args_continue`/`args_edit`까지 스트림을 일시정지한다.
 
 ## 배포 모드 (라이브)
 
@@ -37,8 +40,10 @@
 
 ## 주요 API
 
-| Method | Path |
-| --- | --- |
-| POST | `/workbench/api/runs/stream` |
-| POST | `/workbench/api/runs/:id/continue` |
-| POST | `/workbench/api/runs/:id/cancel` |
+| Method | Path | 비고 |
+| --- | --- | --- |
+| POST | `/workbench/api/runs/stream` | SSE 구조화; 완료 후 KV `run:{id}` persist |
+| POST | `/workbench/api/runs/:id/continue` | `approve`/`reject`/`gate_*`/`args_continue`/`args_edit` — isolate 간 KV resume |
+| POST | `/workbench/api/runs/:id/cancel` | 취소 |
+
+Worker 인스턴스가 달라도 `WORKBENCH_IDEMPOTENCY` KV로 run 메타·args 게이트 신호를 공유한다.

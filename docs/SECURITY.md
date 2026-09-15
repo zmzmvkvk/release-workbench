@@ -21,7 +21,7 @@
 
 | 위험 | 통제 |
 | --- | --- |
-| 모델/원문 HTML XSS | `iframe sandbox=""` + `preview.sanitized` 이벤트 |
+| 모델/원문 HTML XSS | **DOMPurify** (`sanitizePreviewHtml`) + `iframe sandbox=""` + `preview.sanitized` 이벤트 |
 | 임의 코드 실행 | mock 단계에서는 패치 문자열만 표시. 실실행 시 분리 sandbox(이후) |
 | 중복 side effect | `idempotencyKey` → `run.duplicate_blocked` |
 | 근거 없는 생성 | citation 없으면 계획 승인 비활성 |

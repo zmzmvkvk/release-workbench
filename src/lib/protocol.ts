@@ -329,21 +329,20 @@ export function applyEvent(state: RunState, raw: unknown): RunState {
       const files = Array.isArray(payload.files) ? (payload.files as FileDiff[]) : [];
       return { ...next, diffs: files };
     }
-    case "preview.ready":
+    case "preview.ready": {
+      const desktop =
+        typeof payload.desktopHtml === "string" ? payload.desktopHtml : null;
+      const mobile =
+        typeof payload.mobileHtml === "string" ? payload.mobileHtml : null;
       return {
         ...next,
         preview: {
           ...next.preview,
-          desktopHtml:
-            typeof payload.desktopHtml === "string"
-              ? payload.desktopHtml
-              : next.preview.desktopHtml,
-          mobileHtml:
-            typeof payload.mobileHtml === "string"
-              ? payload.mobileHtml
-              : next.preview.mobileHtml,
+          desktopHtml: desktop ?? next.preview.desktopHtml,
+          mobileHtml: mobile ?? next.preview.mobileHtml,
         },
       };
+    }
     case "preview.sanitized":
       return {
         ...next,

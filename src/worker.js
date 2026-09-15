@@ -423,8 +423,107 @@ function executeSteps(scenarioId, fixture) {
   ];
 }
 
-async function play(run, steps, controller, signal) {
+async function persistRun(env, run) {
+  if (!env.WORKBENCH_IDEMPOTENCY) return;
+  try {
+    await env.WORKBENCH_IDEMPOTENCY.put(
+      `run:${run.runId}`,
+      JSON.stringify({
+        runId: run.runId,
+        scenarioId: run.scenarioId,
+        fixture: run.fixture,
+        mode: run.mode,
+        idempotencyKey: run.idempotencyKey,
+      }),
+      { expirationTtl: 3600 },
+    );
+  } catch {
+    /* best-effort */
+  }
+}
+
+async function loadRun(env, runId) {
+  let run = runs.get(runId);
+  if (run) return run;
+  if (!env.WORKBENCH_IDEMPOTENCY) return null;
+  try {
+    const raw = await env.WORKBENCH_IDEMPOTENCY.get(`run:${runId}`);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    const ac = new AbortController();
+    run = {
+      runId,
+      scenarioId: data.scenarioId,
+      fixture: data.fixture,
+      mode: data.mode ?? "mock",
+      idempotencyKey: data.idempotencyKey,
+      cancelled: false,
+      events: [],
+      abort: ac,
+    };
+    runs.set(runId, run);
+    return run;
+  } catch {
+    return null;
+  }
+}
+
+/** Pause after tool.started until continue(args_*) / KV signal / soft timeout. */
+async function waitArgsGate(run, signal, env, softTimeoutMs = 12_000) {
+  if (run.cancelled || signal.aborted) return;
+  const key = `args:${run.runId}`;
+  if (env?.WORKBENCH_IDEMPOTENCY) {
+    try {
+      await env.WORKBENCH_IDEMPOTENCY.put(key, "waiting", { expirationTtl: 60 });
+    } catch {
+      /* memory path only */
+    }
+  }
+
+  await new Promise((resolve) => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      clearInterval(poll);
+      signal.removeEventListener("abort", onAbort);
+      run.resolveArgsGate = null;
+      resolve();
+    };
+    const timer = setTimeout(finish, softTimeoutMs);
+    const onAbort = () => finish();
+    signal.addEventListener("abort", onAbort);
+    run.resolveArgsGate = () => finish();
+
+    const poll = setInterval(async () => {
+      if (!env?.WORKBENCH_IDEMPOTENCY) return;
+      try {
+        const v = await env.WORKBENCH_IDEMPOTENCY.get(key);
+        if (!v || v === "waiting") return;
+        if (v.startsWith("edit:")) {
+          try {
+            run.pendingArgsEdit = JSON.parse(v.slice(5));
+          } catch {
+            run.pendingArgsEdit = v.slice(5);
+          }
+        }
+        try {
+          await env.WORKBENCH_IDEMPOTENCY.delete(key);
+        } catch {
+          /* ignore */
+        }
+        finish();
+      } catch {
+        /* ignore poll errors */
+      }
+    }, 200);
+  });
+}
+
+async function play(run, steps, controller, signal, env) {
   const enc = new TextEncoder();
+  let argsGateUsed = false;
   for (const step of steps) {
     if (signal.aborted || run.cancelled) break;
     try {
@@ -435,6 +534,21 @@ async function play(run, steps, controller, signal) {
     if (run.cancelled || signal.aborted) break;
     const event = append(run, step.type, step.payload);
     controller.enqueue(enc.encode(sse(event, event.id)));
+
+    if (step.type === "tool.started" && !argsGateUsed) {
+      argsGateUsed = true;
+      await waitArgsGate(run, signal, env);
+      if (run.cancelled || signal.aborted) break;
+      if (run.pendingArgsEdit) {
+        const edited = append(run, "tool.args_edited", {
+          callId: step.payload?.callId ?? "t1",
+          name: step.payload?.name,
+          args: run.pendingArgsEdit,
+        });
+        controller.enqueue(enc.encode(sse(edited, edited.id)));
+        run.pendingArgsEdit = null;
+      }
+    }
   }
   if (run.cancelled) {
     const last = run.events[run.events.length - 1];
@@ -624,6 +738,7 @@ ${(sourceText || "card grid desktop 3 mobile 1 CTA detail").slice(0, 800)}`;
     model: "@cf/meta/llama-3.2-3b-instruct",
     promptVersion: "workers-ai-struct-v3",
   });
+  await persistRun(env, run);
   controller.close();
 }
 
@@ -772,7 +887,8 @@ export default {
       const stream = new ReadableStream({
         async start(controller) {
           request.signal.addEventListener("abort", () => {
-            run.cancelled = true;
+            // Client closed the structuring SSE — do NOT mark run.cancelled
+            // (HITL continue / args gate still need this run across isolates).
             ac.abort();
           });
           try {
@@ -790,8 +906,10 @@ export default {
                 structuringSteps(fixture, scenarioId, key),
                 controller,
                 ac.signal,
+                env,
               );
             }
+            await persistRun(env, run);
           } catch (err) {
             const enc = new TextEncoder();
             const event = append(run, "run.failed", {
@@ -824,8 +942,39 @@ export default {
       request.method === "POST"
     ) {
       const runId = url.pathname.split("/")[4];
-      const run = runs.get(runId);
       const body = await request.json().catch(() => ({}));
+
+      // Args HITL can land on another isolate — signal via KV even without in-memory run
+      if (body.action === "args_continue" || body.action === "args_edit") {
+        if (env.WORKBENCH_IDEMPOTENCY) {
+          try {
+            const val =
+              body.action === "args_edit" && body.args != null
+                ? `edit:${JSON.stringify(body.args)}`
+                : "continue";
+            await env.WORKBENCH_IDEMPOTENCY.put(`args:${runId}`, val, {
+              expirationTtl: 60,
+            });
+          } catch {
+            /* fall through to memory */
+          }
+        }
+        const mem = runs.get(runId);
+        if (body.action === "args_edit" && body.args != null && mem) {
+          mem.pendingArgsEdit = body.args;
+        }
+        if (typeof mem?.resolveArgsGate === "function") {
+          mem.resolveArgsGate();
+        }
+        return Response.json({
+          ok: true,
+          released: true,
+          action: body.action,
+          via: mem?.resolveArgsGate ? "memory+kv" : "kv",
+        });
+      }
+
+      const run = await loadRun(env, runId);
       if (!run) {
         return Response.json({ error: "not found" }, { status: 404 });
       }
@@ -848,15 +997,23 @@ export default {
       }
 
       const approve = append(run, "plan.approved", { by: "user" });
+      const execAbort = new AbortController();
+      run.abort = execAbort;
+      run.cancelled = false;
       const stream = new ReadableStream({
         async start(controller) {
+          request.signal.addEventListener("abort", () => {
+            // Closing execute SSE cancels only this execute phase
+            execAbort.abort();
+          });
           const enc = new TextEncoder();
           controller.enqueue(enc.encode(sse(approve, approve.id)));
           await play(
             run,
             executeSteps(run.scenarioId ?? "rw-004", run.fixture),
             controller,
-            run.abort.signal,
+            execAbort.signal,
+            env,
           );
         },
       });
@@ -874,7 +1031,7 @@ export default {
       request.method === "POST"
     ) {
       const runId = url.pathname.split("/")[4];
-      const run = runs.get(runId);
+      const run = (await loadRun(env, runId)) ?? runs.get(runId);
       if (!run) return Response.json({ error: "not found" }, { status: 404 });
       run.cancelled = true;
       run.abort.abort();

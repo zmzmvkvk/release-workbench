@@ -21,6 +21,7 @@ import {
   tryHttpContinue,
   tryHttpStructuring,
 } from "@/lib/http-sse";
+import { sanitizePreviewHtml } from "@/lib/sanitize-preview";
 import scenariosData from "@/data/scenarios.json";
 
 type Scenario = (typeof scenariosData.scenarios)[number];
@@ -33,7 +34,8 @@ function PreviewFrame({ html, label }: { html: string | null; label: string }) {
       </div>
     );
   }
-  const srcDoc = `<!doctype html><html><head><meta charset="utf-8"/><base target="_blank"/><style>body{margin:0;background:#111;color:#eee}</style></head><body>${html}</body></html>`;
+  const { html: safe } = sanitizePreviewHtml(html);
+  const srcDoc = `<!doctype html><html><head><meta charset="utf-8"/><base target="_blank"/><style>body{margin:0;background:#111;color:#eee}</style></head><body>${safe}</body></html>`;
   return (
     <div>
       <p className="mb-1 text-xs text-zinc-500">{label}</p>
@@ -97,7 +99,7 @@ export function WorkbenchApp() {
     }
   }
 
-  function applyToolArgsEdit() {
+  async function applyToolArgsEdit() {
     const run = clientRunRef.current;
     const pending = state.tools.find((t) => t.status === "running");
     if (!pending) {
@@ -121,7 +123,20 @@ export function WorkbenchApp() {
       setBanner(`도구 인자 수정: ${pending.callId}`);
       return;
     }
-    // HTTP path: local UI evidence + timeline event
+    const httpId = httpRunIdRef.current;
+    if (httpId) {
+      // Do not abort execute SSE — Worker play is paused on args gate
+      const mode = await tryHttpContinue({
+        runId: httpId,
+        action: "args_edit",
+        args,
+        onEvent: push,
+      });
+      if (mode !== "none") {
+        setBanner(`도구 인자 수정(HTTP): ${pending.callId}`);
+        return;
+      }
+    }
     push({
       id: `evt_local_args_${Date.now().toString(36)}`,
       runId: state.runId ?? "local",
@@ -133,7 +148,7 @@ export function WorkbenchApp() {
     setBanner(`도구 인자 수정(로컬): ${pending.callId}`);
   }
 
-  function continueWithoutArgsEdit() {
+  async function continueWithoutArgsEdit() {
     const run = clientRunRef.current;
     const pending = state.tools.find((t) => t.status === "running");
     if (!pending) {
@@ -145,7 +160,19 @@ export function WorkbenchApp() {
       setBanner(`인자 확인 후 계속: ${pending.callId}`);
       return;
     }
-    setBanner("HTTP 실행은 서버 스트림이 이어집니다");
+    const httpId = httpRunIdRef.current;
+    if (httpId) {
+      const mode = await tryHttpContinue({
+        runId: httpId,
+        action: "args_continue",
+        onEvent: push,
+      });
+      if (mode !== "none") {
+        setBanner(`인자 확인 후 계속(HTTP): ${pending.callId}`);
+        return;
+      }
+    }
+    setBanner("인자 게이트를 해제할 수 없습니다");
   }
 
   async function startRun() {

@@ -67,6 +67,8 @@ export async function tryHttpStructuring(opts: {
 export async function tryHttpContinue(opts: {
   runId: string;
   action: string;
+  args?: unknown;
+  reason?: string;
   signal?: AbortSignal;
   onEvent: (e: WorkbenchEvent) => void;
 }): Promise<"sse" | "json" | "none"> {
@@ -74,7 +76,11 @@ export async function tryHttpContinue(opts: {
     const res = await fetch(`/workbench/api/runs/${opts.runId}/continue`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: opts.action }),
+      body: JSON.stringify({
+        action: opts.action,
+        ...(opts.args !== undefined ? { args: opts.args } : {}),
+        ...(opts.reason !== undefined ? { reason: opts.reason } : {}),
+      }),
       signal: opts.signal,
     });
     if (!res.ok) return "none";
