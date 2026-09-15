@@ -4,15 +4,15 @@
 
 | # | 산출물 | 상태 | 증거 |
 | --- | --- | --- | --- |
-| 1 | 라이브 서비스 | ✅ | https://roomy.page/workbench |
+| 1 | 라이브 서비스 | ✅ | https://roomy.page/workbench/ |
 | 2 | 공개 GitHub | ✅ | https://github.com/zmzmvkvk/release-workbench |
-| 3 | 60–90초 데모 | ✅ | https://roomy.page/workbench/demo/release-workbench-90s.webm · `docs/DEMO_SCRIPT.md` |
+| 3 | 60–90초 데모 | ✅ | https://roomy.page/workbench/demo/release-workbench-90s.webm · QA fail→gate reject 포함 |
 | 4 | 시스템 아키텍처 | ✅ | `docs/ARCHITECTURE.md` |
 | 5 | 이벤트·상태머신 | ✅ | `docs/PROTOCOL.md` |
-| 6 | 평가 30+ · 결과표 | ✅ | scenarios 32 · `/evals` · mock + Workers AI spot v3 |
+| 6 | 평가 30+ · 결과표 | ✅ | scenarios 32 · `/evals` · mock + Workers AI spot v3 · 실패 매트릭스 |
 | 7 | Playwright · Vitest CI | ✅ | https://github.com/zmzmvkvk/release-workbench/actions |
-| 8 | 실패 사례 보고서 | ✅ | `docs/FAILURE_CASES.md` (E2E 매핑) |
-| 9 | 보안·공개범위 | ✅ | `docs/SECURITY.md` |
+| 8 | 실패 사례 보고서 | ✅ | `docs/FAILURE_CASES.md` · `/evals#failures` 딥링크 |
+| 9 | 보안·공개범위 | ✅ | `docs/SECURITY.md` (trailing-slash URL 주의) |
 | 10 | 케이스스터디 | ✅ | `docs/CASE_STUDY.md` · wiki `concept-case-release-workbench` |
 
 ## 필수 기능
@@ -27,9 +27,10 @@
 | 실패 복구 시연 | ✅ 10종 + E2E |
 | 미리보기 | ✅ sandboxed iframe + **DOMPurify** |
 | 자동 QA | ✅ mock + axe E2E |
-| trace · metrics | ✅ + TTFT/workflow/cancel/a11y/tool-retry |
-| 평가 대시보드 | ✅ `/evals` |
+| trace · metrics | ✅ + TTFT/workflow/cancel latency UI/a11y/tool-retry |
+| 평가 대시보드 | ✅ `/evals` + 실패 매트릭스 딥링크 |
 | KV idempotency | ✅ + run resume across isolates |
+| QA fail → eval | ✅ rw-027 E2E · gate reject → `eval.case_recorded` |
 
 ## 실패 10종
 
