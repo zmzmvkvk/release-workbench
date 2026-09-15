@@ -16,17 +16,17 @@
   },
   "aggregate": {
     "scenarioCount": 35,
-    "fixtureCoverage": 19,
+    "fixtureCoverage": 22,
     "workflowCompletionRate": 1,
     "schemaValidRate": 0.971,
     "conflictRecall": 1,
     "extractionAccuracy": 1,
     "toolSelectionAccuracy": 1,
     "ttftP50Ms": 201,
-    "ttftP95Ms": 202,
+    "ttftP95Ms": 215,
     "cancelLatencyP50Ms": 1,
-    "workflowP50Ms": 2711,
-    "workflowP95Ms": 2712,
+    "workflowP50Ms": 2706,
+    "workflowP95Ms": 2735,
     "reconnectSuccessRate": 1,
     "duplicateSideEffects": 0,
     "a11yDefectDetectionRate": 1,
@@ -39,21 +39,21 @@
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 202
+      "ttftMs": 206
     },
     {
       "scenarioId": "rw-002",
       "fixture": "citation_missing_block",
       "outcome": "approve_blocked",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-003",
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-004",
@@ -67,7 +67,7 @@
       "fixture": "cancel_during_structuring",
       "outcome": "cancelled",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-006",
@@ -115,7 +115,7 @@
       "fixture": "citation_missing_block",
       "outcome": "approve_blocked",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-013",
@@ -123,14 +123,14 @@
       "outcome": "awaiting_gate",
       "schemaValid": true,
       "sanitized": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-014",
       "fixture": "step_limit_exceeded",
       "outcome": "failed",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-015",
@@ -149,10 +149,11 @@
     },
     {
       "scenarioId": "rw-017",
-      "fixture": "happy_card_grid",
-      "outcome": "completed",
+      "fixture": "modal_focus_ambiguity",
+      "outcome": "approve_blocked",
       "schemaValid": true,
-      "ttftMs": 202
+      "conflictDetected": true,
+      "ttftMs": 215
     },
     {
       "scenarioId": "rw-018",
@@ -166,7 +167,7 @@
       "fixture": "happy_phone_mask",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 200
     },
     {
       "scenarioId": "rw-020",
@@ -189,7 +190,7 @@
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 202
+      "ttftMs": 215
     },
     {
       "scenarioId": "rw-023",
@@ -212,14 +213,14 @@
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-026",
       "fixture": "happy_kst_display",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 215
     },
     {
       "scenarioId": "rw-027",
@@ -230,32 +231,32 @@
     },
     {
       "scenarioId": "rw-028",
-      "fixture": "conflict_discount_copy",
+      "fixture": "token_vs_raw_hex",
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-029",
-      "fixture": "happy_card_grid",
+      "fixture": "priority_from_email",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-030",
       "fixture": "qa_playwright_mismatch",
       "outcome": "awaiting_plan_review",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 200
     },
     {
       "scenarioId": "rw-031",
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 200
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-032",
@@ -263,7 +264,7 @@
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-033",
@@ -271,14 +272,14 @@
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-034",
       "fixture": "tool_args_edited",
       "outcome": "executing",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 215
     },
     {
       "scenarioId": "rw-035",

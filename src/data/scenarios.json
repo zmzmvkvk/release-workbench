@@ -430,9 +430,8 @@
         ],
         "requirementCount": 4
       },
-      "fixture": "happy_card_grid",
-      "failureFocus": [],
-      "fixtureAliasFrom": "modal_focus_ambiguity"
+      "fixture": "modal_focus_ambiguity",
+      "failureFocus": []
     },
     {
       "id": "rw-018",
@@ -691,9 +690,8 @@
         ],
         "requirementCount": 2
       },
-      "fixture": "conflict_discount_copy",
-      "failureFocus": [],
-      "fixtureAliasFrom": "token_vs_raw_hex"
+      "fixture": "token_vs_raw_hex",
+      "failureFocus": []
     },
     {
       "id": "rw-029",
@@ -717,9 +715,8 @@
           "nice"
         ]
       },
-      "fixture": "happy_card_grid",
-      "failureFocus": [],
-      "fixtureAliasFrom": "priority_from_email"
+      "fixture": "priority_from_email",
+      "failureFocus": []
     },
     {
       "id": "rw-030",
@@ -744,8 +741,7 @@
       "failureFocus": [
         "gate.rejected",
         "eval.case_recorded"
-      ],
-      "fixtureAliasFrom": "gate_reject_eval_record"
+      ]
     },
     {
       "id": "rw-031",

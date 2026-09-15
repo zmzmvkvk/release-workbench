@@ -35,6 +35,9 @@ const FIXTURE_IDS = new Set<string>([
   "happy_kst_display",
   "chart_a11y",
   "upload_limit_missing",
+  "modal_focus_ambiguity",
+  "priority_from_email",
+  "token_vs_raw_hex",
   "cancel_during_structuring",
   "conflict_discount_copy",
   "invalid_requirements_json",
@@ -56,7 +59,8 @@ function isHappyExecuteFixture(fixture: string) {
     fixture === "happy_table_sort" ||
     fixture === "happy_phone_mask" ||
     fixture === "happy_kst_display" ||
-    fixture === "chart_a11y"
+    fixture === "chart_a11y" ||
+    fixture === "priority_from_email"
   );
 }
 
@@ -219,7 +223,11 @@ async function main() {
       schemaValid += 1;
     }
 
-    if (fixture === "conflict_discount_copy") {
+    if (
+      fixture === "conflict_discount_copy" ||
+      fixture === "modal_focus_ambiguity" ||
+      fixture === "token_vs_raw_hex"
+    ) {
       conflictExpected += 1;
       if (state.conflicts.length > 0 || state.approveBlockedReason?.includes("충돌")) {
         conflictHits += 1;

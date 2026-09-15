@@ -8,6 +8,9 @@ export type FixtureId =
   | "happy_kst_display"
   | "chart_a11y"
   | "upload_limit_missing"
+  | "modal_focus_ambiguity"
+  | "priority_from_email"
+  | "token_vs_raw_hex"
   | "cancel_during_structuring"
   | "conflict_discount_copy"
   | "invalid_requirements_json"
@@ -897,6 +900,296 @@ export function buildFixtureSteps(fixture: FixtureId, scenarioId: string): Step[
           },
         },
       ];
+    case "modal_focus_ambiguity":
+      return [
+        ...baseSteps(scenarioId),
+        {
+          kind: "event",
+          delayMs: 280,
+          partial: {
+            type: "stream.delta",
+            payload: {
+              channel: "structuring",
+              text: "모달 포커스·Esc·배경클릭 모호성 탐지…",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 200,
+          partial: {
+            type: "conflict.detected",
+            payload: {
+              a: "r3",
+              b: "r4",
+              kind: "ambiguity",
+              note: "배경 클릭 닫기 여부 미정",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 350,
+          partial: {
+            type: "requirements.ready",
+            payload: {
+              requirements: [
+                {
+                  id: "r1",
+                  text: "로그인 유도 모달",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "로그인 유도 모달",
+                      sourceIndex: 0,
+                      start: 0,
+                      end: 9,
+                    },
+                  ],
+                },
+                {
+                  id: "r2",
+                  text: "Esc로 닫기",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "Esc로 닫기",
+                      sourceIndex: 0,
+                      start: 11,
+                      end: 18,
+                    },
+                  ],
+                },
+                {
+                  id: "r3",
+                  text: "포커스 트랩(모달 내부)",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "포커스는 모달 안에 가둬야 함",
+                      sourceIndex: 0,
+                      start: 20,
+                      end: 36,
+                    },
+                  ],
+                },
+                {
+                  id: "r4",
+                  text: "배경 클릭 닫기 (미정)",
+                  priority: "should",
+                  citations: [
+                    {
+                      quote: "배경 클릭 닫기 여부는 미정",
+                      sourceIndex: 0,
+                      start: 38,
+                      end: 53,
+                    },
+                  ],
+                },
+              ],
+              conflicts: [
+                {
+                  id: "c1",
+                  kind: "ambiguity",
+                  requirementIds: ["r4"],
+                  note: "배경 클릭 닫기 여부 미정 — 승인 전 명세 필요",
+                },
+              ],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 150,
+          partial: {
+            type: "plan.proposed",
+            payload: { steps: ["모호성 해소", "focus-trap QA", "Esc QA"] },
+          },
+        },
+      ];
+    case "priority_from_email":
+      return [
+        ...baseSteps(scenarioId),
+        {
+          kind: "event",
+          delayMs: 280,
+          partial: {
+            type: "stream.delta",
+            payload: {
+              channel: "structuring",
+              text: "메일 우선순위 must/should/nice 추출…",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 400,
+          partial: {
+            type: "requirements.ready",
+            payload: {
+              requirements: [
+                {
+                  id: "r1",
+                  text: "로딩 스켈레톤",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "필수: 로딩 스켈레톤",
+                      sourceIndex: 0,
+                      start: 3,
+                      end: 15,
+                    },
+                  ],
+                },
+                {
+                  id: "r2",
+                  text: "애니메이션",
+                  priority: "should",
+                  citations: [
+                    {
+                      quote: "가능하면: 애니메이션",
+                      sourceIndex: 0,
+                      start: 18,
+                      end: 30,
+                    },
+                  ],
+                },
+                {
+                  id: "r3",
+                  text: "사운드 효과",
+                  priority: "nice",
+                  citations: [
+                    {
+                      quote: "나중에: 사운드 효과",
+                      sourceIndex: 0,
+                      start: 33,
+                      end: 45,
+                    },
+                  ],
+                },
+                {
+                  id: "r4",
+                  text: "우선순위 라벨을 계획에 명시",
+                  priority: "should",
+                  citations: [
+                    {
+                      quote: "필수",
+                      sourceIndex: 0,
+                      start: 3,
+                      end: 5,
+                    },
+                  ],
+                },
+              ],
+              conflicts: [],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 200,
+          partial: {
+            type: "plan.proposed",
+            payload: { steps: ["스켈레톤", "애니메이션(optional)", "사운드 후순위"] },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 100,
+          partial: {
+            type: "metrics.sample",
+            payload: {
+              ttftMs: 160,
+              tokens: 340,
+              costUsd: null,
+              provider: "mock",
+              model: "deterministic",
+              promptVersion: "none-mock",
+            },
+          },
+        },
+      ];
+    case "token_vs_raw_hex":
+      return [
+        ...baseSteps(scenarioId),
+        {
+          kind: "event",
+          delayMs: 280,
+          partial: {
+            type: "stream.delta",
+            payload: {
+              channel: "structuring",
+              text: "raw hex vs 디자인 토큰 충돌…",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 200,
+          partial: {
+            type: "conflict.detected",
+            payload: {
+              a: "r1",
+              b: "r2",
+              kind: "contradiction",
+              note: "#FF00AA vs primary 토큰만",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 350,
+          partial: {
+            type: "requirements.ready",
+            payload: {
+              requirements: [
+                {
+                  id: "r1",
+                  text: "강조 색 #FF00AA",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "#FF00AA",
+                      sourceIndex: 0,
+                      start: 5,
+                      end: 12,
+                    },
+                  ],
+                },
+                {
+                  id: "r2",
+                  text: "primary 토큰만 허용",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "primary 토큰만 허용",
+                      sourceIndex: 0,
+                      start: 28,
+                      end: 41,
+                    },
+                  ],
+                },
+              ],
+              conflicts: [
+                {
+                  id: "c1",
+                  kind: "contradiction",
+                  requirementIds: ["r1", "r2"],
+                  note: "raw hex vs 디자인 시스템 토큰",
+                },
+              ],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 150,
+          partial: {
+            type: "plan.proposed",
+            payload: { steps: ["충돌 해소", "rule-no-raw-hex QA"] },
+          },
+        },
+      ];
     case "upload_limit_missing":
       return [
         ...baseSteps(scenarioId),
@@ -1180,6 +1473,9 @@ export function scenarioDefaultFixture(scenarioId: string): FixtureId {
     "rw-019": "happy_phone_mask",
     "rw-021": "chart_a11y",
     "rw-022": "upload_limit_missing",
+    "rw-017": "modal_focus_ambiguity",
+    "rw-028": "token_vs_raw_hex",
+    "rw-029": "priority_from_email",
     "rw-026": "happy_kst_display",
     "rw-030": "happy_card_grid",
     "rw-033": "conflict_discount_copy",
