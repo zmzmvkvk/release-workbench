@@ -408,6 +408,19 @@ export function WorkbenchApp() {
   const canReviewPlan = state.status === "awaiting_plan_review";
   const canGate = state.status === "awaiting_gate" || state.gatePending;
   const approveDisabled = Boolean(state.approveBlockedReason);
+  const auditEntries = useMemo(() => {
+    const types = new Set([
+      "plan.approved",
+      "plan.rejected",
+      "tool.args_edited",
+      "gate.approved",
+      "gate.rejected",
+      "eval.case_recorded",
+      "run.cancelled",
+      "run.duplicate_blocked",
+    ]);
+    return state.events.filter((e) => types.has(e.type));
+  }, [state.events]);
 
   return (
     <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-10">
@@ -788,6 +801,23 @@ export function WorkbenchApp() {
           ) : (
             <p className="text-sm text-zinc-500">QA 대기</p>
           )}
+          {auditEntries.length > 0 ? (
+            <div className="mt-3 border-t border-zinc-800 pt-3">
+              <p className="mb-2 text-xs font-medium text-zinc-300">감사 로그 (HITL·게이트)</p>
+              <ul className="max-h-32 space-y-1 overflow-y-auto text-xs text-zinc-400">
+                {auditEntries.map((e) => (
+                  <li key={e.id}>
+                    <span className="text-zinc-500">{e.ts.slice(11, 19)}</span>{" "}
+                    <code className="text-amber-200/80">{e.type}</code>
+                    {e.type === "eval.case_recorded" &&
+                    typeof (e.payload as { caseId?: string })?.caseId === "string"
+                      ? ` · ${(e.payload as { caseId: string }).caseId}`
+                      : ""}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           {state.metrics ? (
             <p className="mt-3 text-xs text-zinc-500">
               TTFT {state.metrics.ttftMs ?? "—"}ms · tokens {state.metrics.tokens ?? "—"} ·
@@ -820,6 +850,7 @@ export function WorkbenchApp() {
                         scenarioId: state.scenarioId,
                         status: state.status,
                         metrics: state.metrics,
+                        audit: auditEntries,
                         traces: state.traces,
                         events: state.events,
                       },

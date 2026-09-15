@@ -31,6 +31,7 @@
 | 평가 대시보드 | ✅ `/evals` + 실패 매트릭스 딥링크 |
 | KV idempotency | ✅ + run resume across isolates |
 | QA fail → eval | ✅ rw-027 E2E · gate reject → `eval.case_recorded` |
+| 감사 로그 UI | ✅ plan/gate/args/eval 결정 이력 + trace JSON |
 
 ## 실패 10종
 
