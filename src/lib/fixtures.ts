@@ -233,9 +233,21 @@ export function buildFixtureSteps(fixture: FixtureId, scenarioId: string): Step[
                 },
                 {
                   id: "r2",
-                  text: "카드에 제목·가격·CTA(상세보기)",
+                  text: "카드에 제목·가격·CTA",
                   priority: "must",
                   citations: [{ quote: "제목, 가격, CTA", sourceIndex: 0, start: 32, end: 45 }],
+                },
+                {
+                  id: "r3",
+                  text: "CTA 문구는 상세보기",
+                  priority: "must",
+                  citations: [{ quote: "상세보기", sourceIndex: 0, start: 46, end: 50 }],
+                },
+                {
+                  id: "r4",
+                  text: "반응형 레이아웃 유지",
+                  priority: "should",
+                  citations: [{ quote: "3열(데스크톱) / 1열(모바일)", sourceIndex: 0, start: 10, end: 30 }],
                 },
               ],
               conflicts: [],

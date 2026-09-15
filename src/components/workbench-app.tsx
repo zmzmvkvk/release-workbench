@@ -322,13 +322,17 @@ export function WorkbenchApp() {
     abortRef.current?.abort();
     const ac = new AbortController();
     abortRef.current = ac;
+    // Reset — prior structuring AbortSignal must not mark execute as cancelled
+    run.cancelled = false;
     setBusy(true);
     try {
       await runExecuteMock({
         run,
         scenarioId: selected.id,
         onEvent: push,
-        signal: ac.signal,
+        // Do not pass AbortSignal into execute: waitArgsEdit resolving on abort
+        // was emitting run.cancelled and breaking happy-path HITL in CI.
+        // Cancel during execute still works via run.cancelled in cancelRun().
       });
     } finally {
       setBusy(false);
