@@ -17,6 +17,7 @@ const evalResults = JSON.parse(
   };
   aggregate: {
     scenarioCount: number;
+    fixtureCoverage?: number;
     extractionAccuracy: number;
     toolSelectionAccuracy: number;
     conflictRecall: number;
@@ -56,6 +57,9 @@ if (aliased.length > 0) {
   failures.push(`fixtureAliasFrom still present on ${aliased.length} scenarios`);
 }
 if (a.scenarioCount < 35) failures.push(`eval scenarioCount ${a.scenarioCount} < 35`);
+if ((a.fixtureCoverage ?? 0) < 20) {
+  failures.push(`fixtureCoverage ${a.fixtureCoverage ?? 0} < 20`);
+}
 if (a.extractionAccuracy < 1) failures.push(`extractionAccuracy ${a.extractionAccuracy} < 1`);
 if (a.toolSelectionAccuracy < 1) {
   failures.push(`toolSelectionAccuracy ${a.toolSelectionAccuracy} < 1`);
@@ -97,6 +101,11 @@ const summary = {
   updated: new Date().toISOString(),
   mock: {
     scenarioCount: a.scenarioCount,
+    fixtureCoverage:
+      typeof (evalResults.aggregate as { fixtureCoverage?: number }).fixtureCoverage ===
+      "number"
+        ? (evalResults.aggregate as { fixtureCoverage: number }).fixtureCoverage
+        : undefined,
     extractionAccuracy: a.extractionAccuracy,
     toolSelectionAccuracy: a.toolSelectionAccuracy,
     conflictRecall: a.conflictRecall,
@@ -116,11 +125,13 @@ const summary = {
   },
   gates: {
     scenarioCountMin: 35,
+    fixtureCoverageMin: 20,
     extractionAccuracyMin: 1,
     toolSelectionAccuracyMin: 1,
     conflictRecallMin: 1,
     schemaValidRateMin: 0.9,
     workersAiSpotSampleMin: 5,
+    fixtureAliasFromMax: 0,
   },
   links: {
     dashboard: "/workbench/evals",

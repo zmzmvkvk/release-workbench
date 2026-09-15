@@ -1,9 +1,10 @@
 {
   "ok": true,
   "source": "bench-gates",
-  "updated": "2026-09-15T18:01:31.033Z",
+  "updated": "2026-09-15T18:06:04.601Z",
   "mock": {
     "scenarioCount": 35,
+    "fixtureCoverage": 26,
     "extractionAccuracy": 1,
     "toolSelectionAccuracy": 1,
     "conflictRecall": 1,
@@ -23,11 +24,13 @@
   },
   "gates": {
     "scenarioCountMin": 35,
+    "fixtureCoverageMin": 20,
     "extractionAccuracyMin": 1,
     "toolSelectionAccuracyMin": 1,
     "conflictRecallMin": 1,
     "schemaValidRateMin": 0.9,
-    "workersAiSpotSampleMin": 5
+    "workersAiSpotSampleMin": 5,
+    "fixtureAliasFromMax": 0
   },
   "links": {
     "dashboard": "/workbench/evals",

@@ -28,7 +28,8 @@ AI가 페이지를 만드는 데모가 아니라, **불완전 출력을 검토·
 ## 공고와 맞추는 점
 
 - 반복 업무 흐름을 UI로 구조화 (계획 → HITL → 도구 → QA → 게이트)
-- SSE 스트리밍 · Worker health(`sse+kv+ai`) · 취소 · 재연결 · 중복 실행 차단
+- SSE 스트리밍 · Worker health(`sse+kv+ai`) · 취소 · 재연결(mock + HTTP snapshot resume) · 중복 실행 차단
+- 시나리오 **35** · 네이티브 fixture **26** (`fixtureAliasFrom` 0, CI gate)
 - 도구 인자 수정 / 수정 없이 계속 (HTTP KV, isolate-safe)
 - 근거(citation) 없으면 승인 차단
 - 실패를 평가 데이터셋에 기록 (`eval.case_recorded`)

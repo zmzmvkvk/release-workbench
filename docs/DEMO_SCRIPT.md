@@ -15,7 +15,7 @@
 | 28–40 | rw-012 근거 없음 | “citation 없으면 계획 승인 자체가 막힙니다.” |
 | 40–50 | rw-005 취소 | “스트리밍 중 취소와 상태 복구.” |
 | 50–58 | rw-011 중복 | “idempotency로 중복 side effect 차단.” |
-| 58–75 | /evals | “합성 35 + extraction/toolSelection/conflict. 표본·모델·프롬프트 공개.” |
+| 58–75 | /evals | “합성 35 · 네이티브 fixture 26 · extraction/toolSelection/conflict. 표본·모델·프롬프트 공개.” |
 | 75–90 | URL | roomy.page/workbench · GitHub release-workbench |
 
 ## 라이브 Workers AI (별도 시연 가능)
