@@ -108,7 +108,13 @@ export type RunState = {
   diffs: FileDiff[];
   preview: { desktopHtml: string | null; mobileHtml: string | null; sanitized: string[] };
   qa: QaReport | null;
-  metrics: { ttftMs?: number; tokens?: number; costUsd?: number; cancelLatencyMs?: number } | null;
+  metrics: {
+    ttftMs?: number;
+    tokens?: number;
+    costUsd?: number;
+    cancelLatencyMs?: number;
+    reconnectOk?: boolean;
+  } | null;
   traces: { name: string; start: number; end: number; attrs?: unknown }[];
   duplicateBlocked: boolean;
   citationMissing: boolean;

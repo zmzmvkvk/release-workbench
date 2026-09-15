@@ -114,7 +114,13 @@ export function WorkbenchApp() {
       }
     }
     setState((s) => applyEvent(s, next));
-    if (next.type === "stream.reconnect") setBanner("연결 재개됨 (seq 연속)");
+    if (next.type === "stream.reconnect") {
+      setBanner("연결 재개됨 (seq 연속)");
+      setState((s) => ({
+        ...s,
+        metrics: { ...(s.metrics ?? {}), reconnectOk: true },
+      }));
+    }
     if (next.type === "run.duplicate_blocked") {
       setBanner("동일 idempotencyKey 실행이 이미 진행 중");
     }
@@ -786,6 +792,7 @@ export function WorkbenchApp() {
               {state.metrics.cancelLatencyMs != null
                 ? ` · cancel ${state.metrics.cancelLatencyMs}ms`
                 : ""}
+              {state.metrics.reconnectOk ? " · reconnect ok" : ""}
             </p>
           ) : null}
           {state.traces.length > 0 ? (
