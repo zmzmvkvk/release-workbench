@@ -16,7 +16,7 @@ Operating FE experience alone was weak AX hiring evidence. Internal AI automatio
 
 ## Approach
 
-Ship a **public work system**: request → structure with citations → HITL approve/edit/reject → tools/diff/preview/QA → gate. Same event protocol for client mock, Worker SSE mock, and Workers AI. Live HTTP execute pauses on first `tool.started` until `args_continue`/`args_edit` (KV across isolates). Preview uses DOMPurify + sandboxed iframe.
+Ship a **public work system**: request → structure with citations → HITL approve/edit/reject → tools/diff/preview/QA → gate. Same event protocol for client mock, Worker SSE mock, and Workers AI. Live HTTP execute pauses on first `tool.started` until `args_continue`/`args_edit` (KV across isolates). Preview uses DOMPurify + sandboxed iframe. Gate reject writes `eval.case_recorded` into the public failure→eval loop.
 
 ## Evidence (verified)
 
@@ -25,11 +25,11 @@ Ship a **public work system**: request → structure with citations → HITL app
 | Live app + HTTP SSE | yes (`roomy.page` same-origin) |
 | HTTP HITL args gate | yes (KV resume + `waitUntil` persist) |
 | 32 synthetic scenarios | yes |
-| Failure demos (10) + E2E | yes |
+| Failure demos (10+) + E2E | yes (incl. QA fail → gate reject → eval) |
 | Playwright / Vitest / axe CI | yes (public Actions) |
-| Mock bench n=32 + Workers AI spot | yes (separate tables) |
+| Mock bench n=32 + Workers AI spot | yes (extraction/toolSelection/conflict = 1) |
 | Architecture / protocol / security / failures | yes (`docs/`) |
-| 60–90s demo | yes (refreshed with live HITL args edit) |
+| 60–90s demo | yes (includes QA fail + eval record) |
 
 ## Numbers (honest)
 

@@ -3,20 +3,20 @@
 녹화 대상: https://roomy.page/workbench  
 (대체) https://roomy-page-workbench.hommy.workers.dev/workbench  
 
-성공만 찍지 말고 **실패 한 컷**을 넣는다. 현재 산출물: `public/demo/release-workbench-90s.webm`
+성공만 찍지 말고 **실패·거절·평가 기록**을 넣는다. 산출물: `public/demo/release-workbench-90s.webm`
 
 ## 타임라인
 
 | 초 | 화면 | 말할 것 |
 | --- | --- | --- |
-| 0–8 | 히어로 + 시나리오 목록 | “내부업무 AX용 릴리즈 워크벤치. AI 생성이 아니라 검토·검증·게이트.” |
-| 8–18 | rw-004 → 실행 (mock SSE) | “요구사항 구조화와 원문 근거. HTTP SSE로 상태가 흐릅니다.” |
-| 18–32 | 계획 승인 → **수정 없이 계속**(또는 인자 JSON 수정) → diff · preview · QA | “승인 후 패치·미리보기·자동 QA. HTTP 경로도 첫 도구에서 HITL 게이트(KV).” |
-| 32–42 | 게이트 승인 | “사람이 최종 릴리즈를 결정합니다.” |
-| 42–58 | rw-012 또는 rw-005 / rw-011 / rw-013 | “근거 없으면 승인 불가 / 취소 / 중복 차단 / DOMPurify+sandbox.” |
-| 58–72 | Workers AI 토글(선택 1컷) | “같은 프로토콜로 Workers AI 구조화도 됩니다. 스키마 깨지면 폴백·HITL.” |
-| 72–85 | /evals | “합성 32 + Workers AI spot. 표본·모델·프롬프트·TTFT를 같이 공개.” |
-| 85–90 | URL | roomy.page/workbench · GitHub release-workbench |
+| 0–6 | 히어로 + 시나리오 | “내부업무 AX용 릴리즈 워크벤치. 생성보다 검토·검증·게이트.” |
+| 6–16 | rw-004 → 구조화 → 계획 승인 → 인자 HITL → QA → 게이트 승인 | “근거 있는 요구 → 사람이 승인 → 패치·미리보기·자동 QA → 릴리즈.” |
+| 16–28 | rw-027 QA 실패 → **게이트 거절** → eval 기록 | “QA가 깨지면 거절하고 실패 사례를 평가 데이터셋에 남깁니다.” |
+| 28–40 | rw-012 근거 없음 | “citation 없으면 계획 승인 자체가 막힙니다.” |
+| 40–50 | rw-005 취소 | “스트리밍 중 취소와 상태 복구.” |
+| 50–58 | rw-011 중복 | “idempotency로 중복 side effect 차단.” |
+| 58–75 | /evals | “합성 32 + extraction/toolSelection/conflict. 표본·모델·프롬프트 공개.” |
+| 75–90 | URL | roomy.page/workbench · GitHub release-workbench |
 
 ## 찍지 말 것
 
@@ -25,6 +25,9 @@
 - “ChatGPT로 만들었습니다” 멘트
 
 ## 재녹화 명령
+
+`demo-record.spec.ts`는 CI와 동일하게 `?mock=1`로 녹화한다 (HITL·QA 실패·거절이 deterministic).
+라이브 Workers AI UI는 동일 URL에서 토글 가능.
 
 ```bash
 pnpm demo:record

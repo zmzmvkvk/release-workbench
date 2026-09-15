@@ -1055,7 +1055,12 @@ export default {
     }
 
     if (url.pathname === "/" || url.pathname === "") {
-      return Response.redirect(new URL("/workbench", url.origin), 302);
+      return Response.redirect(new URL("/workbench/", url.origin), 302);
+    }
+
+    // Trailing slash + drop search for ASSETS (query like ?mock=1 can 522 on custom domain)
+    if (url.pathname === "/workbench") {
+      return Response.redirect(new URL(`/workbench/${url.search}`, url.origin), 302);
     }
 
     if (url.pathname.startsWith("/workbench")) {
@@ -1063,6 +1068,7 @@ export default {
       url.pathname = rest === "" ? "/" : rest;
     }
 
-    return env.ASSETS.fetch(url);
+    const assetReq = new Request(new URL(url.pathname, url.origin), request);
+    return env.ASSETS.fetch(assetReq);
   },
 };

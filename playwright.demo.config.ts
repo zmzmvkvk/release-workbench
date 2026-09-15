@@ -11,9 +11,12 @@ export default defineConfig({
   workers: 1,
   timeout: 120_000,
   use: {
+    // Prefer workers.dev — roomy.page custom domain can 522 on bare /workbench?query
     baseURL:
-      process.env.DEMO_BASE_URL ??
-      "https://roomy-page-workbench.hommy.workers.dev",
+      process.env.DEMO_BASE_URL &&
+      !process.env.DEMO_BASE_URL.includes("roomy.page")
+        ? process.env.DEMO_BASE_URL
+        : "https://roomy-page-workbench.hommy.workers.dev",
     trace: "off",
     video: { mode: "on", size: { width: 1280, height: 720 } },
     viewport: { width: 1280, height: 720 },
