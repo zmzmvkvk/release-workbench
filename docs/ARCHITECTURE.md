@@ -47,7 +47,8 @@ Canonical types live in `src/lib/protocol.ts` + wiki `concept-workbench-protocol
 
 `idle → structuring → awaiting_plan_review → executing → awaiting_gate → completed|failed|cancelled`
 
-HITL: `plan.rejected`, `tool.args_edited`, `gate.rejected`, cancel, duplicate block
+HITL: `plan.rejected`, `tool.args_edited` / `args_continue` (HTTP KV gate after first `tool.started`), `gate.rejected`, cancel, duplicate block
+KV: `idem:*` duplicate · `run:*` resume after SSE disconnect (`waitUntil`) · `args:*` cross-isolate tool gate
 
 ## Data
 
