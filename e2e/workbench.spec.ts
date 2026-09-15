@@ -48,6 +48,7 @@ test("cancel during structuring reaches cancelled", async ({ page }) => {
   await expect(page.getByText("status:")).toContainText("structuring", { timeout: 10_000 });
   await page.getByRole("button", { name: "취소", exact: true }).click();
   await expect(page.getByText("status:")).toContainText("cancelled", { timeout: 10_000 });
+  await expect(page.getByText(/cancel \d+ms/)).toBeVisible({ timeout: 5_000 });
 });
 
 test("duplicate blocked fixture shows banner", async ({ page }) => {

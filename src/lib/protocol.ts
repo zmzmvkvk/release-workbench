@@ -108,7 +108,7 @@ export type RunState = {
   diffs: FileDiff[];
   preview: { desktopHtml: string | null; mobileHtml: string | null; sanitized: string[] };
   qa: QaReport | null;
-  metrics: { ttftMs?: number; tokens?: number; costUsd?: number } | null;
+  metrics: { ttftMs?: number; tokens?: number; costUsd?: number; cancelLatencyMs?: number } | null;
   traces: { name: string; start: number; end: number; attrs?: unknown }[];
   duplicateBlocked: boolean;
   citationMissing: boolean;
@@ -385,17 +385,34 @@ export function applyEvent(state: RunState, raw: unknown): RunState {
       };
     case "gate.edit_requested":
       return { ...next, status: "executing", gatePending: false };
-    case "run.cancelled":
-      return { ...next, status: "cancelled", gatePending: false };
+    case "run.cancelled": {
+      const cancelLatencyMs =
+        typeof payload.cancelLatencyMs === "number"
+          ? payload.cancelLatencyMs
+          : undefined;
+      return {
+        ...next,
+        status: "cancelled",
+        gatePending: false,
+        metrics: cancelLatencyMs != null
+          ? { ...(next.metrics ?? {}), cancelLatencyMs }
+          : next.metrics,
+      };
+    }
     case "run.duplicate_blocked":
       return { ...next, duplicateBlocked: true };
     case "metrics.sample":
       return {
         ...next,
         metrics: {
-          ttftMs: typeof payload.ttftMs === "number" ? payload.ttftMs : undefined,
-          tokens: typeof payload.tokens === "number" ? payload.tokens : undefined,
-          costUsd: typeof payload.costUsd === "number" ? payload.costUsd : undefined,
+          ttftMs: typeof payload.ttftMs === "number" ? payload.ttftMs : next.metrics?.ttftMs,
+          tokens: typeof payload.tokens === "number" ? payload.tokens : next.metrics?.tokens,
+          costUsd:
+            typeof payload.costUsd === "number" ? payload.costUsd : next.metrics?.costUsd,
+          cancelLatencyMs:
+            typeof payload.cancelLatencyMs === "number"
+              ? payload.cancelLatencyMs
+              : next.metrics?.cancelLatencyMs,
         },
       };
     case "trace.span":

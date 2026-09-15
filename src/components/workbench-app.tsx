@@ -66,6 +66,7 @@ export function WorkbenchApp() {
   const abortRef = useRef<AbortController | null>(null);
   const clientRunRef = useRef<ClientRun | null>(null);
   const httpRunIdRef = useRef<string | null>(null);
+  const runStartedPerfRef = useRef<number | null>(null);
   const [transport, setTransport] = useState<"http-sse" | "client-mock">("client-mock");
   const [llmMode, setLlmMode] = useState<"mock" | "workers-ai">("mock");
   const [toolArgsDraft, setToolArgsDraft] = useState("");
@@ -98,13 +99,26 @@ export function WorkbenchApp() {
   }, [scenarios]);
 
   function push(event: WorkbenchEvent) {
-    setState((s) => applyEvent(s, event));
-    if (event.type === "stream.reconnect") setBanner("연결 재개됨 (seq 연속)");
-    if (event.type === "run.duplicate_blocked") {
+    let next = event;
+    if (event.type === "run.cancelled" && runStartedPerfRef.current != null) {
+      const cancelLatencyMs = Math.round(
+        performance.now() - runStartedPerfRef.current,
+      );
+      const payload = (event.payload ?? {}) as Record<string, unknown>;
+      if (payload.cancelLatencyMs == null) {
+        next = {
+          ...event,
+          payload: { ...payload, cancelLatencyMs },
+        };
+      }
+    }
+    setState((s) => applyEvent(s, next));
+    if (next.type === "stream.reconnect") setBanner("연결 재개됨 (seq 연속)");
+    if (next.type === "run.duplicate_blocked") {
       setBanner("동일 idempotencyKey 실행이 이미 진행 중");
     }
-    if (event.type === "tool.started") {
-      const payload = event.payload as { args?: unknown };
+    if (next.type === "tool.started") {
+      const payload = next.payload as { args?: unknown };
       try {
         setToolArgsDraft(JSON.stringify(payload.args ?? {}, null, 2));
       } catch {
@@ -198,6 +212,7 @@ export function WorkbenchApp() {
     setState(initialRunState());
     setBanner(null);
     setBusy(true);
+    runStartedPerfRef.current = performance.now();
     try {
       const forceMock =
         typeof window !== "undefined" &&
@@ -243,11 +258,21 @@ export function WorkbenchApp() {
   }
 
   async function cancelRun() {
+    const cancelLatencyMs =
+      runStartedPerfRef.current != null
+        ? Math.round(performance.now() - runStartedPerfRef.current)
+        : undefined;
     const httpId = httpRunIdRef.current;
     if (httpId) {
       const event = await tryHttpCancel(httpId);
       if (event) {
-        push(event);
+        push({
+          ...event,
+          payload: {
+            ...((event.payload as Record<string, unknown>) ?? {}),
+            ...(cancelLatencyMs != null ? { cancelLatencyMs } : {}),
+          },
+        });
         return;
       }
     }
@@ -271,7 +296,10 @@ export function WorkbenchApp() {
         seq: run.seq++,
         ts: new Date().toISOString(),
         type: "run.cancelled",
-        payload: { reason: "user_cancelled" },
+        payload: {
+          reason: "user_cancelled",
+          ...(cancelLatencyMs != null ? { cancelLatencyMs } : {}),
+        },
       });
     });
   }
@@ -739,6 +767,9 @@ export function WorkbenchApp() {
             <p className="mt-3 text-xs text-zinc-500">
               TTFT {state.metrics.ttftMs ?? "—"}ms · tokens {state.metrics.tokens ?? "—"} ·
               cost ${state.metrics.costUsd ?? 0}
+              {state.metrics.cancelLatencyMs != null
+                ? ` · cancel ${state.metrics.cancelLatencyMs}ms`
+                : ""}
             </p>
           ) : null}
           {state.traces.length > 0 ? (
