@@ -110,6 +110,7 @@ test("stream reconnect banner on rw-006", async ({ page }) => {
   await page.getByRole("button", { name: /rw-006/ }).click();
   await page.getByRole("button", { name: "실행 시작" }).click();
   await expect(page.getByText("연결 재개됨 (seq 연속)")).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText(/reconnect ok/)).toBeVisible({ timeout: 5_000 });
 });
 
 test("step limit fixture reaches failed", async ({ page }) => {
