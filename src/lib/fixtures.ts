@@ -597,6 +597,9 @@ export function scenarioDefaultFixture(scenarioId: string): FixtureId {
     "rw-014": "step_limit_exceeded",
     "rw-027": "qa_playwright_mismatch",
     "rw-030": "happy_card_grid",
+    "rw-033": "conflict_discount_copy",
+    "rw-034": "tool_args_edited",
+    "rw-035": "duplicate_blocked",
   };
   return map[scenarioId] ?? "happy_card_grid";
 }

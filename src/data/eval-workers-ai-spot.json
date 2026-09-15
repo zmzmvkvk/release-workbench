@@ -1,14 +1,14 @@
 {
   "meta": {
     "title": "Workers AI spot check",
-    "updated": "2026-09-15T16:11:23.586Z",
+    "updated": "2026-09-15T17:01:39.047Z",
     "model": "@cf/meta/llama-3.2-3b-instruct",
     "promptVersion": "workers-ai-struct-v3",
     "runsPerCase": 1,
     "sampleSize": 5,
     "endpoint": "https://roomy-page-workbench.hommy.workers.dev/workbench/api/runs/stream",
     "notes": [
-      "소량 스팟. mock 벤치 n=32와 합산하지 않음.",
+      "소량 스팟. mock 벤치 n=35와 합산하지 않음.",
       "v3: citations must be SOURCE substrings; sanitizeRequirement repairs invented quotes.",
       "ttftMs = AI.run wall time (non-stream).",
       "tokens: usage.total_tokens 파싱 (5/5건). costUsd는 provider 미제공 → null.",
@@ -21,47 +21,47 @@
     "schemaInvalidObserved": 0,
     "fallbackRate": 0,
     "sourceQuoteRate": 1,
-    "ttftP50Ms": 473,
-    "ttftP95Ms": 622,
-    "totalP50Ms": 473,
-    "totalP95Ms": 622,
-    "tokensP50": 236,
+    "ttftP50Ms": 461,
+    "ttftP95Ms": 636,
+    "totalP50Ms": 461,
+    "totalP95Ms": 636,
+    "tokensP50": 232,
     "costUsdPerRequest": null
   },
   "cases": [
     {
       "scenarioId": "rw-001",
       "requirementsReady": true,
-      "ttftMs": 554,
+      "ttftMs": 473,
       "tokens": 252,
       "sourceQuote": true
     },
     {
       "scenarioId": "rw-004",
       "requirementsReady": true,
-      "ttftMs": 622,
+      "ttftMs": 636,
       "tokens": 232,
       "sourceQuote": true
     },
     {
       "scenarioId": "rw-007",
       "requirementsReady": true,
-      "ttftMs": 342,
+      "ttftMs": 289,
       "tokens": 226,
       "sourceQuote": true
     },
     {
       "scenarioId": "rw-012",
       "requirementsReady": true,
-      "ttftMs": 473,
-      "tokens": 248,
+      "ttftMs": 438,
+      "tokens": 254,
       "sourceQuote": true
     },
     {
       "scenarioId": "rw-002",
       "requirementsReady": true,
-      "ttftMs": 459,
-      "tokens": 236,
+      "ttftMs": 461,
+      "tokens": 232,
       "sourceQuote": true
     }
   ]

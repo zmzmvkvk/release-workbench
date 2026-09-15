@@ -637,7 +637,23 @@ export function WorkbenchApp() {
         </button>
         <span className="text-xs text-zinc-500">
           status: <span className="text-zinc-200">{state.status}</span>
-          {state.runId ? ` · ${state.runId}` : ""}
+          {state.runId ? (
+            <>
+              {" · "}
+              {transport === "http-sse" ? (
+                <a
+                  href={`/workbench/api/runs/${state.runId}`}
+                  className="text-emerald-400 hover:underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {state.runId}
+                </a>
+              ) : (
+                state.runId
+              )}
+            </>
+          ) : null}
         </span>
       </div>
 

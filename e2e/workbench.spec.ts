@@ -29,6 +29,23 @@ test("happy path: structure → approve → gate", async ({ page }) => {
   await expect(page.getByText("status:")).toContainText("completed", { timeout: 15_000 });
 });
 
+test("http-sse run id links to snapshot when worker available", async ({ page }) => {
+  await page.goto("/workbench/");
+  await page.getByRole("button", { name: /rw-004/ }).click();
+  await page.getByRole("button", { name: "실행 시작" }).click();
+  await expect(page.getByText("status:")).toContainText("awaiting_plan_review", {
+    timeout: 25_000,
+  });
+  const snap = page.getByRole("link", { name: /^run_/ });
+  // Worker up → http-sse link; otherwise mock shows plain text (no link).
+  const transport = page.getByText(/transport http-sse|transport client-mock/);
+  await expect(transport).toBeVisible({ timeout: 10_000 });
+  if (await page.getByText("transport http-sse").isVisible().catch(() => false)) {
+    await expect(snap).toBeVisible();
+    await expect(snap).toHaveAttribute("href", /\/workbench\/api\/runs\/run_/);
+  }
+});
+
 test("citation missing blocks plan approve", async ({ page }) => {
   await page.goto(WB);
   await page.getByRole("button", { name: /rw-012/ }).click();

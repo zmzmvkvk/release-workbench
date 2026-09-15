@@ -9,7 +9,7 @@
 | 3 | 60–90초 데모 | ✅ | https://roomy.page/workbench/demo/release-workbench-90s.webm · ≈66s · QA fail→gate reject |
 | 4 | 시스템 아키텍처 | ✅ | `docs/ARCHITECTURE.md` |
 | 5 | 이벤트·상태머신 | ✅ | `docs/PROTOCOL.md` |
-| 6 | 평가 30+ · 결과표 | ✅ | scenarios 32 · `/evals` · mock + Workers AI spot v3 · 실패 매트릭스 |
+| 6 | 평가 30+ · 결과표 | ✅ | scenarios **35** · `/evals` · mock + Workers AI spot v3 · 실패 매트릭스 |
 | 7 | Playwright · Vitest CI | ✅ | Actions · prod health + Workers AI SSE + hybrid patch-plan smoke |
 | 8 | 실패 사례 보고서 | ✅ | `docs/FAILURE_CASES.md` · `/evals#failures` 딥링크 |
 | 9 | 보안·공개범위 | ✅ | `docs/SECURITY.md` (trailing-slash URL 주의) |
@@ -32,6 +32,7 @@
 | 평가 대시보드 | ✅ `/evals` + 실패 매트릭스 딥링크 |
 | KV idempotency | ✅ + run resume across isolates |
 | Stream concurrency | ✅ per-isolate max 8 → 429 · health `maxActiveStreams` |
+| Run snapshot 링크 | ✅ http-sse `runId` → `GET /api/runs/:id` |
 | QA fail → eval | ✅ rw-027 E2E · gate reject → `eval.case_recorded` |
 | costUsd 정직성 | ✅ provider 미제공 → `null` / UI `— (미계측)` · mock도 `$0` 미표기 |
 | promptVersion UI | ✅ metrics strip · Workers AI `workers-ai-struct-v3` |

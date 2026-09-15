@@ -3,7 +3,7 @@
     "title": "Release Workbench synthetic scenarios",
     "version": "0.1.0",
     "updated": "2026-09-15",
-    "count": 32,
+    "count": 35,
     "domain": "교육·유통 운영 UI / 내부 업무 AX 클린룸",
     "notes": [
       "회사 데이터·사내 화면 없음. 전부 합성.",
@@ -794,6 +794,68 @@
       },
       "fixture": "full_path_conflict_hitl_qa",
       "failureFocus": []
+    },
+    {
+      "id": "rw-033",
+      "title": "법무 vs 디자인: 배지 색·할인 표기 충돌",
+      "tags": ["conflict", "legal", "design"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "design",
+          "text": "프로모 배지를 빨강으로. 문구는 '오늘만 40%'."
+        },
+        {
+          "kind": "email",
+          "text": "컴플라이언스: 할인율 숫자 표기 금지. 배지는 브랜드 블루만 허용."
+        }
+      ],
+      "expected": {
+        "requirementCount": 2,
+        "conflicts": ["contradiction"]
+      },
+      "fixture": "conflict_discount_copy",
+      "failureFocus": []
+    },
+    {
+      "id": "rw-034",
+      "title": "도구 인자 수정 후 동일 작업 재개",
+      "tags": ["hitl", "args", "failure"],
+      "difficulty": "medium",
+      "sources": [
+        {
+          "kind": "brief",
+          "text": "카드 그리드 desktop 3 / mobile 1. CTA는 '자세히 보기'로."
+        }
+      ],
+      "expected": {
+        "requirementCount": 1,
+        "demo": "args_edit_then_continue"
+      },
+      "fixture": "tool_args_edited",
+      "failureFocus": ["tool.args_edited"]
+    },
+    {
+      "id": "rw-035",
+      "title": "동시 스트림 과부하(API 429) 대응",
+      "tags": ["ops", "failure", "concurrency"],
+      "difficulty": "hard",
+      "sources": [
+        {
+          "kind": "brief",
+          "text": "동일 isolate에서 동시 SSE가 한도를 넘으면 429와 Retry-After를 받는다. 앱은 재시도 UX를 보여야 한다."
+        }
+      ],
+      "expected": {
+        "requirementCount": 1,
+        "demo": "max_active_streams_429",
+        "apiSignal": "HTTP 429 too_many_streams"
+      },
+      "fixture": "duplicate_blocked",
+      "failureFocus": ["run.duplicate_blocked"],
+      "notes": [
+        "이벤트 프로토콜 실패가 아니라 Worker health.maxActiveStreams=8 과부하 가드. 중복 차단 fixture로 관련 side-effect 통제를 함께 시연."
+      ]
     }
   ],
   "coverage": {

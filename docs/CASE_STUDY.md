@@ -28,11 +28,12 @@ Ship a **public work system**: request → structure with citations → HITL app
 | Protocol catalog API | yes (`GET /workbench/api/protocol`) |
 | Workers AI structure + patch tool | yes (struct-v3 + `propose_patch_plan` patch-v1 on execute) |
 | HTTP HITL args gate | yes (KV resume + `waitUntil` persist) |
-| 32 synthetic scenarios | yes |
+| Synthetic scenarios | yes (**35**) |
 | Failure demos (10+) + E2E | yes (incl. QA fail → gate reject → eval) |
 | Playwright / Vitest / axe CI | yes (public Actions) |
-| Prod health + Workers AI SSE smoke | yes (CI `prod-smoke` on push to main) |
-| Mock bench n=32 + Workers AI spot | yes (extraction/toolSelection/conflict = 1) |
+| Prod health + Workers AI SSE + hybrid smoke | yes (CI `prod-smoke` on push to main) |
+| Mock bench n=35 + Workers AI spot | yes (extraction/toolSelection/conflict = 1; tokens p50≈232) |
+| Run snapshot API | yes (`GET /workbench/api/runs/:id` · UI link on http-sse) |
 | Architecture / protocol / security / failures | yes (`docs/`) |
 | 60–90s demo | yes (includes QA fail + eval record) |
 | Metrics honesty | yes (`promptVersion` in UI; costUsd null when unmetered) |
@@ -40,7 +41,7 @@ Ship a **public work system**: request → structure with citations → HITL app
 ## Numbers (honest)
 
 - Mock TTFT ≈ fixture delay (~200ms) — not a real LLM.
-- Workers AI spot (prompt `workers-ai-struct-v3`, n=5): TTFT p50≈473ms, tokens p50≈236, source-bound citations; **costUsd null** (provider 미제공, 추정 안 함).
+- Workers AI spot (prompt `workers-ai-struct-v3`, n=5): TTFT p50≈461ms, tokens p50≈232, source-bound citations; **costUsd null** (provider 미제공, 추정 안 함).
 - No company productivity percentages.
 
 ## Internal automation (second case)

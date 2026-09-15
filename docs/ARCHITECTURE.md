@@ -61,7 +61,7 @@ KV: `idem:*` duplicate · `run:*` resume after SSE disconnect (`waitUntil`) · `
 
 | Asset | Path |
 | --- | --- |
-| Scenarios (32) | `src/data/scenarios.json` |
+| Scenarios (35) | `src/data/scenarios.json` |
 | Mock bench results | `src/data/eval-results.json` |
 | Workers AI spot | `src/data/eval-workers-ai-spot.json` |
 | Structuring fixtures | `src/lib/fixtures.ts` |

@@ -9,13 +9,14 @@
 | rw-007 | invalid_requirements_json | `requirements.invalid` → `failed` | E2E |
 | rw-008 | tool_retry_once | `tool.failed` → `tool.retried` | E2E |
 | rw-009 | plan_reject_darkmode | `plan.rejected` / `rejected_at_plan` | E2E |
-| rw-010 | tool_args_edited | `tool.args_edited` + HITL UI | E2E (rw-004 경로) |
-| rw-011 | duplicate_blocked | `run.duplicate_blocked` | E2E + Worker KV |
+| rw-010 | tool_args_edited | `tool.args_edited` + HITL UI | E2E (rw-004·rw-034) |
+| rw-011 | duplicate_blocked | `run.duplicate_blocked` | E2E + Worker KV · rw-035 |
 | rw-012 | citation_missing_block | 승인 버튼 비활성 | E2E |
 | rw-013 | preview_xss_sanitized | sanitized note + sandbox iframe + DOMPurify | E2E |
 | rw-014 | step_limit_exceeded | `run.step_limit` → `failed` | E2E |
 | rw-027 | qa_playwright_mismatch | QA 실패 + 수정 제안 | E2E |
-| rw-001 | conflict_discount_copy | 충돌 → 승인 차단 | fixture + bench |
+| rw-001 | conflict_discount_copy | 충돌 → 승인 차단 | fixture + bench · rw-033 |
+| API | maxActiveStreams | HTTP 429 `too_many_streams` | health + CI |
 | gate reject | (rw-027 등) | `gate.rejected` + `eval.case_recorded` | E2E |
 
 정상 경로: rw-004 → 계획 승인 → (**수정 없이 계속** 또는 인자 수정) → execute → QA → 게이트 승인.
