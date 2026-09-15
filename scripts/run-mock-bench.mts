@@ -150,6 +150,8 @@ async function main() {
   let dupSideEffects = 0;
   let a11yDetectHits = 0;
   let a11yDetectExpected = 0;
+  let toolRetryHits = 0;
+  let toolRetryExpected = 0;
 
   for (const s of scenariosData.scenarios) {
     const fixture = (FIXTURE_IDS.has(s.fixture)
@@ -205,6 +207,14 @@ async function main() {
       }
     }
 
+    if (fixture === "tool_retry_once") {
+      toolRetryExpected += 1;
+      const failed = state.events.some((e) => e.type === "tool.failed");
+      const retried = state.events.some((e) => e.type === "tool.retried");
+      const finished = state.events.some((e) => e.type === "tool.finished");
+      if (failed && retried && finished) toolRetryHits += 1;
+    }
+
     cases.push({
       scenarioId: s.id,
       fixture,
@@ -256,6 +266,7 @@ async function main() {
       reconnectSuccessRate: pct(reconnectOk, reconnectN),
       duplicateSideEffects: dupSideEffects,
       a11yDefectDetectionRate: pct(a11yDetectHits, a11yDetectExpected),
+      toolRetrySuccessRate: pct(toolRetryHits, toolRetryExpected),
     },
     cases,
   };

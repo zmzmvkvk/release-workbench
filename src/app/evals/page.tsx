@@ -65,6 +65,14 @@ export default function EvalsPage() {
               : null,
           )}
         />
+        <Stat
+          label="도구 재시도 성공률"
+          value={fmt(
+            "toolRetrySuccessRate" in aggregate
+              ? (aggregate.toolRetrySuccessRate as number | null)
+              : null,
+          )}
+        />
       </section>
 
       <section className="mt-10 rounded-xl border border-sky-900/50 bg-sky-950/20 p-4">

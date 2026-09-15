@@ -469,10 +469,14 @@ async function playWorkersAiStructuring(run, env, controller, signal, sourceText
     text: "Workers AI로 요구사항 구조화…",
   });
 
-  const prompt = `Extract at most 2 requirements from the source. JSON only, no markdown.
+  const prompt = `Extract at most 2 requirements from the SOURCE text only. JSON only, no markdown.
+Rules:
+- citations.quote MUST be a contiguous substring copied from SOURCE (not invented).
+- priority is "must" or "should".
+- If two SOURCE lines contradict, put a conflicts entry.
 Schema:
-{"requirements":[{"id":"r1","text":"short","priority":"must","citations":[{"quote":"from source","sourceIndex":0,"start":0,"end":4}]}],"conflicts":[]}
-Source:
+{"requirements":[{"id":"r1","text":"...","priority":"must","citations":[{"quote":"exact from source","sourceIndex":0,"start":0,"end":5}]}],"conflicts":[]}
+SOURCE:
 ${(sourceText || "card grid desktop 3 mobile 1 CTA detail").slice(0, 800)}`;
 
   let raw = "";
@@ -481,12 +485,13 @@ ${(sourceText || "card grid desktop 3 mobile 1 CTA detail").slice(0, 800)}`;
       messages: [
         {
           role: "system",
-          content: "You are a JSON API. Output one minified JSON object. Stop after the closing brace.",
+          content:
+            "You are a JSON API. Output one minified JSON object only. Quotes in citations must be copied from SOURCE. Stop after the closing brace.",
         },
         { role: "user", content: prompt },
       ],
-      max_tokens: 400,
-      temperature: 0.2,
+      max_tokens: 350,
+      temperature: 0.1,
     });
     ttftMs = Date.now() - t0;
     raw =
@@ -596,7 +601,7 @@ ${(sourceText || "card grid desktop 3 mobile 1 CTA detail").slice(0, 800)}`;
   }
 
   push("requirements.ready", {
-    requirements: parsed.requirements,
+    requirements: parsed.requirements.map((r) => sanitizeRequirement(r, sourceText)),
     conflicts: Array.isArray(parsed.conflicts) ? parsed.conflicts : [],
     fallback: usedFallback || parsed.fallback || null,
   });
@@ -617,9 +622,49 @@ ${(sourceText || "card grid desktop 3 mobile 1 CTA detail").slice(0, 800)}`;
     costUsd: null,
     provider: "workers-ai",
     model: "@cf/meta/llama-3.2-3b-instruct",
-    promptVersion: "workers-ai-struct-v2",
+    promptVersion: "workers-ai-struct-v3",
   });
   controller.close();
+}
+
+/** Force citation quotes to be substrings of source when model invents them. */
+function sanitizeRequirement(req, sourceText) {
+  const src = sourceText || "";
+  const text = String(req?.text ?? "").slice(0, 200);
+  let citations = Array.isArray(req?.citations) ? req.citations : [];
+  citations = citations.map((c) => {
+    const quote = String(c?.quote ?? "");
+    if (quote && src.includes(quote)) {
+      const start = src.indexOf(quote);
+      return { ...c, quote, sourceIndex: 0, start, end: start + quote.length };
+    }
+    const fallbackQuote = src.slice(0, Math.min(24, src.length));
+    return {
+      quote: fallbackQuote,
+      sourceIndex: 0,
+      start: 0,
+      end: fallbackQuote.length,
+      repaired: true,
+    };
+  });
+  if (citations.length === 0 && src) {
+    const fallbackQuote = src.slice(0, Math.min(24, src.length));
+    citations = [
+      {
+        quote: fallbackQuote,
+        sourceIndex: 0,
+        start: 0,
+        end: fallbackQuote.length,
+        repaired: true,
+      },
+    ];
+  }
+  return {
+    id: String(req?.id ?? "r1"),
+    text: text || src.slice(0, 80),
+    priority: req?.priority === "should" ? "should" : "must",
+    citations,
+  };
 }
 
 export default {
