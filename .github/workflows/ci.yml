@@ -38,6 +38,7 @@ jobs:
           echo "$body" | grep -q '"kv":true'
           echo "$body" | grep -q '"ai":true'
           echo "$body" | grep -q '"protocol":"/workbench/api/protocol"'
+          echo "$body" | grep -q '"maxActiveStreams":8'
           proto=$(curl -fsS "https://roomy-page-workbench.hommy.workers.dev/workbench/api/protocol")
           echo "$proto" | head -c 500
           echo
