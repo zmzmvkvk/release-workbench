@@ -31,8 +31,12 @@ export default function EvalsPage() {
       <p className="mt-4 rounded-lg border border-zinc-800 bg-zinc-900/50 p-3 text-xs text-zinc-400">
         라이브 HTTP HITL: execute 첫 도구에서 Worker가 일시정지 →{" "}
         <code className="text-zinc-300">args_continue</code> /{" "}
-        <code className="text-zinc-300">args_edit</code> (KV, isolate-safe). 미리보기는{" "}
-        DOMPurify + <code className="text-zinc-300">sandbox=&quot;&quot;</code>. 벤치 숫자는
+        <code className="text-zinc-300">args_edit</code> (KV, isolate-safe). Workers AI
+        모드에서는 계획 승인 직후 라이브{" "}
+        <code className="text-zinc-300">propose_patch_plan</code> (prompt{" "}
+        <code className="text-zinc-300">workers-ai-patch-v1</code>) 도구 스텝이 들어간 뒤
+        deterministic execute fixture가 이어집니다. 미리보기는 DOMPurify +{" "}
+        <code className="text-zinc-300">sandbox=&quot;&quot;</code>. 벤치 숫자는
         deterministic mock이며 Workers AI는 아래 spot 표만 사용.
       </p>
 

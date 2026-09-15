@@ -595,11 +595,11 @@ async function playWorkersAiPatchPlan(run, env, controller, signal) {
         {
           role: "system",
           content:
-            "You write one short English sentence describing a safe UI patch plan. No markdown. Max 30 words.",
+            "You write one short English sentence describing a SAFE UI patch plan for a clean-room card grid. Mention only layout/CTA/a11y. Do not invent versions, libraries, or dependency upgrades. No markdown. Max 28 words.",
         },
         {
           role: "user",
-          content: `Scenario ${run.scenarioId}. Write the patch plan sentence for a clean-room React card grid (desktop 3 cols, mobile 1, CTA detail).`,
+          content: `Scenario ${run.scenarioId}. Patch plan for: desktop 3-column card grid, mobile 1 column, keep CTA detail, preserve accessibility labels.`,
         },
       ],
       max_tokens: 80,
