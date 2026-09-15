@@ -23,13 +23,13 @@
 | HTTP SSE (Worker) | ✅ roomy.page same-origin |
 | Workers AI 구조화 | ✅ `mode=workers-ai` · prompt v3 · source-bound citations |
 | 도구 호출 UI | ✅ |
-| 승인·수정·거절 | ✅ plan / gate / **인자 수정·수정 없이 계속** |
+| 승인·수정·거절 | ✅ plan / gate / **인자 수정·수정 없이 계속** (HTTP KV `args_*`) |
 | 실패 복구 시연 | ✅ 10종 + E2E |
-| 미리보기 | ✅ sandboxed iframe |
+| 미리보기 | ✅ sandboxed iframe + **DOMPurify** |
 | 자동 QA | ✅ mock + axe E2E |
 | trace · metrics | ✅ + TTFT/workflow/cancel/a11y/tool-retry |
 | 평가 대시보드 | ✅ `/evals` |
-| KV idempotency | ✅ |
+| KV idempotency | ✅ + run resume across isolates |
 
 ## 실패 10종
 

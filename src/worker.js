@@ -783,7 +783,7 @@ function sanitizeRequirement(req, sourceText) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     // --- SSE mock API (HTTP streaming evidence) ---
@@ -883,6 +883,9 @@ export default {
           /* memory still holds */
         }
       }
+      // Persist immediately so continue works even if the SSE client disconnects
+      // before the stream callback finishes.
+      ctx.waitUntil(persistRun(env, run));
 
       const stream = new ReadableStream({
         async start(controller) {
@@ -909,7 +912,7 @@ export default {
                 env,
               );
             }
-            await persistRun(env, run);
+            ctx.waitUntil(persistRun(env, run));
           } catch (err) {
             const enc = new TextEncoder();
             const event = append(run, "run.failed", {
