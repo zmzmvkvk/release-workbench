@@ -2,9 +2,9 @@
 
 [![ci](https://github.com/zmzmvkvk/release-workbench/actions/workflows/ci.yml/badge.svg)](https://github.com/zmzmvkvk/release-workbench/actions/workflows/ci.yml)
 
-Public **request → verified release** workbench. Flagship hiring evidence for internal-ops AX / AX frontend roles.
+Public **request ? verified release** workbench. Flagship hiring evidence for internal-ops AX / AX frontend roles.
 
-Not an "AI builds a page" demo — a work system where incomplete model output is **reviewed, auto-QA'd, and gated** before release.
+Not an "AI builds a page" demo ? a work system where incomplete model output is **reviewed, auto-QA'd, and gated** before release.
 
 ## Live evidence
 
@@ -15,7 +15,7 @@ Not an "AI builds a page" demo — a work system where incomplete model output i
 | Eval summary (curl) | https://roomy.page/workbench/api/evals |
 | Event protocol (JSON) | https://roomy.page/workbench/api/protocol |
 | Evals | https://roomy.page/workbench/evals |
-| 90s demo | https://roomy.page/workbench/demo/release-workbench-90s.webm |
+| 90s demo (~63s) | https://roomy.page/workbench/demo/release-workbench-90s.webm |
 | Failure deep link | https://roomy.page/workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1 |
 | Workers AI hybrid | https://roomy.page/workbench/?mode=workers-ai&scenario=rw-004 |
 | Failure matrix | https://roomy.page/workbench/evals#failures |
@@ -25,24 +25,24 @@ Not an "AI builds a page" demo — a work system where incomplete model output i
 | Hiring brief (1p) | [`docs/HIRING_BRIEF.md`](./docs/HIRING_BRIEF.md) |
 | Internal automation (2nd case) | [`docs/CASE_INTERNAL_AUTOMATION.md`](./docs/CASE_INTERNAL_AUTOMATION.md) |
 
-> On roomy.page always use a **trailing slash**: `/workbench/?…`. Bare `/workbench?…` can 522.
+> On roomy.page always use a **trailing slash**: `/workbench/??`. Bare `/workbench??` can 522.
 
-Transport: **HTTP SSE** (Cloudflare Worker) + **client mock** fallback. Same event protocol. Optional **Workers AI** structuring (`mode=workers-ai`, prompt `workers-ai-struct-v3`) and hybrid `propose_patch_plan` → diff `AI plan:`. Metrics show `promptVersion` / tokens; **costUsd stays null** when unmetered.
+Transport: **HTTP SSE** (Cloudflare Worker) + **client mock** fallback. Same event protocol. Optional **Workers AI** structuring (`mode=workers-ai`, prompt `workers-ai-struct-v3`) and hybrid `propose_patch_plan` ? diff `AI plan:`. Metrics show `promptVersion` / tokens; **costUsd stays null** when unmetered.
 
 HITL: plan approve/reject, **tool args edit / continue** (client-mock + HTTP Worker `args_continue`/`args_edit` gate), release gate.
 
 ## What hiring managers can verify
 
-1. SSE streaming + cancel  
-2. Tool call timeline + fail/retry  
+1. SSE streaming + cancel + mid-stream snapshot resume  
+2. Tool call timeline + fail/retry + `run_persisted` span  
 3. HITL: plan approve/reject, tool arg edit/continue, gate  
-4. Failure demos: schema invalid, citation block, duplicate (KV), XSS sandbox, step limit, reconnect, QA fail → gate reject → eval, 429 retry  
-5. Synthetic evals n=35 (mock) + Workers AI spot (source-bound citations; costUsd null)  
-6. Playwright · Vitest · axe · **eval gates** · live Workers AI structure/hybrid smoke  
+4. Failure demos: schema invalid, citation block, duplicate (KV), XSS sandbox, step limit, reconnect, QA fail ? gate reject ? eval, 429 retry  
+5. Synthetic evals n=35 � native fixtures 26 � Workers AI spot (costUsd null)  
+6. Playwright � Vitest � axe � **eval gates** � live Workers AI structure/hybrid smoke  
 
 ## Stack
 
-Next.js (static export) · React · TypeScript · Zod · Playwright · Vitest · Cloudflare Workers · Workers AI · KV idempotency
+Next.js (static export) � React � TypeScript � Zod � Playwright � Vitest � Cloudflare Workers � Workers AI � KV idempotency
 
 ## Run
 
