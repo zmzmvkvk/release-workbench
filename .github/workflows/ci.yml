@@ -112,8 +112,16 @@ jobs:
           grep -q '"name":"propose_patch_plan"' /tmp/hybrid-exec.txt
           grep -q '"type":"tool.finished"' /tmp/hybrid-exec.txt
           grep -q 'AI plan:' /tmp/hybrid-exec.txt || grep -q 'patchPlan' /tmp/hybrid-exec.txt
-          snap=$(curl -fsS "https://roomy-page-workbench.hommy.workers.dev/workbench/api/runs/${run_id}")
-          echo "$snap"
+          # KV is eventually consistent across isolates — retry snapshot until tools appear.
+          snap=""
+          for i in 1 2 3 4 5 6 7 8; do
+            snap=$(curl -fsS "https://roomy-page-workbench.hommy.workers.dev/workbench/api/runs/${run_id}")
+            echo "snapshot attempt $i: $snap"
+            if echo "$snap" | grep -q 'propose_patch_plan'; then
+              break
+            fi
+            sleep 1
+          done
           echo "$snap" | grep -q '"mode":"workers-ai"'
           echo "$snap" | grep -q 'propose_patch_plan'
           echo "$snap" | grep -q '"toolNames"'
