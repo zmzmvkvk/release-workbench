@@ -38,9 +38,11 @@ test("citation missing blocks plan approve", async ({ page }) => {
 test("evals page shows benchmark table", async ({ page }) => {
   await page.goto("/workbench/evals");
   await expect(page.getByRole("heading", { name: "합성 벤치마크" })).toBeVisible();
-  await expect(page.getByText("rw-004")).toBeVisible();
+  await expect(page.getByText("rw-004").first()).toBeVisible();
   await expect(page.getByRole("heading", { name: "실패·복구 시연 매트릭스" })).toBeVisible();
   await expect(page.getByRole("link", { name: "자동실행" }).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Workers AI spot/ })).toBeVisible();
+  await expect(page.getByText("tokens p50", { exact: true })).toBeVisible();
 });
 
 test("cancel during structuring reaches cancelled", async ({ page }) => {

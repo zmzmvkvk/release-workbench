@@ -185,6 +185,36 @@ export default function EvalsPage() {
             <li key={n}>{n}</li>
           ))}
         </ul>
+        <div className="mt-4 overflow-x-auto rounded-lg border border-sky-900/40">
+          <table className="w-full min-w-[28rem] text-left text-sm">
+            <thead className="border-b border-sky-900/40 text-xs text-sky-200/60">
+              <tr>
+                <th className="px-3 py-2">scenario</th>
+                <th className="px-3 py-2">ready</th>
+                <th className="px-3 py-2">sourceQuote</th>
+                <th className="px-3 py-2">ttftMs</th>
+                <th className="px-3 py-2">tokens</th>
+              </tr>
+            </thead>
+            <tbody>
+              {workersAiSpot.cases.map((c) => (
+                <tr key={c.scenarioId} className="border-b border-sky-950/60 text-sky-100/90">
+                  <td className="px-3 py-2 font-mono text-xs">{c.scenarioId}</td>
+                  <td className="px-3 py-2">{c.requirementsReady ? "yes" : "no"}</td>
+                  <td className="px-3 py-2">
+                    {"sourceQuote" in c && c.sourceQuote ? "yes" : "no"}
+                  </td>
+                  <td className="px-3 py-2 font-mono text-xs">
+                    {c.ttftMs != null ? c.ttftMs : "—"}
+                  </td>
+                  <td className="px-3 py-2 font-mono text-xs">
+                    {"tokens" in c && c.tokens != null ? String(c.tokens) : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <p className="mt-4 text-xs text-zinc-500">
