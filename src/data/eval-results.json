@@ -25,7 +25,7 @@
     "ttftP50Ms": 201,
     "ttftP95Ms": 216,
     "cancelLatencyP50Ms": 1,
-    "workflowP50Ms": 2708,
+    "workflowP50Ms": 2706,
     "workflowP95Ms": 2722,
     "reconnectSuccessRate": 1,
     "duplicateSideEffects": 0,
@@ -39,7 +39,7 @@
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 212
+      "ttftMs": 209
     },
     {
       "scenarioId": "rw-002",
@@ -53,8 +53,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 200,
-      "notes": "mapped via scenarioDefaultFixture"
+      "ttftMs": 200
     },
     {
       "scenarioId": "rw-004",
@@ -68,7 +67,7 @@
       "fixture": "cancel_during_structuring",
       "outcome": "cancelled",
       "schemaValid": true,
-      "ttftMs": 215
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-006",
@@ -89,21 +88,21 @@
       "fixture": "tool_retry_once",
       "outcome": "executing",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-009",
       "fixture": "plan_reject_darkmode",
       "outcome": "rejected_at_plan",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 200
     },
     {
       "scenarioId": "rw-010",
       "fixture": "tool_args_edited",
       "outcome": "executing",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 215
     },
     {
       "scenarioId": "rw-011",
@@ -116,7 +115,7 @@
       "fixture": "citation_missing_block",
       "outcome": "approve_blocked",
       "schemaValid": true,
-      "ttftMs": 200
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-013",
@@ -124,22 +123,21 @@
       "outcome": "awaiting_gate",
       "schemaValid": true,
       "sanitized": true,
-      "ttftMs": 201
+      "ttftMs": 200
     },
     {
       "scenarioId": "rw-014",
       "fixture": "step_limit_exceeded",
       "outcome": "failed",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 200
     },
     {
       "scenarioId": "rw-015",
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202,
-      "notes": "mapped via scenarioDefaultFixture"
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-016",
@@ -147,15 +145,14 @@
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 201
+      "ttftMs": 216
     },
     {
       "scenarioId": "rw-017",
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201,
-      "notes": "mapped via scenarioDefaultFixture"
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-018",
@@ -169,8 +166,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201,
-      "notes": "mapped via scenarioDefaultFixture"
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-020",
@@ -185,32 +181,29 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201,
-      "notes": "mapped via scenarioDefaultFixture"
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-022",
-      "fixture": "happy_card_grid",
-      "outcome": "completed",
+      "fixture": "citation_missing_block",
+      "outcome": "approve_blocked",
       "schemaValid": true,
-      "ttftMs": 201,
-      "notes": "mapped via scenarioDefaultFixture"
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-023",
-      "fixture": "happy_card_grid",
-      "outcome": "completed",
+      "fixture": "conflict_discount_copy",
+      "outcome": "approve_blocked",
       "schemaValid": true,
-      "ttftMs": 202,
-      "notes": "mapped via scenarioDefaultFixture"
+      "conflictDetected": true,
+      "ttftMs": 200
     },
     {
       "scenarioId": "rw-024",
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 202,
-      "notes": "mapped via scenarioDefaultFixture"
+      "ttftMs": 200
     },
     {
       "scenarioId": "rw-025",
@@ -225,55 +218,51 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201,
-      "notes": "mapped via scenarioDefaultFixture"
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-027",
       "fixture": "qa_playwright_mismatch",
       "outcome": "awaiting_plan_review",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-028",
-      "fixture": "happy_card_grid",
-      "outcome": "completed",
+      "fixture": "conflict_discount_copy",
+      "outcome": "approve_blocked",
       "schemaValid": true,
-      "ttftMs": 201,
-      "notes": "mapped via scenarioDefaultFixture"
+      "conflictDetected": true,
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-029",
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 216,
-      "notes": "mapped via scenarioDefaultFixture"
+      "ttftMs": 215
     },
     {
       "scenarioId": "rw-030",
-      "fixture": "happy_card_grid",
-      "outcome": "completed",
+      "fixture": "qa_playwright_mismatch",
+      "outcome": "awaiting_plan_review",
       "schemaValid": true,
-      "ttftMs": 216,
-      "notes": "mapped via scenarioDefaultFixture"
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-031",
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201,
-      "notes": "mapped via scenarioDefaultFixture"
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-032",
-      "fixture": "happy_card_grid",
-      "outcome": "completed",
+      "fixture": "conflict_discount_copy",
+      "outcome": "approve_blocked",
       "schemaValid": true,
-      "ttftMs": 201,
-      "notes": "mapped via scenarioDefaultFixture"
+      "conflictDetected": true,
+      "ttftMs": 216
     },
     {
       "scenarioId": "rw-033",
@@ -288,7 +277,7 @@
       "fixture": "tool_args_edited",
       "outcome": "executing",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-035",

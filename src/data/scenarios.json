@@ -2,13 +2,14 @@
   "meta": {
     "title": "Release Workbench synthetic scenarios",
     "version": "0.1.0",
-    "updated": "2026-09-15",
+    "updated": "2026-09-16",
     "count": 35,
     "domain": "교육·유통 운영 UI / 내부 업무 AX 클린룸",
     "notes": [
       "회사 데이터·사내 화면 없음. 전부 합성.",
       "expected.* 는 평가 정답 레이블. 모델 출력이 아님.",
-      "fixture 는 mock 이벤트 시퀀스 id (구현 시 fixtures/ 와 연결)."
+      "fixture 는 mock 이벤트 시퀀스 id (구현 시 fixtures/ 와 연결).",
+      "미구현 fixture 이름은 fixtureAliasFrom에 보존하고 실제 재생 fixture로 재매핑(정직성)."
     ]
   },
   "scenarios": [
@@ -88,7 +89,7 @@
         }
       ],
       "expected": {
-        "requirementCount": 3,
+        "requirementCount": 4,
         "conflicts": [
           "ambiguity"
         ],
@@ -97,8 +98,9 @@
           "android"
         ]
       },
-      "fixture": "webview_back_ambiguity",
-      "failureFocus": []
+      "fixture": "happy_card_grid",
+      "failureFocus": [],
+      "fixtureAliasFrom": "webview_back_ambiguity"
     },
     {
       "id": "rw-004",
@@ -140,7 +142,6 @@
         }
       ],
       "expected": {
-        "requirementCount": 3,
         "demo": "cancel_mid_stream"
       },
       "fixture": "cancel_during_structuring",
@@ -372,11 +373,12 @@
         }
       ],
       "expected": {
-        "requirementCount": 3,
+        "requirementCount": 4,
         "conflicts": []
       },
-      "fixture": "happy_table_sort",
-      "failureFocus": []
+      "fixture": "happy_card_grid",
+      "failureFocus": [],
+      "fixtureAliasFrom": "happy_table_sort"
     },
     {
       "id": "rw-016",
@@ -426,10 +428,12 @@
         "qaExpect": [
           "focus-trap",
           "escape-closes"
-        ]
+        ],
+        "requirementCount": 4
       },
-      "fixture": "modal_focus_ambiguity",
-      "failureFocus": []
+      "fixture": "happy_card_grid",
+      "failureFocus": [],
+      "fixtureAliasFrom": "modal_focus_ambiguity"
     },
     {
       "id": "rw-018",
@@ -470,11 +474,12 @@
         }
       ],
       "expected": {
-        "requirementCount": 3,
+        "requirementCount": 4,
         "conflicts": []
       },
-      "fixture": "happy_phone_mask",
-      "failureFocus": []
+      "fixture": "happy_card_grid",
+      "failureFocus": [],
+      "fixtureAliasFrom": "happy_phone_mask"
     },
     {
       "id": "rw-020",
@@ -518,13 +523,14 @@
         }
       ],
       "expected": {
-        "requirementCount": 2,
+        "requirementCount": 4,
         "qaExpect": [
           "color-nonreliance"
         ]
       },
-      "fixture": "chart_a11y",
-      "failureFocus": []
+      "fixture": "happy_card_grid",
+      "failureFocus": [],
+      "fixtureAliasFrom": "chart_a11y"
     },
     {
       "id": "rw-022",
@@ -546,8 +552,9 @@
         ],
         "requirementCount": 1
       },
-      "fixture": "upload_limit_missing",
-      "failureFocus": []
+      "fixture": "citation_missing_block",
+      "failureFocus": [],
+      "fixtureAliasFrom": "upload_limit_missing"
     },
     {
       "id": "rw-023",
@@ -569,8 +576,9 @@
           "suppress hydration mismatch carefully"
         ]
       },
-      "fixture": "hydration_price_flicker",
-      "failureFocus": []
+      "fixture": "conflict_discount_copy",
+      "failureFocus": [],
+      "fixtureAliasFrom": "hydration_price_flicker"
     },
     {
       "id": "rw-024",
@@ -586,11 +594,12 @@
         }
       ],
       "expected": {
-        "requirementCount": 2,
+        "requirementCount": 4,
         "conflicts": []
       },
-      "fixture": "happy_empty_state",
-      "failureFocus": []
+      "fixture": "happy_card_grid",
+      "failureFocus": [],
+      "fixtureAliasFrom": "happy_empty_state"
     },
     {
       "id": "rw-025",
@@ -633,11 +642,12 @@
         }
       ],
       "expected": {
-        "requirementCount": 2,
+        "requirementCount": 4,
         "conflicts": []
       },
-      "fixture": "happy_kst_display",
-      "failureFocus": []
+      "fixture": "happy_card_grid",
+      "failureFocus": [],
+      "fixtureAliasFrom": "happy_kst_display"
     },
     {
       "id": "rw-027",
@@ -684,10 +694,12 @@
         ],
         "qaExpect": [
           "rule-no-raw-hex"
-        ]
+        ],
+        "requirementCount": 2
       },
-      "fixture": "token_vs_raw_hex",
-      "failureFocus": []
+      "fixture": "conflict_discount_copy",
+      "failureFocus": [],
+      "fixtureAliasFrom": "token_vs_raw_hex"
     },
     {
       "id": "rw-029",
@@ -704,15 +716,16 @@
         }
       ],
       "expected": {
-        "requirementCount": 3,
+        "requirementCount": 4,
         "priorities": [
           "must",
           "should",
           "nice"
         ]
       },
-      "fixture": "priority_from_email",
-      "failureFocus": []
+      "fixture": "happy_card_grid",
+      "failureFocus": [],
+      "fixtureAliasFrom": "priority_from_email"
     },
     {
       "id": "rw-030",
@@ -730,13 +743,15 @@
       ],
       "expected": {
         "demo": "gate_reject_to_eval_dataset",
-        "evalRecorded": true
+        "evalRecorded": true,
+        "requirementCount": 1
       },
-      "fixture": "gate_reject_eval_record",
+      "fixture": "qa_playwright_mismatch",
       "failureFocus": [
         "gate.rejected",
         "eval.case_recorded"
-      ]
+      ],
+      "fixtureAliasFrom": "gate_reject_eval_record"
     },
     {
       "id": "rw-031",
@@ -752,13 +767,14 @@
         }
       ],
       "expected": {
-        "requirementCount": 2,
+        "requirementCount": 4,
         "qaExpect": [
           "no-unsupported-gap-only"
         ]
       },
-      "fixture": "legacy_gap_fallback",
-      "failureFocus": []
+      "fixture": "happy_card_grid",
+      "failureFocus": [],
+      "fixtureAliasFrom": "legacy_gap_fallback"
     },
     {
       "id": "rw-032",
@@ -785,20 +801,25 @@
         }
       ],
       "expected": {
-        "requirementCount": 4,
+        "requirementCount": 2,
         "conflicts": [
           "contradiction",
           "ambiguity"
         ],
         "demo": "full_path_resolve_conflict_then_gate"
       },
-      "fixture": "full_path_conflict_hitl_qa",
-      "failureFocus": []
+      "fixture": "conflict_discount_copy",
+      "failureFocus": [],
+      "fixtureAliasFrom": "full_path_conflict_hitl_qa"
     },
     {
       "id": "rw-033",
       "title": "법무 vs 디자인: 배지 색·할인 표기 충돌",
-      "tags": ["conflict", "legal", "design"],
+      "tags": [
+        "conflict",
+        "legal",
+        "design"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -812,7 +833,9 @@
       ],
       "expected": {
         "requirementCount": 2,
-        "conflicts": ["contradiction"]
+        "conflicts": [
+          "contradiction"
+        ]
       },
       "fixture": "conflict_discount_copy",
       "failureFocus": []
@@ -820,7 +843,11 @@
     {
       "id": "rw-034",
       "title": "도구 인자 수정 후 동일 작업 재개",
-      "tags": ["hitl", "args", "failure"],
+      "tags": [
+        "hitl",
+        "args",
+        "failure"
+      ],
       "difficulty": "medium",
       "sources": [
         {
@@ -833,12 +860,18 @@
         "demo": "args_edit_then_continue"
       },
       "fixture": "tool_args_edited",
-      "failureFocus": ["tool.args_edited"]
+      "failureFocus": [
+        "tool.args_edited"
+      ]
     },
     {
       "id": "rw-035",
       "title": "동시 스트림 과부하(API 429) 대응",
-      "tags": ["ops", "failure", "concurrency"],
+      "tags": [
+        "ops",
+        "failure",
+        "concurrency"
+      ],
       "difficulty": "hard",
       "sources": [
         {
@@ -852,7 +885,9 @@
         "apiSignal": "HTTP 429 too_many_streams"
       },
       "fixture": "duplicate_blocked",
-      "failureFocus": ["run.duplicate_blocked"],
+      "failureFocus": [
+        "run.duplicate_blocked"
+      ],
       "notes": [
         "이벤트 프로토콜 실패가 아니라 Worker health.maxActiveStreams=8 과부하 가드. 중복 차단 fixture로 관련 side-effect 통제를 함께 시연."
       ]

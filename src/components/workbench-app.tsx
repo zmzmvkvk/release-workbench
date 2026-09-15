@@ -296,6 +296,17 @@ export function WorkbenchApp() {
   }
 
   useEffect(() => {
+    const running = state.tools.some((t) => t.status === "running");
+    if (!running || transport !== "http-sse") return;
+    const timer = window.setTimeout(() => {
+      setBanner(
+        "Worker args 게이트 soft-timeout(~12s): 응답 없으면 자동 계속됩니다. 인자 수정 또는 '수정 없이 계속'을 누르세요.",
+      );
+    }, 9_000);
+    return () => window.clearTimeout(timer);
+  }, [state.tools, transport]);
+
+  useEffect(() => {
     if (typeof window === "undefined" || autorunDoneRef.current) return;
     const params = new URLSearchParams(window.location.search);
     if (params.get("autorun") !== "1") return;

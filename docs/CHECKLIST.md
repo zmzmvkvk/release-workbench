@@ -33,7 +33,8 @@
 | KV idempotency | ✅ + run resume across isolates |
 | Stream concurrency | ✅ per-isolate max 8 → 429 · client 1회 재시도 · health cap |
 | Run snapshot 링크 | ✅ http-sse `runId` → `GET /api/runs/:id` |
-| Eval regression gates | ✅ `pnpm bench:gates` (n≥35, extraction/tool/conflict=1, cost null) |
+| fixture 정합성 | ✅ 미구현 이름 → 실제 fixture 재매핑 (`fixtureAliasFrom` 보존) |
+| args soft-timeout UX | ✅ http-sse 도구 running 9s 배너 |
 | QA fail → eval | ✅ rw-027 E2E · gate reject → `eval.case_recorded` |
 | costUsd 정직성 | ✅ provider 미제공 → `null` / UI `— (미계측)` · mock도 `$0` 미표기 |
 | promptVersion UI | ✅ metrics strip · Workers AI `workers-ai-struct-v3` |
