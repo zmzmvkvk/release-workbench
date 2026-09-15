@@ -28,6 +28,11 @@
 | 과도한 변경 | `run.step_limit` |
 | 스트리밍 중단 | cancel → AbortSignal |
 
+## URL 주의 (roomy.page)
+
+커스텀 도메인에서 **슬래시 없는 경로 + 쿼리** (`/workbench?mock=1`, `/portfolio?x=1`)는 Cloudflare 522가 날 수 있다.
+공개 링크는 항상 trailing slash를 쓴다: `/workbench/?mock=1&scenario=rw-027`.
+
 ## 권한 (목표 모델, 5–6주)
 
 - 데모: 인증 없음 (공개 mock)

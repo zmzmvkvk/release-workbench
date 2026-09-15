@@ -83,6 +83,20 @@ export function WorkbenchApp() {
     return () => abortRef.current?.abort();
   }, []);
 
+  // Deep links: /workbench/?mock=1&scenario=rw-027&filter=failure
+  // Prefer trailing slash before ? on roomy.page (bare /workbench?q can 522).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const scenario = params.get("scenario");
+    if (scenario && scenarios.some((s) => s.id === scenario)) {
+      setSelectedId(scenario);
+    }
+    const f = params.get("filter");
+    if (f === "failure" || f === "happy" || f === "all") setFilter(f);
+    if (params.get("mode") === "workers-ai") setLlmMode("workers-ai");
+  }, [scenarios]);
+
   function push(event: WorkbenchEvent) {
     setState((s) => applyEvent(s, event));
     if (event.type === "stream.reconnect") setBanner("연결 재개됨 (seq 연속)");
@@ -378,8 +392,36 @@ export function WorkbenchApp() {
             90초 데모
           </a>
         </p>
+        <p className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-zinc-500">
+          실패 딥링크:
+          {[
+            ["rw-027", "QA→거절"],
+            ["rw-012", "근거없음"],
+            ["rw-005", "취소"],
+            ["rw-011", "중복"],
+            ["rw-008", "도구재시도"],
+            ["rw-013", "XSS"],
+          ].map(([id, label]) => (
+            <a
+              key={id}
+              href={`/workbench/?mock=1&scenario=${id}&filter=failure`}
+              className="text-amber-200/80 hover:underline"
+              onClick={(e) => {
+                e.preventDefault();
+                setSelectedId(id);
+                setFilter("failure");
+                const u = new URL(window.location.href);
+                u.searchParams.set("mock", "1");
+                u.searchParams.set("scenario", id);
+                u.searchParams.set("filter", "failure");
+                window.history.replaceState({}, "", u);
+              }}
+            >
+              {id} {label}
+            </a>
+          ))}
+        </p>
       </header>
-
       <div className="flex flex-wrap items-center gap-2 text-xs">
         <span className="text-zinc-500">구조화 모드</span>
         {(["mock", "workers-ai"] as const).map((m) => (

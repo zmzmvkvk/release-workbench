@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 /** Force client-mock transport in CI (no Worker). */
-const WB = "/workbench?mock=1";
+const WB = "/workbench/?mock=1";
 
 test("happy path: structure → approve → gate", async ({ page }) => {
   test.setTimeout(60_000);
