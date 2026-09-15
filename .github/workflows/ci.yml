@@ -22,23 +22,27 @@ jobs:
       - run: pnpm test:e2e
       - run: pnpm build
 
-  # Hiring evidence: production Worker is reachable (same-origin API, not SPA HTML).
+  # Hiring evidence: production Worker health (workers.dev is authoritative).
+  # roomy.page may 403 GitHub Actions IPs (Cloudflare); probed best-effort.
   prod-smoke:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - name: Probe roomy.page health
-        run: |
-          set -euo pipefail
-          body=$(curl -fsS "https://roomy.page/workbench/api/health")
-          echo "$body"
-          echo "$body" | grep -q '"ok":true'
-          echo "$body" | grep -q '"sse":true'
-          echo "$body" | grep -q '"kv":true'
-          echo "$body" | grep -q '"ai":true'
-      - name: Probe workers.dev health
+      - name: Probe workers.dev health (required)
         run: |
           set -euo pipefail
           body=$(curl -fsS "https://roomy-page-workbench.hommy.workers.dev/workbench/api/health")
           echo "$body"
           echo "$body" | grep -q '"ok":true'
+          echo "$body" | grep -q '"sse":true'
+          echo "$body" | grep -q '"kv":true'
+          echo "$body" | grep -q '"ai":true'
+      - name: Probe roomy.page health (best-effort)
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          code=$(curl -sS -o /tmp/health.json -w "%{http_code}" "https://roomy.page/workbench/api/health")
+          echo "HTTP $code"
+          cat /tmp/health.json || true
+          test "$code" = "200"
+          grep -q '"ok":true' /tmp/health.json
