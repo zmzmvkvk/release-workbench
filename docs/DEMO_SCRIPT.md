@@ -3,7 +3,7 @@
 녹화 대상: https://roomy.page/workbench  
 (대체) https://roomy-page-workbench.hommy.workers.dev/workbench  
 
-성공만 찍지 말고 **실패·거절·평가 기록**을 넣는다. 산출물: `public/demo/release-workbench-90s.webm`
+산출물: `public/demo/release-workbench-90s.webm` (최근 녹화 ≈66s, QA fail→gate reject 포함)
 
 ## 타임라인
 
