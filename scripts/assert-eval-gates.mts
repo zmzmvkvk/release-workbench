@@ -49,6 +49,12 @@ if (scenarios.scenarios.length !== scenarios.meta.count) {
     `scenarios length ${scenarios.scenarios.length} != meta.count ${scenarios.meta.count}`,
   );
 }
+const aliased = scenarios.scenarios.filter(
+  (s: { fixtureAliasFrom?: unknown }) => typeof s.fixtureAliasFrom === "string",
+);
+if (aliased.length > 0) {
+  failures.push(`fixtureAliasFrom still present on ${aliased.length} scenarios`);
+}
 if (a.scenarioCount < 35) failures.push(`eval scenarioCount ${a.scenarioCount} < 35`);
 if (a.extractionAccuracy < 1) failures.push(`extractionAccuracy ${a.extractionAccuracy} < 1`);
 if (a.toolSelectionAccuracy < 1) {

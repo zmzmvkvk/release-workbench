@@ -1,7 +1,7 @@
 {
   "ok": true,
   "source": "bench-gates",
-  "updated": "2026-09-15T17:55:02.404Z",
+  "updated": "2026-09-15T18:01:31.033Z",
   "mock": {
     "scenarioCount": 35,
     "extractionAccuracy": 1,
