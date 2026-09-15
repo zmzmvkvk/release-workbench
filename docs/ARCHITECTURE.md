@@ -17,13 +17,17 @@ Browser (React / Next static export, basePath /workbench)
         ├─ prefer HTTP SSE ─────────────────────────────────────────┐
         │                                                           ▼
         │              Cloudflare Worker `roomy-page-workbench`
+        │                GET  /workbench/api/health
+        │                GET  /workbench/api/protocol  (event/state catalog)
         │                POST /workbench/api/runs/stream
         │                POST /workbench/api/runs/:id/continue
         │                POST /workbench/api/runs/:id/cancel
         │                ├─ mock fixtures (deterministic)
-        │                ├─ mode=workers-ai → Workers AI llama-3.2-3b
-        │                │     + schema fail → heuristic fallback
-        │                ├─ KV WORKBENCH_IDEMPOTENCY (duplicate block)
+        │                ├─ mode=workers-ai
+        │                │     ├─ struct-v3 (requirements + citations)
+        │                │     └─ on plan approve: patch-v1 `propose_patch_plan`
+        │                │         then deterministic execute fixtures
+        │                ├─ KV WORKBENCH_IDEMPOTENCY (duplicate · run resume · args gate)
         │                └─ ASSETS (SPA)
         │
         └─ fallback: client-mock-runner (same event protocol)
@@ -31,8 +35,10 @@ Browser (React / Next static export, basePath /workbench)
 
 Public URLs:
 
-- https://roomy.page/workbench
-- https://roomy-page-workbench.hommy.workers.dev/workbench
+- https://roomy.page/workbench/
+- https://roomy.page/workbench/api/health
+- https://roomy.page/workbench/api/protocol
+- https://roomy-page-workbench.hommy.workers.dev/workbench/
 - https://github.com/zmzmvkvk/release-workbench
 
 ## Event protocol
@@ -62,12 +68,15 @@ KV: `idem:*` duplicate · `run:*` resume after SSE disconnect (`waitUntil`) · `
 
 ## Observability
 
-- `GET /workbench/api/health` — `{ ok, sse, kv, ai }` (UI header badge; proves Worker not SPA fallback)
+- `GET /workbench/api/health` — `{ ok, sse, kv, ai, protocol }` (UI header badge)
+- `GET /workbench/api/protocol` — states, eventTypes, HITL, promptVersions (curl hiring evidence)
 - `metrics.sample` — ttftMs, totalMs, tokens, costUsd, provider, model, promptVersion
 - Workers AI: `usage.total_tokens` 파싱 시 tokens 기록. **costUsd는 provider 미제공 → null** (추정 금지)
+- Hybrid execute: `propose_patch_plan` tool (prompt `workers-ai-patch-v1`) before mock fixtures
 - HITL/gate 감사 로그 UI + trace JSON 다운로드
-- `trace.span` — named intervals
+- `trace.span` — named intervals (`workers_ai_structuring`, `workers_ai_patch_plan`, …)
 - `/evals` dashboard — mock n=32 + Workers AI spot (separate tables; tokens p50 when present)
+- CI `prod-smoke` — health + protocol + live Workers AI structuring SSE
 
 ## Security
 
