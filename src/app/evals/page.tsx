@@ -28,6 +28,13 @@ export default function EvalsPage() {
           ← 워크벤치
         </Link>
       </p>
+      <p className="mt-4 rounded-lg border border-zinc-800 bg-zinc-900/50 p-3 text-xs text-zinc-400">
+        라이브 HTTP HITL: execute 첫 도구에서 Worker가 일시정지 →{" "}
+        <code className="text-zinc-300">args_continue</code> /{" "}
+        <code className="text-zinc-300">args_edit</code> (KV, isolate-safe). 미리보기는{" "}
+        DOMPurify + <code className="text-zinc-300">sandbox=&quot;&quot;</code>. 벤치 숫자는
+        deterministic mock이며 Workers AI는 아래 spot 표만 사용.
+      </p>
 
       <section className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <Stat label="시나리오 (n)" value={String(aggregate.scenarioCount)} />
