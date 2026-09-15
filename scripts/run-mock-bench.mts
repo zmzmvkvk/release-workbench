@@ -29,6 +29,7 @@ type CaseRow = {
 
 const FIXTURE_IDS = new Set<string>([
   "happy_card_grid",
+  "happy_empty_state",
   "cancel_during_structuring",
   "conflict_discount_copy",
   "invalid_requirements_json",
@@ -42,6 +43,10 @@ const FIXTURE_IDS = new Set<string>([
   "step_limit_exceeded",
   "qa_playwright_mismatch",
 ]);
+
+function isHappyExecuteFixture(fixture: string) {
+  return fixture === "happy_card_grid" || fixture === "happy_empty_state";
+}
 
 async function runOne(scenarioId: string, fixture: FixtureId): Promise<{
   state: RunState;
@@ -113,7 +118,7 @@ async function runOne(scenarioId: string, fixture: FixtureId): Promise<{
   if (
     state.status === "awaiting_plan_review" &&
     !state.approveBlockedReason &&
-    fixture === "happy_card_grid"
+    isHappyExecuteFixture(fixture)
   ) {
     await runExecuteMock({
       run,
@@ -228,7 +233,7 @@ async function main() {
       if (state.events.some((e) => e.type === "stream.reconnect")) reconnectOk += 1;
     }
 
-    if (fixture === "happy_card_grid") {
+    if (isHappyExecuteFixture(fixture)) {
       attemptedComplete += 1;
       if (state.status === "completed") completed += 1;
       toolSelectExpected += 1;

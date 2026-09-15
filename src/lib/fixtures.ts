@@ -2,6 +2,7 @@ import type { WorkbenchEvent } from "./protocol";
 
 export type FixtureId =
   | "happy_card_grid"
+  | "happy_empty_state"
   | "cancel_during_structuring"
   | "conflict_discount_copy"
   | "invalid_requirements_json"
@@ -210,6 +211,108 @@ export function buildFixtureSteps(fixture: FixtureId, scenarioId: string): Step[
           partial: {
             type: "run.duplicate_blocked",
             payload: { existingRunId: "run_existing_demo" },
+          },
+        },
+      ];
+    case "happy_empty_state":
+      return [
+        ...baseSteps(scenarioId),
+        {
+          kind: "event",
+          delayMs: 300,
+          partial: {
+            type: "stream.delta",
+            payload: {
+              channel: "structuring",
+              text: "빈 상태 일러스트·CTA 구조화…",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 400,
+          partial: {
+            type: "requirements.ready",
+            payload: {
+              requirements: [
+                {
+                  id: "r1",
+                  text: "위시리스트 빈 상태 Empty view",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "위시리스트 비었을 때",
+                      sourceIndex: 0,
+                      start: 0,
+                      end: 10,
+                    },
+                  ],
+                },
+                {
+                  id: "r2",
+                  text: "일러스트 assets/empty-wish.svg",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "assets/empty-wish.svg",
+                      sourceIndex: 0,
+                      start: 28,
+                      end: 49,
+                    },
+                  ],
+                },
+                {
+                  id: "r3",
+                  text: "CTA 문구 '강의 둘러보기'",
+                  priority: "must",
+                  citations: [
+                    {
+                      quote: "강의 둘러보기",
+                      sourceIndex: 0,
+                      start: 15,
+                      end: 22,
+                    },
+                  ],
+                },
+                {
+                  id: "r4",
+                  text: "빈 목록에서만 Empty view 표시",
+                  priority: "should",
+                  citations: [
+                    {
+                      quote: "위시리스트 비었을 때",
+                      sourceIndex: 0,
+                      start: 0,
+                      end: 10,
+                    },
+                  ],
+                },
+              ],
+              conflicts: [],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 200,
+          partial: {
+            type: "plan.proposed",
+            payload: { steps: ["Empty view 패치", "미리보기", "axe 검사"] },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 100,
+          partial: {
+            type: "metrics.sample",
+            payload: {
+              ttftMs: 175,
+              tokens: 390,
+              costUsd: null,
+              provider: "mock",
+              model: "deterministic",
+              promptVersion: "none-mock",
+            },
           },
         },
       ];
@@ -596,6 +699,7 @@ export function scenarioDefaultFixture(scenarioId: string): FixtureId {
     "rw-013": "preview_xss_sanitized",
     "rw-014": "step_limit_exceeded",
     "rw-027": "qa_playwright_mismatch",
+    "rw-024": "happy_empty_state",
     "rw-030": "happy_card_grid",
     "rw-033": "conflict_discount_copy",
     "rw-034": "tool_args_edited",
