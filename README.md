@@ -1,7 +1,7 @@
 # portfolio/web
 
-[Magic UI Portfolio](https://github.com/dillionverma/portfolio) 템플릿(MIT).  
-데이터는 `src/data/resume.tsx`. 경력 사실은 `legacy/v1`만.
+[Magic UI Portfolio](https://github.com/dillionverma/portfolio) ?�플�?MIT).  
+?�이?�는 `src/data/resume.tsx`. 경력 ?�실?� `legacy/v1`�?
 
 ```bash
 pnpm install
@@ -9,4 +9,4 @@ pnpm dev
 pnpm deploy
 ```
 
-공개 주소는 `/portfolio`. 루트는 `/portfolio`로 보낸다.
+공개 주소??`/portfolio`. 루트??`/portfolio`�?보낸??
