@@ -39,5 +39,13 @@
     "vitest": "^5.0.0",
     "wrangler": "^4.131.2"
   },
-  "packageManager": "pnpm@12.4.1"
+  "packageManager": "pnpm@12.4.1",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "unrs-resolver",
+      "workerd",
+      "sharp"
+    ]
+  }
 }
