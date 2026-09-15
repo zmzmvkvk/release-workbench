@@ -50,5 +50,5 @@
 
 - OpenAI/Anthropic 키 경로 고도화
 - FDE용 BE/DB·인증·Docker
-- Workers AI 대량 벤치·token/cost 계측
+- Workers AI 대량 벤치·token/cost 계측 — `usage` 필드 파싱은 넣었으나 llama-3.2-3b binding 응답에 tokens가 없어 현재 `null` 유지(추정값 미표기)
 - 사내 자동화는 공개 화면·수치 없이 설계 원칙만 (`docs/CASE_INTERNAL_AUTOMATION.md`)
