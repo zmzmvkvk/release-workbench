@@ -143,4 +143,17 @@ describe("workbench protocol reducer", () => {
     expect(state.diffs).toHaveLength(1);
     expect(state.qa?.passed).toBe(true);
   });
+
+  it("records cancelLatencyMs on run.cancelled", () => {
+    const state = applyEvent(initialRunState(), {
+      id: "1",
+      runId: "r1",
+      seq: 0,
+      ts: "2026-09-15T00:00:00.000Z",
+      type: "run.cancelled",
+      payload: { reason: "user_cancelled", cancelLatencyMs: 42 },
+    });
+    expect(state.status).toBe("cancelled");
+    expect(state.metrics?.cancelLatencyMs).toBe(42);
+  });
 });

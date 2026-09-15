@@ -785,6 +785,39 @@ export function WorkbenchApp() {
               ))}
             </ul>
           ) : null}
+          {state.events.length > 0 ? (
+            <button
+              type="button"
+              className="mt-3 text-xs text-sky-300 hover:underline"
+              onClick={() => {
+                const blob = new Blob(
+                  [
+                    JSON.stringify(
+                      {
+                        runId: state.runId,
+                        scenarioId: state.scenarioId,
+                        status: state.status,
+                        metrics: state.metrics,
+                        traces: state.traces,
+                        events: state.events,
+                      },
+                      null,
+                      2,
+                    ),
+                  ],
+                  { type: "application/json" },
+                );
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `workbench-trace-${state.runId ?? "run"}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+            >
+              trace JSON 다운로드
+            </button>
+          ) : null}
         </Panel>
       </section>
     </div>
