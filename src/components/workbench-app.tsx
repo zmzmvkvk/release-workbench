@@ -229,7 +229,7 @@ export function WorkbenchApp() {
       const forceMock =
         typeof window !== "undefined" &&
         new URLSearchParams(window.location.search).has("mock");
-      const usedHttp =
+      const httpResult =
         !forceMock &&
         (await tryHttpStructuring({
           scenarioId: selected.id,
@@ -244,9 +244,21 @@ export function WorkbenchApp() {
           onRunId: (id) => {
             httpRunIdRef.current = id;
           },
+          onRateLimited: ({ retryAfterSec }) => {
+            setBanner(
+              `동시 스트림 한도(429). ${retryAfterSec}s 후 자동 재시도…`,
+            );
+          },
         }));
-      if (usedHttp) {
+      if (httpResult && httpResult.kind === "ok") {
         setTransport("http-sse");
+        return;
+      }
+      if (httpResult && httpResult.kind === "rate_limited") {
+        setTransport("http-sse");
+        setBanner(
+          `동시 스트림 한도 초과(429). active=${httpResult.activeStreams ?? "?"} · Retry-After ${httpResult.retryAfterSec}s · 재시도 후에도 실패`,
+        );
         return;
       }
       setTransport("client-mock");
@@ -439,7 +451,7 @@ export function WorkbenchApp() {
         <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
           Release Workbench · {transport} · {scenariosData.meta.count} scenarios
           {workerHealth
-            ? ` · worker SSE${workerHealth.kv ? "+KV" : ""}${workerHealth.ai ? "+AI" : ""}`
+            ? ` · worker SSE${workerHealth.kv ? "+KV" : ""}${workerHealth.ai ? "+AI" : ""}${workerHealth.maxActiveStreams != null ? `·cap${workerHealth.maxActiveStreams}` : ""}`
             : " · worker unreachable (client-mock fallback)"}
         </p>
         <h1 className="text-3xl font-semibold tracking-tight text-zinc-50">

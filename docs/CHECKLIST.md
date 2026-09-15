@@ -31,7 +31,7 @@
 | trace · metrics | ✅ + TTFT/workflow/cancel latency UI/a11y/tool-retry |
 | 평가 대시보드 | ✅ `/evals` + 실패 매트릭스 딥링크 |
 | KV idempotency | ✅ + run resume across isolates |
-| Stream concurrency | ✅ per-isolate max 8 → 429 · health `maxActiveStreams` |
+| Stream concurrency | ✅ per-isolate max 8 → 429 · client 1회 재시도 · health cap |
 | Run snapshot 링크 | ✅ http-sse `runId` → `GET /api/runs/:id` |
 | QA fail → eval | ✅ rw-027 E2E · gate reject → `eval.case_recorded` |
 | costUsd 정직성 | ✅ provider 미제공 → `null` / UI `— (미계측)` · mock도 `$0` 미표기 |

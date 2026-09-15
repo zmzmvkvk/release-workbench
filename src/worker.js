@@ -826,13 +826,21 @@ ${(sourceText || "card grid desktop 3 mobile 1 CTA detail").slice(0, 800)}`;
     return;
   }
 
+  const requirements = parsed.requirements.map((r) =>
+    sanitizeRequirement(r, sourceText),
+  );
   push("requirements.ready", {
-    requirements: parsed.requirements.map((r) => sanitizeRequirement(r, sourceText)),
+    requirements,
     conflicts: Array.isArray(parsed.conflicts) ? parsed.conflicts : [],
     fallback: usedFallback || parsed.fallback || null,
   });
   push("plan.proposed", {
-    steps: ["코드 패치", "미리보기", "QA"],
+    steps: [
+      ...requirements.slice(0, 3).map((r) => String(r.text).slice(0, 80)),
+      "미리보기 · QA 게이트",
+    ],
+    provider: "workers-ai",
+    promptVersion: "workers-ai-struct-v3",
   });
   const totalMs = Date.now() - t0;
   push("trace.span", {

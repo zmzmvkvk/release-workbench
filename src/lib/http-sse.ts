@@ -28,7 +28,62 @@ export async function readSseStream(
   }
 }
 
-/** Prefer Worker HTTP SSE; returns null if unavailable (use client mock). */
+function sleep(ms: number, signal?: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException("Aborted", "AbortError"));
+      return;
+    }
+    const t = setTimeout(() => resolve(), ms);
+    signal?.addEventListener(
+      "abort",
+      () => {
+        clearTimeout(t);
+        reject(new DOMException("Aborted", "AbortError"));
+      },
+      { once: true },
+    );
+  });
+}
+
+export type HttpStructuringResult =
+  | { kind: "ok" }
+  | { kind: "unavailable" }
+  | {
+      kind: "rate_limited";
+      retryAfterSec: number;
+      activeStreams?: number;
+      retried: boolean;
+    };
+
+export function parseRetryAfterSec(
+  res: Response,
+  body?: { retryAfter?: unknown },
+) {
+  const raw = res.headers.get("Retry-After");
+  if (raw != null && raw !== "") {
+    const header = Number(raw);
+    if (Number.isFinite(header) && header > 0) return Math.min(30, header);
+  }
+  if (typeof body?.retryAfter === "number" && body.retryAfter > 0) {
+    return Math.min(30, body.retryAfter);
+  }
+  return 2;
+}
+
+async function postStreamOnce(
+  body: Record<string, unknown>,
+  signal: AbortSignal,
+): Promise<Response> {
+  return fetch("/workbench/api/runs/stream", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    signal,
+  });
+}
+
+/** Prefer Worker HTTP SSE; returns structured result (429 retry once). */
 export async function tryHttpStructuring(opts: {
   scenarioId: string;
   fixture: string;
@@ -38,29 +93,61 @@ export async function tryHttpStructuring(opts: {
   signal: AbortSignal;
   onEvent: (e: WorkbenchEvent) => void;
   onRunId: (id: string) => void;
-}): Promise<boolean> {
+  onRateLimited?: (info: { retryAfterSec: number; attempt: number }) => void;
+}): Promise<HttpStructuringResult> {
+  const payload = {
+    scenarioId: opts.scenarioId,
+    fixture: opts.fixture,
+    idempotencyKey: opts.idempotencyKey,
+    mode: opts.mode ?? "mock",
+    sourceText: opts.sourceText,
+  };
+
   try {
-    const res = await fetch("/workbench/api/runs/stream", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        scenarioId: opts.scenarioId,
-        fixture: opts.fixture,
-        idempotencyKey: opts.idempotencyKey,
-        mode: opts.mode ?? "mock",
-        sourceText: opts.sourceText,
-      }),
-      signal: opts.signal,
-    });
+    let res = await postStreamOnce(payload, opts.signal);
+    let firstActive: number | undefined;
+
+    if (res.status === 429) {
+      let body: { activeStreams?: number; retryAfter?: number } = {};
+      try {
+        body = (await res.json()) as typeof body;
+      } catch {
+        /* empty */
+      }
+      firstActive = body.activeStreams;
+      const retryAfterSec = parseRetryAfterSec(res, body);
+      opts.onRateLimited?.({ retryAfterSec, attempt: 1 });
+      await sleep(retryAfterSec * 1000, opts.signal);
+      res = await postStreamOnce(
+        { ...payload, idempotencyKey: `${opts.idempotencyKey}-retry` },
+        opts.signal,
+      );
+      if (res.status === 429) {
+        let body2: { activeStreams?: number; retryAfter?: number } = {};
+        try {
+          body2 = (await res.json()) as typeof body2;
+        } catch {
+          /* empty */
+        }
+        return {
+          kind: "rate_limited",
+          retryAfterSec: parseRetryAfterSec(res, body2),
+          activeStreams: body2.activeStreams ?? firstActive,
+          retried: true,
+        };
+      }
+    }
+
     if (!res.ok || !res.headers.get("content-type")?.includes("text/event-stream")) {
-      return false;
+      return { kind: "unavailable" };
     }
     const id = res.headers.get("X-Run-Id");
     if (id) opts.onRunId(id);
     await readSseStream(res, opts.onEvent, opts.signal);
-    return true;
-  } catch {
-    return false;
+    return { kind: "ok" };
+  } catch (e) {
+    if ((e as Error).name === "AbortError") throw e;
+    return { kind: "unavailable" };
   }
 }
 
@@ -100,7 +187,6 @@ export async function tryHttpContinue(opts: {
       ok?: boolean;
       released?: boolean;
     };
-    // args_continue may return {ok,released} without events — still success
     if (data.released || data.ok === true) {
       if (data.event) opts.onEvent(data.event);
       if (data.events) data.events.forEach(opts.onEvent);
@@ -121,8 +207,6 @@ export async function tryHttpCancel(runId: string): Promise<WorkbenchEvent | nul
   try {
     const res = await fetch(`/workbench/api/runs/${runId}/cancel`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reason: "user_cancelled" }),
     });
     if (!res.ok) return null;
     const data = (await res.json()) as { event?: WorkbenchEvent };
@@ -134,27 +218,21 @@ export async function tryHttpCancel(runId: string): Promise<WorkbenchEvent | nul
 
 export type WorkerHealth = {
   ok: boolean;
-  sse: boolean;
-  kv: boolean;
-  ai: boolean;
-  ts?: string;
+  sse?: boolean;
+  kv?: boolean;
+  ai?: boolean;
+  maxActiveStreams?: number;
 };
 
-/** Same-origin Worker probe — proves HTTP API (not SPA HTML fallback). */
 export async function probeWorkerHealth(
   signal?: AbortSignal,
 ): Promise<WorkerHealth | null> {
   try {
     const res = await fetch("/workbench/api/health", {
-      method: "GET",
-      signal,
-      headers: { Accept: "application/json" },
+      signal: signal ?? AbortSignal.timeout(2500),
     });
     if (!res.ok) return null;
-    const ct = res.headers.get("content-type") ?? "";
-    if (!ct.includes("application/json")) return null;
-    const data = (await res.json()) as WorkerHealth;
-    return data?.ok ? data : null;
+    return (await res.json()) as WorkerHealth;
   } catch {
     return null;
   }
