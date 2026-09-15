@@ -34,6 +34,7 @@ const FIXTURE_IDS = new Set<string>([
   "happy_phone_mask",
   "happy_kst_display",
   "chart_a11y",
+  "upload_limit_missing",
   "cancel_during_structuring",
   "conflict_discount_copy",
   "invalid_requirements_json",

@@ -7,6 +7,7 @@ export type FixtureId =
   | "happy_phone_mask"
   | "happy_kst_display"
   | "chart_a11y"
+  | "upload_limit_missing"
   | "cancel_during_structuring"
   | "conflict_discount_copy"
   | "invalid_requirements_json"
@@ -896,6 +897,67 @@ export function buildFixtureSteps(fixture: FixtureId, scenarioId: string): Step[
           },
         },
       ];
+    case "upload_limit_missing":
+      return [
+        ...baseSteps(scenarioId),
+        {
+          kind: "event",
+          delayMs: 280,
+          partial: {
+            type: "stream.delta",
+            payload: {
+              channel: "structuring",
+              text: "업로드 한도 누락 탐지…",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 300,
+          partial: {
+            type: "citation.missing",
+            payload: {
+              reqId: "r1",
+              reason: "max upload size not specified in source",
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 200,
+          partial: {
+            type: "requirements.ready",
+            payload: {
+              requirements: [
+                {
+                  id: "r1",
+                  text: "과제 제출 파일 업로드 (용량 한도 미정)",
+                  priority: "must",
+                  citations: [],
+                },
+              ],
+              conflicts: [
+                {
+                  id: "c1",
+                  kind: "missing",
+                  requirementIds: ["r1"],
+                  note: "용량 한도는 백엔드에 물어보라고만 적힘 — 구현 조건 누락",
+                },
+              ],
+            },
+          },
+        },
+        {
+          kind: "event",
+          delayMs: 150,
+          partial: {
+            type: "plan.proposed",
+            payload: {
+              steps: ["한도 명세 확보 전 승인 차단"],
+            },
+          },
+        },
+      ];
     case "citation_missing_block":
       return [
         ...baseSteps(scenarioId),
@@ -1116,6 +1178,8 @@ export function scenarioDefaultFixture(scenarioId: string): FixtureId {
     "rw-024": "happy_empty_state",
     "rw-015": "happy_table_sort",
     "rw-019": "happy_phone_mask",
+    "rw-021": "chart_a11y",
+    "rw-022": "upload_limit_missing",
     "rw-026": "happy_kst_display",
     "rw-030": "happy_card_grid",
     "rw-033": "conflict_discount_copy",

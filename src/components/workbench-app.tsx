@@ -530,6 +530,15 @@ export function WorkbenchApp() {
           </a>
           {" · "}
           <a
+            href="/workbench/api/evals"
+            className="text-emerald-400 hover:underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            evals JSON
+          </a>
+          {" · "}
+          <a
             href="/workbench/api/protocol"
             className="text-emerald-400 hover:underline"
             target="_blank"

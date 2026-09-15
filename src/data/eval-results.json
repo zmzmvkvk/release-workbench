@@ -16,7 +16,7 @@
   },
   "aggregate": {
     "scenarioCount": 35,
-    "fixtureCoverage": 18,
+    "fixtureCoverage": 19,
     "workflowCompletionRate": 1,
     "schemaValidRate": 0.971,
     "conflictRecall": 1,
@@ -39,7 +39,7 @@
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 215
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-002",
@@ -53,7 +53,7 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-004",
@@ -74,7 +74,7 @@
       "fixture": "stream_reconnect",
       "outcome": "awaiting_plan_review",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-007",
@@ -95,7 +95,7 @@
       "fixture": "plan_reject_darkmode",
       "outcome": "rejected_at_plan",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-010",
@@ -115,7 +115,7 @@
       "fixture": "citation_missing_block",
       "outcome": "approve_blocked",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-013",
@@ -123,7 +123,7 @@
       "outcome": "awaiting_gate",
       "schemaValid": true,
       "sanitized": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-014",
@@ -152,21 +152,21 @@
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-018",
       "fixture": "citation_missing_block",
       "outcome": "approve_blocked",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-019",
       "fixture": "happy_phone_mask",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-020",
@@ -179,15 +179,16 @@
     {
       "scenarioId": "rw-021",
       "fixture": "chart_a11y",
-      "outcome": "awaiting_plan_review",
+      "outcome": "completed",
       "schemaValid": true,
       "ttftMs": 201
     },
     {
       "scenarioId": "rw-022",
-      "fixture": "citation_missing_block",
+      "fixture": "upload_limit_missing",
       "outcome": "approve_blocked",
       "schemaValid": true,
+      "conflictDetected": true,
       "ttftMs": 202
     },
     {
@@ -196,7 +197,7 @@
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-024",
@@ -211,7 +212,7 @@
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-026",
@@ -233,28 +234,28 @@
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-029",
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-030",
       "fixture": "qa_playwright_mismatch",
       "outcome": "awaiting_plan_review",
       "schemaValid": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-031",
       "fixture": "happy_card_grid",
       "outcome": "completed",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 200
     },
     {
       "scenarioId": "rw-032",
@@ -270,14 +271,14 @@
       "outcome": "approve_blocked",
       "schemaValid": true,
       "conflictDetected": true,
-      "ttftMs": 202
+      "ttftMs": 201
     },
     {
       "scenarioId": "rw-034",
       "fixture": "tool_args_edited",
       "outcome": "executing",
       "schemaValid": true,
-      "ttftMs": 201
+      "ttftMs": 202
     },
     {
       "scenarioId": "rw-035",

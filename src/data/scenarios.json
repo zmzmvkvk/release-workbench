@@ -549,9 +549,8 @@
         ],
         "requirementCount": 1
       },
-      "fixture": "citation_missing_block",
-      "failureFocus": [],
-      "fixtureAliasFrom": "upload_limit_missing"
+      "fixture": "upload_limit_missing",
+      "failureFocus": ["citation.missing"]
     },
     {
       "id": "rw-023",
