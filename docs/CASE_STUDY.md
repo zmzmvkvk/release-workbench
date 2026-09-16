@@ -11,6 +11,7 @@ Public hiring evidence for internal-ops AX frontend.
 - QA fail deep link: https://roomy.page/workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1
 - Args soft-timeout: https://roomy.page/workbench/?mock=1&scenario=rw-004&holdArgs=1
 - Data Inspector: https://roomy.page/workbench/#data-inspector
+- Dataset Studio: https://roomy.page/workbench/evals#dataset-studio
 - Failure matrix: https://roomy.page/workbench/evals#failures
 - GitHub: https://github.com/zmzmvkvk/release-workbench
 - CI: https://github.com/zmzmvkvk/release-workbench/actions
@@ -32,6 +33,7 @@ Ship a **public work system**: request → structure with citations → HITL app
 | Workers AI structure + patch tool | yes (struct-v3 + patch-v1 → `apply_code_patch` args + diff `AI plan:`) |
 | HTTP HITL args gate | yes (KV resume + soft-timeout → `tool.args_gate_released` + `holdArgs` deep link) |
 | Run Data Inspector | yes (`#data-inspector` · source→eval stages · owner labels) |
+| Dataset Studio | yes (`/evals#dataset-studio` · provenance catalog) |
 | Synthetic scenarios | yes (**35** · native fixtures **26** · `fixtureAliasFrom` 0) |
 | Failure demos (10+) + E2E | yes (incl. QA fail → gate reject → eval · SSE-drop recovered Vitest · soft-timeout E2E) |
 | Playwright / Vitest / axe CI | yes (public Actions · eval gates) |
