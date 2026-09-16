@@ -18,6 +18,7 @@ AI가 페이지를 만드는 데모가 아니라, **불완전 출력을 검토·
 | CI (unit/e2e + prod health/AI smoke) | https://github.com/zmzmvkvk/release-workbench/actions |
 | 90초 데모 | https://roomy.page/workbench/demo/release-workbench-90s.webm |
 | QA 실패→거절→eval (자동실행) | https://roomy.page/workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1 |
+| Args soft-timeout (딥링크) | https://roomy.page/workbench/?mock=1&scenario=rw-004&holdArgs=1 |
 | Workers AI 하이브리드 | https://roomy.page/workbench/?mode=workers-ai&scenario=rw-004 |
 | 실패 매트릭스 | https://roomy.page/workbench/evals#failures |
 | 합성 벤치 (n=35 · fixtureCoverage 26 · Workers AI spot) | https://roomy.page/workbench/evals |

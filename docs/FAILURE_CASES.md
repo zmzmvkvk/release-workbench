@@ -7,7 +7,7 @@
 | rw-005 | cancel_during_structuring | `run.cancelled` | E2E |
 | rw-006 | stream_reconnect | `stream.reconnect` + banner | E2E |
 | (live) | HTTP SSE drop mid-stream | `GET /api/runs/:id` snapshot → `stream.reconnect` (`recoveredFrom: run-snapshot`) | Vitest `tryHttpStructuring` recovered + client banner |
-| (live) | args soft-timeout | 첫 `tool.started` 후 ~12s 자동 계속 · UI ~9s 배너 | Worker `waitArgsGate` + UI |
+| (live) | args soft-timeout | 첫 `tool.started` 후 ~12s → `tool.args_gate_released` (`reason=soft_timeout`) · UI ~9s 배너 | Worker `waitArgsGate` + E2E (mock) · Vitest |
 | (live) | execute 완료 증거 | SSE `trace.span` `run_persisted` (`toolNames`) | CI hybrid smoke |
 | rw-007 | invalid_requirements_json | `requirements.invalid` → `failed` | E2E |
 | rw-008 | tool_retry_once | `tool.failed` → `tool.retried` | E2E |
@@ -26,6 +26,6 @@
 
 Workers AI 하이브리드: `mode=workers-ai` 구조화(struct-v3) → 계획 승인 → 라이브 `propose_patch_plan`(patch-v1) → deterministic execute fixture. 모델이 버전·의존성을 지어내면 프롬프트 제약 + HITL 게이트가 방어선이다(추정 cost 없음).
 
-HTTP SSE (라이브): execute 첫 `tool.started`에서 Worker가 일시정지 → `POST …/continue` `args_continue`/`args_edit`(KV 신호, isolate-safe) → soft-timeout 12s.
+HTTP SSE (라이브): execute 첫 `tool.started`에서 Worker 일시정지 → `POST …/continue` `args_continue`/`args_edit`(KV) 또는 soft-timeout 12s → 항상 `tool.args_gate_released` (reason 구분).
 
 측정 시 표본·fixture 버전·실행 횟수·모델·프롬프트 버전을 `/evals`와 README에 같이 적는다.

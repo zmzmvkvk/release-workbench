@@ -132,6 +132,22 @@ test("xss fixture shows sanitized note", async ({ page }) => {
   await expect(page.getByText(/sanitized:/i)).toBeVisible({ timeout: 20_000 });
 });
 
+test("holdArgs deep link auto-approves then soft-timeouts", async ({ page }) => {
+  test.setTimeout(60_000);
+  // Click start (more stable than autorun under React Strict Mode); holdArgs auto-approves.
+  await page.goto("/workbench/?mock=1&scenario=rw-004&holdArgs=1");
+  await page.getByRole("button", { name: "실행 시작" }).click();
+  await expect(page.getByText(/holdArgs 딥링크|계획 자동 승인/)).toBeVisible({
+    timeout: 25_000,
+  });
+  await expect(page.getByText(/args gate soft-timeout/)).toBeVisible({
+    timeout: 25_000,
+  });
+  await expect(page.getByText("status:")).toContainText("awaiting_gate", {
+    timeout: 25_000,
+  });
+});
+
 test("tool args soft-timeout records args_gate_released on timeline", async ({
   page,
 }) => {

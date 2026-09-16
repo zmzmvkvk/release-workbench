@@ -1,7 +1,7 @@
 {
   "ok": true,
   "source": "bench-gates",
-  "updated": "2026-09-16T00:24:50.242Z",
+  "updated": "2026-09-16T00:38:20.141Z",
   "mock": {
     "scenarioCount": 35,
     "fixtureCoverage": 26,
@@ -22,7 +22,7 @@
     "model": "deterministic-mock",
     "promptVersion": "none-mock",
     "runsPerCase": 1,
-    "note": "TTFT/workflow/cancel are mock fixture delays — not live LLM latency"
+    "note": "TTFT/workflow/cancel are mock fixture delays (not live LLM latency)"
   },
   "workersAiSpot": {
     "sampleSize": 5,

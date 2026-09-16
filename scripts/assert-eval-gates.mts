@@ -130,7 +130,7 @@ const summary = {
     model: evalResults.meta?.model ?? "deterministic-mock",
     promptVersion: evalResults.meta?.promptVersion ?? "none-mock",
     runsPerCase: evalResults.meta?.runsPerCase ?? 1,
-    note: "TTFT/workflow/cancel are mock fixture delays — not live LLM latency",
+    note: "TTFT/workflow/cancel are mock fixture delays (not live LLM latency)",
   },
   workersAiSpot: {
     sampleSize: spot.aggregate.sampleSize,

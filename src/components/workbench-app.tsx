@@ -97,8 +97,10 @@ export function WorkbenchApp() {
   }, []);
 
   // Deep links: /workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1
+  // soft-timeout demo: ?mock=1&scenario=rw-004&autorun=1&holdArgs=1
   // Prefer trailing slash before ? on roomy.page (bare /workbench?q can 522).
   const autorunDoneRef = useRef(false);
+  const holdArgsPlanDoneRef = useRef(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
@@ -245,6 +247,7 @@ export function WorkbenchApp() {
     abortRef.current = ac;
     httpRunIdRef.current = null;
     clientRunRef.current = null;
+    holdArgsPlanDoneRef.current = false;
     setState(initialRunState());
     setBanner(null);
     setBusy(true);
@@ -353,6 +356,24 @@ export function WorkbenchApp() {
     void startRun();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot deep-link autorun
   }, [selectedId]);
+
+  // holdArgs=1: after structuring, auto-approve plan then wait for soft-timeout
+  // (do not click continue) so timeline shows tool.args_gate_released.
+  useEffect(() => {
+    if (typeof window === "undefined" || holdArgsPlanDoneRef.current) return;
+    if (busy) return;
+    if (state.status !== "awaiting_plan_review") return;
+    if (!clientRunRef.current && !httpRunIdRef.current) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("holdArgs") !== "1") return;
+    if (state.approveBlockedReason) return;
+    holdArgsPlanDoneRef.current = true;
+    setBanner(
+      "holdArgs 딥링크: 계획 자동 승인 → args 게이트에서 soft-timeout까지 대기",
+    );
+    void continueAction("approve");
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot holdArgs plan approve
+  }, [state.status, state.approveBlockedReason, busy]);
 
   async function cancelRun() {
     const cancelLatencyMs =

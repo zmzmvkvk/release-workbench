@@ -131,14 +131,19 @@ export default function EvalsPage() {
             ["rw-012", "근거 없는 요구 생성 거절"],
             ["rw-013", "위험한 HTML 격리"],
             ["rw-014", "최대 실행 단계 초과"],
+            ["rw-004", "Args soft-timeout (승인 후 12s 대기 → timeline)"],
           ].map(([id, label]) => (
-            <li key={id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm">
+            <li key={`${id}-${label}`} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm">
               <span className="text-zinc-300">
                 <code className="text-amber-200/90">{id}</code> · {label}
               </span>
               <a
                 className="text-xs text-emerald-400 hover:underline"
-                href={`/workbench/?mock=1&scenario=${id}&filter=failure&autorun=1`}
+                href={
+                  id === "rw-004"
+                    ? `/workbench/?mock=1&scenario=rw-004&holdArgs=1`
+                    : `/workbench/?mock=1&scenario=${id}&filter=failure&autorun=1`
+                }
               >
                 자동실행
               </a>
