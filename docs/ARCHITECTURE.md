@@ -57,7 +57,7 @@ Canonical types live in `src/lib/protocol.ts` + wiki `concept-workbench-protocol
 
 `idle → structuring → awaiting_plan_review → executing → awaiting_gate → completed|failed|cancelled`
 
-HITL: `plan.rejected`, `tool.args_edited` / `args_continue` (HTTP KV gate after first `tool.started`), `gate.rejected`, cancel, duplicate block
+HITL: `plan.rejected`, `tool.args_edited` / `args_continue` / soft-timeout → `tool.args_gate_released` (HTTP KV gate after first `tool.started`), `gate.rejected`, cancel, duplicate block
 KV: `idem:*` duplicate · `run:*` resume after SSE disconnect (`waitUntil`) · `args:*` cross-isolate tool gate
 
 ## Data
@@ -73,7 +73,7 @@ KV: `idem:*` duplicate · `run:*` resume after SSE disconnect (`waitUntil`) · `
 ## Observability
 
 - `GET /workbench/api/health` — `{ ok, sse, kv, ai, protocol, evals }` (UI header badge)
-- `GET /workbench/api/evals` — curlable mock + Workers AI spot (`fixtureCoverage`, alias=0 gates)
+- `GET /workbench/api/evals` — curlable mock + Workers AI spot (`fixtureCoverage`, TTFT/workflow latency, alias=0 gates)
 - `GET /workbench/api/runs/:id` — **KV-first** snapshot; client SSE-drop → `stream.reconnect`
 - `GET /workbench/api/protocol` — states, eventTypes, HITL, promptVersions
 - `metrics.sample` — ttftMs, totalMs, tokens, costUsd, provider, model, promptVersion
