@@ -26,6 +26,12 @@ https://roomy.page/workbench/?mode=workers-ai&scenario=rw-004
 
 흐름: Workers AI 구조화(struct-v3) → 계획 승인 → `propose_patch_plan`(patch-v1) → diff에 `AI plan:` 주석 → HITL args → QA → 게이트.
 
+## Args soft-timeout (별도 시연)
+
+https://roomy.page/workbench/?mock=1&scenario=rw-004&holdArgs=1
+
+실행 시작 → 계획 자동 승인 → ~12s 대기 → 타임라인에 `tool.args_gate_released` (soft_timeout).
+
 ## 찍지 말 것
 
 - 사내 화면, 회사 생산성 %

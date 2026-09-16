@@ -30,7 +30,7 @@ Internal automation is a **second portfolio case** only: design principles + how
 | Stream abort | cancel → `AbortSignal` |
 | Mid-stream drop | `GET /api/runs/:id` (KV-first) → client `stream.reconnect` / `recovered` |
 | Stale cross-isolate view | execute SSE ends with `trace.span` `run_persisted` (`toolNames`) |
-| Args gate hang | soft-timeout (~12s) auto-continues; UI banner ~9s |
+| Args gate hang | soft-timeout (~12s) → `tool.args_gate_released` (`reason=soft_timeout`); UI banner ~9s; deep link `?holdArgs=1` |
 
 ## URL note (roomy.page)
 
