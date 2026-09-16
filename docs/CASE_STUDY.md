@@ -31,6 +31,7 @@ Ship a **public work system**: request → structure with citations → HITL app
 | Protocol catalog API | yes (`GET /workbench/api/protocol` · includes `tool.args_gate_released`) |
 | Workers AI structure + patch tool | yes (struct-v3 + patch-v1 → `apply_code_patch` args + diff `AI plan:`) |
 | HTTP HITL args gate | yes (KV resume + soft-timeout → `tool.args_gate_released` + `holdArgs` deep link) |
+| Run Data Inspector | yes (`#data-inspector` · source→eval stages · owner labels) |
 | Synthetic scenarios | yes (**35** · native fixtures **26** · `fixtureAliasFrom` 0) |
 | Failure demos (10+) + E2E | yes (incl. QA fail → gate reject → eval · SSE-drop recovered Vitest · soft-timeout E2E) |
 | Playwright / Vitest / axe CI | yes (public Actions · eval gates) |
