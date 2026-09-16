@@ -66,8 +66,12 @@ test("citation missing blocks plan approve", async ({ page }) => {
   await page.goto(WB);
   await page.getByRole("button", { name: /rw-012/ }).click();
   await page.getByRole("button", { name: "실행 시작" }).click();
-  await expect(page.getByText(/근거\(citation\) 없는 요구/)).toBeVisible({ timeout: 20_000 });
-  await expect(page.getByRole("button", { name: "계획 승인 → 실행" })).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "계획 승인 → 실행" }),
+  ).toBeDisabled({ timeout: 20_000 });
+  await expect(
+    page.getByText("근거(citation) 없는 요구 — 승인 불가").first(),
+  ).toBeVisible();
 });
 
 test("evals page links to curlable evals JSON", async ({ page }) => {

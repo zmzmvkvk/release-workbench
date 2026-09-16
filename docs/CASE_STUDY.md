@@ -10,6 +10,7 @@ Public hiring evidence for internal-ops AX frontend.
 - Demo (90s): https://roomy.page/workbench/demo/release-workbench-90s.webm
 - QA fail deep link: https://roomy.page/workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1
 - Args soft-timeout: https://roomy.page/workbench/?mock=1&scenario=rw-004&holdArgs=1
+- Data Inspector: https://roomy.page/workbench/#data-inspector
 - Failure matrix: https://roomy.page/workbench/evals#failures
 - GitHub: https://github.com/zmzmvkvk/release-workbench
 - CI: https://github.com/zmzmvkvk/release-workbench/actions
