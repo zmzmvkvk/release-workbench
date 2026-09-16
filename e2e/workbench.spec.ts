@@ -23,6 +23,9 @@ test("happy path: structure → approve → gate", async ({ page }) => {
     timeout: 20_000,
   });
   await page.getByRole("button", { name: "수정 없이 계속" }).click();
+  await expect(page.getByText(/args gate released: args_continue/)).toBeVisible({
+    timeout: 10_000,
+  });
   await expect(page.getByText("status:")).toContainText("awaiting_gate", { timeout: 25_000 });
 
   await page.getByRole("button", { name: "게이트 승인" }).click();
@@ -129,6 +132,29 @@ test("xss fixture shows sanitized note", async ({ page }) => {
   await expect(page.getByText(/sanitized:/i)).toBeVisible({ timeout: 20_000 });
 });
 
+test("tool args soft-timeout records args_gate_released on timeline", async ({
+  page,
+}) => {
+  test.setTimeout(60_000);
+  await page.goto(WB);
+  await page.getByRole("button", { name: /rw-004/ }).click();
+  await page.getByRole("button", { name: "실행 시작" }).click();
+  await expect(page.getByText("status:")).toContainText("awaiting_plan_review", {
+    timeout: 20_000,
+  });
+  await page.getByRole("button", { name: "계획 승인 → 실행" }).click();
+  await expect(page.getByRole("button", { name: "수정 없이 계속" })).toBeVisible({
+    timeout: 20_000,
+  });
+  // Do not click — wait for client-mock soft-timeout (12s)
+  await expect(page.getByText(/args gate soft-timeout/)).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(page.getByText("status:")).toContainText("awaiting_gate", {
+    timeout: 25_000,
+  });
+});
+
 test("plan reject reaches rejected_at_plan", async ({ page }) => {
   await page.goto(WB);
   await page.getByRole("button", { name: /rw-009/ }).click();
@@ -156,6 +182,9 @@ test("tool args edit HITL control appears during execute", async ({ page }) => {
   await page.getByLabel("도구 인자 JSON").fill('{"allowedMime":["application/pdf"]}');
   await page.getByRole("button", { name: "인자 수정 적용" }).click();
   await expect(page.getByText("도구 인자 수정: t_patch")).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByText(/args gate released: args_edit/)).toBeVisible({
+    timeout: 10_000,
+  });
 });
 
 test("stream reconnect banner on rw-006", async ({ page }) => {

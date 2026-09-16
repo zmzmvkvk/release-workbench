@@ -35,12 +35,13 @@ stateDiagram-v2
 | 계획 거절 | `plan.rejected` |
 | 도구 인자 수정 | `tool.args_edited` — client-mock `waitArgsEdit` 또는 HTTP `POST …/continue` `action=args_edit` |
 | 인자 확인 후 계속 | HTTP `action=args_continue` (Worker `play`가 첫 `tool.started` 후 게이트 해제) |
+| Args 게이트 해제 | `tool.args_gate_released` — `reason`: `soft_timeout` \| `args_continue` \| `args_edit` \| `aborted` (타임라인·trace·감사 로그에 남김) |
 | 게이트 승인 | `gate.approved` + `run.completed` |
 | 게이트 거절 | `gate.rejected` |
 | 취소 | `run.cancelled` |
 | SSE 중단 복구 | `GET /runs/:id` 스냅샷 → 클라이언트 `stream.reconnect` (`recoveredFrom: run-snapshot`) |
 
-HTTP execute 경로: Worker `play()`는 첫 `tool.started` 이후 soft-timeout(기본 12s) 또는 `args_continue`/`args_edit`까지 스트림을 일시정지한다.
+HTTP execute 경로: Worker `play()`는 첫 `tool.started` 이후 soft-timeout(기본 12s) 또는 `args_continue`/`args_edit`까지 스트림을 일시정지한다. 해제 시 `tool.args_gate_released`를 emit한 뒤(`args_edit`면 `tool.args_edited`도) 다음 스텝을 이어간다. client-mock도 동일 이벤트 프로토콜을 쓴다.
 
 ## 배포 모드 (라이브)
 

@@ -12,6 +12,7 @@ import { scenarioDefaultFixture, type FixtureId } from "@/lib/fixtures";
 import {
   createClientRun,
   emitClientEvent,
+  releaseArgsGateContinue,
   runExecuteMock,
   runStructuringMock,
   type ClientRun,
@@ -129,6 +130,15 @@ export function WorkbenchApp() {
     if (next.type === "run.duplicate_blocked") {
       setBanner("동일 idempotencyKey 실행이 이미 진행 중");
     }
+    if (next.type === "tool.args_gate_released") {
+      const reason = String(
+        (next.payload as { reason?: string } | null)?.reason ?? "unknown",
+      );
+      // Keep HITL-specific banners for user actions; only announce auto release.
+      if (reason === "soft_timeout") {
+        setBanner("Args 게이트 soft-timeout → 자동 계속 (timeline에 기록됨)");
+      }
+    }
     if (next.type === "tool.started") {
       const payload = next.payload as {
         args?: unknown;
@@ -210,7 +220,7 @@ export function WorkbenchApp() {
       return;
     }
     if (run) {
-      run.notifyArgsEdited?.();
+      releaseArgsGateContinue(run);
       setBanner(`인자 확인 후 계속: ${pending.callId}`);
       return;
     }
@@ -488,6 +498,7 @@ export function WorkbenchApp() {
       "plan.approved",
       "plan.rejected",
       "tool.args_edited",
+      "tool.args_gate_released",
       "gate.approved",
       "gate.rejected",
       "eval.case_recorded",

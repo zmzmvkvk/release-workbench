@@ -510,9 +510,11 @@ async function loadRun(env, runId) {
   }
 }
 
-/** Pause after tool.started until continue(args_*) / KV signal / soft timeout. */
+/** Pause after tool.started until continue(args_*) / KV signal / soft timeout.
+ * @returns {"soft_timeout"|"args_continue"|"args_edit"|"aborted"}
+ */
 async function waitArgsGate(run, signal, env, softTimeoutMs = 12_000) {
-  if (run.cancelled || signal.aborted) return;
+  if (run.cancelled || signal.aborted) return "aborted";
   const key = `args:${run.runId}`;
   if (env?.WORKBENCH_IDEMPOTENCY) {
     try {
@@ -522,21 +524,21 @@ async function waitArgsGate(run, signal, env, softTimeoutMs = 12_000) {
     }
   }
 
-  await new Promise((resolve) => {
+  return new Promise((resolve) => {
     let done = false;
-    const finish = () => {
+    const finish = (reason) => {
       if (done) return;
       done = true;
       clearTimeout(timer);
       clearInterval(poll);
       signal.removeEventListener("abort", onAbort);
       run.resolveArgsGate = null;
-      resolve();
+      resolve(reason);
     };
-    const timer = setTimeout(finish, softTimeoutMs);
-    const onAbort = () => finish();
+    const timer = setTimeout(() => finish("soft_timeout"), softTimeoutMs);
+    const onAbort = () => finish("aborted");
     signal.addEventListener("abort", onAbort);
-    run.resolveArgsGate = () => finish();
+    run.resolveArgsGate = (reason = "args_continue") => finish(reason);
 
     const poll = setInterval(async () => {
       if (!env?.WORKBENCH_IDEMPOTENCY) return;
@@ -549,13 +551,20 @@ async function waitArgsGate(run, signal, env, softTimeoutMs = 12_000) {
           } catch {
             run.pendingArgsEdit = v.slice(5);
           }
+          try {
+            await env.WORKBENCH_IDEMPOTENCY.delete(key);
+          } catch {
+            /* ignore */
+          }
+          finish("args_edit");
+          return;
         }
         try {
           await env.WORKBENCH_IDEMPOTENCY.delete(key);
         } catch {
           /* ignore */
         }
-        finish();
+        finish("args_continue");
       } catch {
         /* ignore poll errors */
       }
@@ -579,8 +588,15 @@ async function play(run, steps, controller, signal, env) {
 
     if (step.type === "tool.started" && !argsGateUsed) {
       argsGateUsed = true;
-      await waitArgsGate(run, signal, env);
+      const releaseReason = await waitArgsGate(run, signal, env);
       if (run.cancelled || signal.aborted) break;
+      const released = append(run, "tool.args_gate_released", {
+        callId: step.payload?.callId ?? "t1",
+        name: step.payload?.name,
+        reason: releaseReason,
+        softTimeoutMs: 12_000,
+      });
+      controller.enqueue(enc.encode(sse(released, released.id)));
       if (run.pendingArgsEdit) {
         const edited = append(run, "tool.args_edited", {
           callId: step.payload?.callId ?? "t1",
@@ -1069,6 +1085,7 @@ export default {
           "tool.failed",
           "tool.retried",
           "tool.args_edited",
+          "tool.args_gate_released",
           "diff.ready",
           "preview.sanitized",
           "qa.finished",
@@ -1342,14 +1359,17 @@ export default {
         if (body.action === "args_edit" && body.args != null && mem) {
           mem.pendingArgsEdit = body.args;
         }
-        if (typeof mem?.resolveArgsGate === "function") {
-          mem.resolveArgsGate();
+        const hadMemoryGate = typeof mem?.resolveArgsGate === "function";
+        if (hadMemoryGate) {
+          mem.resolveArgsGate(
+            body.action === "args_edit" ? "args_edit" : "args_continue",
+          );
         }
         return Response.json({
           ok: true,
           released: true,
           action: body.action,
-          via: mem?.resolveArgsGate ? "memory+kv" : "kv",
+          via: hadMemoryGate ? "memory+kv" : "kv",
         });
       }
 

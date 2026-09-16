@@ -56,6 +56,10 @@ jobs:
           echo "$evals" | grep -q '"fixtureCoverage":2[0-9]\|"fixtureCoverageMin":20'
           echo "$evals" | grep -q 'workers-ai-struct-v3\|workersAiSpot'
           echo "$evals" | grep -q 'fixtureAliasFromMax\|"fixtureCoverage"'
+          echo "$evals" | grep -q '"ttftP50Ms"'
+          echo "$evals" | grep -q '"workflowP50Ms"'
+          echo "$evals" | grep -q '"tokensP50"'
+          echo "$evals" | grep -q '"costUsdPerRequest":null'
       - name: Probe roomy.page health (best-effort)
         continue-on-error: true
         run: |

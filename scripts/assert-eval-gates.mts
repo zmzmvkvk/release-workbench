@@ -24,6 +24,14 @@ const evalResults = JSON.parse(
     workflowCompletionRate: number;
     duplicateSideEffects: number;
     schemaValidRate: number;
+    ttftP50Ms?: number | null;
+    ttftP95Ms?: number | null;
+    cancelLatencyP50Ms?: number | null;
+    workflowP50Ms?: number | null;
+    workflowP95Ms?: number | null;
+    reconnectSuccessRate?: number | null;
+    a11yDefectDetectionRate?: number | null;
+    toolRetrySuccessRate?: number | null;
   };
 };
 const scenarios = JSON.parse(
@@ -37,6 +45,9 @@ const spot = JSON.parse(
     requirementsReadyRate: number;
     sourceQuoteRate: number;
     costUsdPerRequest: number | null;
+    ttftP50Ms?: number | null;
+    ttftP95Ms?: number | null;
+    tokensP50?: number | null;
   };
   meta: { promptVersion: string };
 };
@@ -101,25 +112,33 @@ const summary = {
   updated: new Date().toISOString(),
   mock: {
     scenarioCount: a.scenarioCount,
-    fixtureCoverage:
-      typeof (evalResults.aggregate as { fixtureCoverage?: number }).fixtureCoverage ===
-      "number"
-        ? (evalResults.aggregate as { fixtureCoverage: number }).fixtureCoverage
-        : undefined,
+    fixtureCoverage: a.fixtureCoverage,
     extractionAccuracy: a.extractionAccuracy,
     toolSelectionAccuracy: a.toolSelectionAccuracy,
     conflictRecall: a.conflictRecall,
     workflowCompletionRate: a.workflowCompletionRate,
     schemaValidRate: a.schemaValidRate,
     duplicateSideEffects: a.duplicateSideEffects,
+    ttftP50Ms: a.ttftP50Ms ?? null,
+    ttftP95Ms: a.ttftP95Ms ?? null,
+    cancelLatencyP50Ms: a.cancelLatencyP50Ms ?? null,
+    workflowP50Ms: a.workflowP50Ms ?? null,
+    workflowP95Ms: a.workflowP95Ms ?? null,
+    reconnectSuccessRate: a.reconnectSuccessRate ?? null,
+    a11yDefectDetectionRate: a.a11yDefectDetectionRate ?? null,
+    toolRetrySuccessRate: a.toolRetrySuccessRate ?? null,
     model: evalResults.meta?.model ?? "deterministic-mock",
     promptVersion: evalResults.meta?.promptVersion ?? "none-mock",
     runsPerCase: evalResults.meta?.runsPerCase ?? 1,
+    note: "TTFT/workflow/cancel are mock fixture delays — not live LLM latency",
   },
   workersAiSpot: {
     sampleSize: spot.aggregate.sampleSize,
     requirementsReadyRate: spot.aggregate.requirementsReadyRate,
     sourceQuoteRate: spot.aggregate.sourceQuoteRate,
+    ttftP50Ms: spot.aggregate.ttftP50Ms ?? null,
+    ttftP95Ms: spot.aggregate.ttftP95Ms ?? null,
+    tokensP50: spot.aggregate.tokensP50 ?? null,
     costUsdPerRequest: spot.aggregate.costUsdPerRequest,
     promptVersion: spot.meta.promptVersion,
   },

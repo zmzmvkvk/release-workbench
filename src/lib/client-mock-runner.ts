@@ -33,6 +33,8 @@ export type ClientRun = {
   cancelled: boolean;
   /** Resolve when HITL edits tool args (or timeout). */
   notifyArgsEdited?: () => void;
+  /** Set before notifyArgsEdited for gate release reason. */
+  pendingArgsEditReason?: "args_edit" | "args_continue";
 };
 
 export function createClientRun(): ClientRun {
@@ -84,19 +86,24 @@ async function playSteps(
     }
     if (step.kind === "waitArgsEdit") {
       const waitMs = autoReleaseArgsMs ?? step.timeoutMs;
+      let reason: "soft_timeout" | "args_continue" | "args_edit" | "aborted" =
+        "soft_timeout";
       await new Promise<void>((resolve) => {
         const timer = setTimeout(resolve, waitMs);
         run.notifyArgsEdited = () => {
+          reason = run.pendingArgsEditReason === "args_edit" ? "args_edit" : "args_continue";
           clearTimeout(timer);
           resolve();
         };
         if (signal?.aborted) {
+          reason = "aborted";
           clearTimeout(timer);
           resolve();
         } else {
           signal?.addEventListener(
             "abort",
             () => {
+              reason = "aborted";
               clearTimeout(timer);
               resolve();
             },
@@ -105,6 +112,13 @@ async function playSteps(
         }
       });
       run.notifyArgsEdited = undefined;
+      run.pendingArgsEditReason = undefined;
+      onEvent(
+        nextEvent(run, "tool.args_gate_released", {
+          reason,
+          softTimeoutMs: step.timeoutMs,
+        }),
+      );
       continue;
     }
     try {
@@ -189,6 +203,13 @@ export function emitClientEvent(
 ) {
   onEvent(nextEvent(run, type, payload));
   if (type === "tool.args_edited") {
+    run.pendingArgsEditReason = "args_edit";
     run.notifyArgsEdited?.();
   }
+}
+
+/** Release args HITL without editing (mock path). */
+export function releaseArgsGateContinue(run: ClientRun) {
+  run.pendingArgsEditReason = "args_continue";
+  run.notifyArgsEdited?.();
 }

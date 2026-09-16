@@ -34,6 +34,7 @@ export const EventTypeSchema = z.enum([
   "plan.rejected",
   "tool.started",
   "tool.args_edited",
+  "tool.args_gate_released",
   "tool.finished",
   "tool.failed",
   "tool.retried",
@@ -179,6 +180,14 @@ function summarize(event: WorkbenchEvent): TimelineItem {
     summary = `cancelled: ${String(payload.reason ?? "")}`;
   } else if (event.type === "tool.started") {
     summary = `tool ${String(payload.name)} started`;
+  } else if (event.type === "tool.args_edited") {
+    summary = `tool args edited (${String(payload.callId ?? "?")})`;
+  } else if (event.type === "tool.args_gate_released") {
+    const reason = String(payload.reason ?? "unknown");
+    summary =
+      reason === "soft_timeout"
+        ? `args gate soft-timeout (${String(payload.softTimeoutMs ?? "?")}ms)`
+        : `args gate released: ${reason}`;
   } else if (event.type === "tool.failed") {
     summary = `tool failed: ${String(payload.error ?? "")}`;
   } else if (event.type === "tool.retried") {
@@ -391,6 +400,23 @@ export function applyEvent(state: RunState, raw: unknown): RunState {
         ...next,
         status: "failed",
         error: String(payload.message ?? payload.reason ?? event.type),
+      };
+    case "tool.args_gate_released":
+      // Timeline + traces only; status stays executing until tool.finished / gate.
+      return {
+        ...next,
+        traces: [
+          ...next.traces,
+          {
+            name: "args_gate_released",
+            start: 0,
+            end: Number(payload.softTimeoutMs ?? 0),
+            attrs: {
+              reason: String(payload.reason ?? "unknown"),
+              callId: payload.callId,
+            },
+          },
+        ],
       };
     case "gate.edit_requested":
       return { ...next, status: "executing", gatePending: false };
