@@ -36,7 +36,9 @@ External reviewers cannot open the internal GUIDE/tool. Screenshots and company 
 
 ## Next public artifact (publisher-shaped)
 
-**Run Data Inspector** — one run view: source → requirements+citations → HITL edits → tools → QA → gate → eval case.  
-This is the clean-room answer to “how do you manage data lifecycle?” without cloning internal GUIDE UI.
+**Run Data Inspector** (shipped): https://roomy.page/workbench/#data-inspector — one run view: source → requirements+citations → HITL → tools → QA → gate → eval.  
+Clean-room answer to “how do you manage data lifecycle?” without cloning internal GUIDE UI.
+
+**Next:** Dataset Studio on `/evals` (case ownership / labels UI).
 
 See also: `docs/CASE_STUDY.md`, `docs/SECURITY.md`, `docs/HIRING_BRIEF.md`.

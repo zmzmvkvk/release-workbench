@@ -38,7 +38,7 @@
 | args soft-timeout UX | ✅ http-sse 9s 배너 + `tool.args_gate_released` + E2E soft-timeout 타임라인 |
 | QA fail → eval | ✅ rw-027 E2E · gate reject → `eval.case_recorded` |
 | costUsd 정직성 | ✅ provider 미제공 → `null` / UI `— (미계측)` · mock도 `$0` 미표기 |
-| promptVersion UI | ✅ metrics strip · Workers AI `workers-ai-struct-v3` |
+| Run Data Inspector | ✅ 원문→추출→근거→HITL→도구→QA→게이트→eval 단계 UI (`#data-inspector`) |
 
 ## 실패 10종
 
@@ -57,7 +57,7 @@
 
 ## 아직 목표 밖 / 이후
 
-- **Run Data Inspector** — run 단위 데이터 생명주기 UI (사내 GUIDE 원칙의 공개 재현; 사내 화면 복제 금지)
+- Dataset Studio (evals 편집·케이스 소유권 UI) — Inspector 다음 단계
 - OpenAI/Anthropic 키 경로 고도화
 - FDE용 BE/DB·인증·Docker
 - Workers AI 대량 벤치·cost 계측 — tokens는 `usage.total_tokens` 파싱(spot tokens p50≈236). **costUsd는 provider 미제공 → null** (추정값 미표기)

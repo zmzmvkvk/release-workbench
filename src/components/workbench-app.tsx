@@ -25,6 +25,7 @@ import {
   type WorkerHealth,
 } from "@/lib/http-sse";
 import { sanitizePreviewHtml } from "@/lib/sanitize-preview";
+import { RunDataInspector } from "@/components/run-data-inspector";
 import scenariosData from "@/data/scenarios.json";
 
 type Scenario = (typeof scenariosData.scenarios)[number];
@@ -552,6 +553,10 @@ export function WorkbenchApp() {
             실패 매트릭스
           </Link>
           {" · "}
+          <a href="#data-inspector" className="text-emerald-400 hover:underline">
+            Data Inspector
+          </a>
+          {" · "}
           <a
             href="https://github.com/zmzmvkvk/release-workbench/blob/main/docs/HIRING_BRIEF.md"
             className="text-emerald-400 hover:underline"
@@ -803,6 +808,8 @@ export function WorkbenchApp() {
           {state.error}
         </div>
       ) : null}
+
+      <RunDataInspector state={state} />
 
       <section className="grid gap-4 lg:grid-cols-2">
         <Panel title="Agent 실행 타임라인">

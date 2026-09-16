@@ -4,6 +4,19 @@ import AxeBuilder from "@axe-core/playwright";
 /** Force client-mock transport in CI (no Worker). */
 const WB = "/workbench/?mock=1";
 
+test("Run Data Inspector shows lifecycle stages after start", async ({ page }) => {
+  await page.goto(WB);
+  await expect(page.getByRole("heading", { name: "Run Data Inspector" })).toBeVisible();
+  await page.getByRole("button", { name: /rw-004/ }).click();
+  await page.getByRole("button", { name: "실행 시작" }).click();
+  await expect(page.getByText("status:")).toContainText("awaiting_plan_review", {
+    timeout: 20_000,
+  });
+  await expect(page.getByText("요구 추출")).toBeVisible();
+  await expect(page.getByText("근거(citation)")).toBeVisible();
+  await expect(page.getByText(/\d+\/\d+ with citation/)).toBeVisible();
+});
+
 test("happy path: structure → approve → gate", async ({ page }) => {
   test.setTimeout(60_000);
   await page.goto(WB);

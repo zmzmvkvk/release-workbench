@@ -18,6 +18,7 @@ Not an "AI builds a page" demo -- a work system where incomplete model output is
 | 90s demo (~63s) | https://roomy.page/workbench/demo/release-workbench-90s.webm |
 | Failure deep link | https://roomy.page/workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1 |
 | Args soft-timeout | https://roomy.page/workbench/?mock=1&scenario=rw-004&holdArgs=1 (click Start) |
+| Data Inspector | https://roomy.page/workbench/#data-inspector |
 | Workers AI hybrid | https://roomy.page/workbench/?mode=workers-ai&scenario=rw-004 |
 | Failure matrix | https://roomy.page/workbench/evals#failures |
 | workers.dev | https://roomy-page-workbench.hommy.workers.dev/workbench/ |
