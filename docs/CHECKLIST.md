@@ -57,6 +57,7 @@
 
 ## 아직 목표 밖 / 이후
 
+- **Run Data Inspector** — run 단위 데이터 생명주기 UI (사내 GUIDE 원칙의 공개 재현; 사내 화면 복제 금지)
 - OpenAI/Anthropic 키 경로 고도화
 - FDE용 BE/DB·인증·Docker
 - Workers AI 대량 벤치·cost 계측 — tokens는 `usage.total_tokens` 파싱(spot tokens p50≈236). **costUsd는 provider 미제공 → null** (추정값 미표기)
