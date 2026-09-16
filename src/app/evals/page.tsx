@@ -28,6 +28,10 @@ export default function EvalsPage() {
           ← 워크벤치
         </Link>
         {" · "}
+        <Link href="/#data-inspector" className="text-emerald-400 hover:underline">
+          Data Inspector
+        </Link>
+        {" · "}
         <a
           href="/workbench/api/evals"
           className="text-emerald-400 hover:underline"
@@ -36,6 +40,10 @@ export default function EvalsPage() {
         >
           evals JSON (curl)
         </a>
+      </p>
+      <p className="mt-2 text-xs text-zinc-600">
+        Dataset Studio(케이스 소유·레이블 UI)는 다음 단계. 지금은 벤치 표 + 실패
+        매트릭스 + curl latency 필드로 검증.
       </p>
       <p className="mt-4 rounded-lg border border-zinc-800 bg-zinc-900/50 p-3 text-xs text-zinc-400">
         라이브 HTTP HITL: execute 첫 도구에서 Worker가 일시정지 →{" "}
