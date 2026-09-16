@@ -37,8 +37,9 @@ External reviewers cannot open the internal GUIDE/tool. Screenshots and company 
 ## Next public artifact (publisher-shaped)
 
 **Run Data Inspector** (shipped): https://roomy.page/workbench/#data-inspector — one run view: source → requirements+citations → HITL → tools → QA → gate → eval.  
-Clean-room answer to “how do you manage data lifecycle?” without cloning internal GUIDE UI.
 
-**Next:** Dataset Studio on `/evals` (case ownership / labels UI).
+**Dataset Studio** (shipped, read-only catalog): https://roomy.page/workbench/evals#dataset-studio — provenance: synthetic_authored / failure_demo / gate_reject_loop / workers_ai_spot.
+
+**Next:** Dataset Studio write path (add case API) — not required for hiring browse evidence.
 
 See also: `docs/CASE_STUDY.md`, `docs/SECURITY.md`, `docs/HIRING_BRIEF.md`.
