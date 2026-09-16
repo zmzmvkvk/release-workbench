@@ -170,28 +170,85 @@ export default function EvalsPage() {
               </tr>
             </thead>
             <tbody>
-              {scenariosData.scenarios.slice(0, 12).map((s) => {
-                const bench = cases.find((c) => c.scenarioId === s.id);
-                const isFail =
-                  (s.failureFocus?.length ?? 0) > 0 || s.tags?.includes("failure");
-                const provenance = isFail ? "failure_demo" : "synthetic_authored";
-                return (
-                  <tr key={s.id} className="border-b border-zinc-900 text-zinc-300">
-                    <td className="px-3 py-2 font-mono text-xs">{s.id}</td>
-                    <td className="px-3 py-2 text-xs">{provenance}</td>
-                    <td className="px-3 py-2 text-xs">human (expected.*)</td>
-                    <td className="px-3 py-2 text-xs text-zinc-500">
-                      {s.fixture ?? "—"}
-                      {bench ? ` · ${bench.outcome}` : ""}
-                    </td>
-                  </tr>
+              {(() => {
+                const byId = new Map(
+                  scenariosData.scenarios.map((s) => [s.id, s] as const),
                 );
-              })}
+                const authored = scenariosData.scenarios
+                  .filter(
+                    (s) =>
+                      !(s.failureFocus?.length ?? 0) &&
+                      !s.tags?.includes("failure"),
+                  )
+                  .slice(0, 4);
+                const fails = failureScenarios.slice(0, 4);
+                const gateLoop = byId.get("rw-027");
+                const rows: {
+                  id: string;
+                  provenance: string;
+                  owner: string;
+                  detail: string;
+                  href?: string;
+                }[] = [
+                  ...authored.map((s) => {
+                    const bench = cases.find((c) => c.scenarioId === s.id);
+                    return {
+                      id: s.id,
+                      provenance: "synthetic_authored",
+                      owner: "human (expected.*)",
+                      detail: `${s.fixture ?? "—"}${bench ? ` · ${bench.outcome}` : ""}`,
+                    };
+                  }),
+                  ...fails.map((s) => {
+                    const bench = cases.find((c) => c.scenarioId === s.id);
+                    return {
+                      id: s.id,
+                      provenance: "failure_demo",
+                      owner: "human (demo path)",
+                      detail: `${s.fixture ?? "—"}${bench ? ` · ${bench.outcome}` : ""}`,
+                    };
+                  }),
+                ];
+                if (gateLoop) {
+                  rows.push({
+                    id: "rw-027",
+                    provenance: "gate_reject_loop",
+                    owner: "runtime (HITL reject)",
+                    detail: `${gateLoop.fixture ?? "qa_playwright_mismatch"} · eval.case_recorded`,
+                    href: "/workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1",
+                  });
+                }
+                for (const c of workersAiSpot.cases.slice(0, 3)) {
+                  rows.push({
+                    id: c.scenarioId,
+                    provenance: "workers_ai_spot",
+                    owner: "model (live spot)",
+                    detail: `ttft ${c.ttftMs ?? "—"} · tokens ${"tokens" in c && c.tokens != null ? c.tokens : "—"} · cost null`,
+                  });
+                }
+                return rows.map((r, i) => (
+                  <tr key={`${r.provenance}-${r.id}-${i}`} className="border-b border-zinc-900 text-zinc-300">
+                    <td className="px-3 py-2 font-mono text-xs">
+                      {r.href ? (
+                        <a href={r.href} className="text-emerald-400 hover:underline">
+                          {r.id}
+                        </a>
+                      ) : (
+                        r.id
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-xs">{r.provenance}</td>
+                    <td className="px-3 py-2 text-xs">{r.owner}</td>
+                    <td className="px-3 py-2 text-xs text-zinc-500">{r.detail}</td>
+                  </tr>
+                ));
+              })()}
             </tbody>
           </table>
         </div>
         <p className="mt-2 text-xs text-zinc-600">
-          상위 12개만 표시 · 전체 n={scenariosData.meta.count}.{" "}
+          provenance 샘플 (authored / failure / gate loop / Workers AI spot). 전체
+          시나리오 n={scenariosData.meta.count}.{" "}
           <Link href="/#data-inspector" className="text-emerald-400 hover:underline">
             Run Data Inspector
           </Link>
@@ -324,7 +381,8 @@ export default function EvalsPage() {
       </section>
 
       <p className="mt-4 text-xs text-zinc-500">
-        mock TTFT는 fixture delay 기준. Workers AI 표는 mock n=32와 합산하지 않음.
+        mock TTFT는 fixture delay 기준. Workers AI 표는 mock n={aggregate.scenarioCount}와
+        합산하지 않음.
       </p>
 
       <div className="mt-8 overflow-x-auto rounded-xl border border-zinc-800">
