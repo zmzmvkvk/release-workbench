@@ -39,6 +39,7 @@
 | QA fail → eval | ✅ rw-027 E2E · gate reject → `eval.case_recorded` |
 | costUsd 정직성 | ✅ provider 미제공 → `null` / UI `— (미계측)` · mock도 `$0` 미표기 |
 | Run Data Inspector | ✅ 원문→추출→근거→HITL→도구→QA→게이트→eval 단계 UI (`#data-inspector`) |
+| Dataset Studio | ✅ `/evals#dataset-studio` provenance 카탈로그 (합성/실패/gate loop/spot) |
 
 ## 실패 10종
 
@@ -57,7 +58,7 @@
 
 ## 아직 목표 밖 / 이후
 
-- Dataset Studio (evals 편집·케이스 소유권 UI) — Inspector 다음 단계
+- Dataset Studio 쓰기(편집)·케이스 추가 API — 지금은 읽기 전용 카탈로그
 - OpenAI/Anthropic 키 경로 고도화
 - FDE용 BE/DB·인증·Docker
 - Workers AI 대량 벤치·cost 계측 — tokens는 `usage.total_tokens` 파싱(spot tokens p50≈236). **costUsd는 provider 미제공 → null** (추정값 미표기)

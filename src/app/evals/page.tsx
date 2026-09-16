@@ -42,8 +42,11 @@ export default function EvalsPage() {
         </a>
       </p>
       <p className="mt-2 text-xs text-zinc-600">
-        Dataset Studio(케이스 소유·레이블 UI)는 다음 단계. 지금은 벤치 표 + 실패
-        매트릭스 + curl latency 필드로 검증.
+        <a href="#dataset-studio" className="text-emerald-400/80 hover:underline">
+          Dataset Studio
+        </a>
+        {" · "}
+        케이스 provenance(합성 / 실패시연 / gate loop / Workers AI spot) 카탈로그.
       </p>
       <p className="mt-4 rounded-lg border border-zinc-800 bg-zinc-900/50 p-3 text-xs text-zinc-400">
         라이브 HTTP HITL: execute 첫 도구에서 Worker가 일시정지 →{" "}
@@ -119,6 +122,81 @@ export default function EvalsPage() {
               : null,
           )}
         />
+      </section>
+
+      <section className="mt-10" id="dataset-studio">
+        <h2 className="text-lg font-medium text-zinc-100">Dataset Studio</h2>
+        <p className="mt-1 text-xs text-zinc-500">
+          평가 데이터가 <strong className="font-medium text-zinc-400">언제·누가·어떻게</strong>{" "}
+          들어오는지 (사내 GUIDE 비공개 · 합성만). 편집 UI는 읽기 전용 카탈로그.
+        </p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Stat label="합성 시나리오 (authored)" value={String(scenariosData.meta.count)} />
+          <Stat label="실패 시연 태그" value={String(failureScenarios.length)} />
+          <Stat
+            label="bench cases (mock)"
+            value={String(cases.length)}
+          />
+          <Stat
+            label="Workers AI spot"
+            value={String(workersAiSpot.meta.sampleSize)}
+          />
+        </div>
+        <ul className="mt-4 space-y-2 text-xs text-zinc-400">
+          <li>
+            <code className="text-zinc-300">synthetic_authored</code> — 시나리오 JSON + expected
+            레이블 (사람 작성 · 모델 출력 아님)
+          </li>
+          <li>
+            <code className="text-zinc-300">failure_demo</code> — failureFocus/tags로 시연용 실패
+            경로
+          </li>
+          <li>
+            <code className="text-zinc-300">gate_reject_loop</code> — 런타임{" "}
+            <code className="text-zinc-300">eval.case_recorded</code> (예: rw-027)
+          </li>
+          <li>
+            <code className="text-zinc-300">workers_ai_spot</code> — 라이브 소량 표본 (costUsd null)
+          </li>
+        </ul>
+        <div className="mt-4 overflow-x-auto rounded-xl border border-zinc-800">
+          <table className="w-full min-w-[36rem] text-left text-sm">
+            <thead className="border-b border-zinc-800 bg-zinc-900/80 text-xs text-zinc-500">
+              <tr>
+                <th className="px-3 py-2">id</th>
+                <th className="px-3 py-2">provenance</th>
+                <th className="px-3 py-2">owner</th>
+                <th className="px-3 py-2">fixture / outcome</th>
+              </tr>
+            </thead>
+            <tbody>
+              {scenariosData.scenarios.slice(0, 12).map((s) => {
+                const bench = cases.find((c) => c.scenarioId === s.id);
+                const isFail =
+                  (s.failureFocus?.length ?? 0) > 0 || s.tags?.includes("failure");
+                const provenance = isFail ? "failure_demo" : "synthetic_authored";
+                return (
+                  <tr key={s.id} className="border-b border-zinc-900 text-zinc-300">
+                    <td className="px-3 py-2 font-mono text-xs">{s.id}</td>
+                    <td className="px-3 py-2 text-xs">{provenance}</td>
+                    <td className="px-3 py-2 text-xs">human (expected.*)</td>
+                    <td className="px-3 py-2 text-xs text-zinc-500">
+                      {s.fixture ?? "—"}
+                      {bench ? ` · ${bench.outcome}` : ""}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-2 text-xs text-zinc-600">
+          상위 12개만 표시 · 전체 n={scenariosData.meta.count}.{" "}
+          <Link href="/#data-inspector" className="text-emerald-400 hover:underline">
+            Run Data Inspector
+          </Link>
+          에서 run 단위 생명주기 확인.
+        </p>
       </section>
 
       <section className="mt-10" id="failures">

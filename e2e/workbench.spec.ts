@@ -74,6 +74,13 @@ test("citation missing blocks plan approve", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("evals page shows Dataset Studio provenance", async ({ page }) => {
+  await page.goto("/workbench/evals#dataset-studio");
+  await expect(page.getByRole("heading", { name: "Dataset Studio" })).toBeVisible();
+  await expect(page.getByText("synthetic_authored")).toBeVisible();
+  await expect(page.getByText("gate_reject_loop")).toBeVisible();
+});
+
 test("evals page links to curlable evals JSON", async ({ page }) => {
   await page.goto("/workbench/evals");
   await expect(page.getByRole("link", { name: /evals JSON/ })).toHaveAttribute(
