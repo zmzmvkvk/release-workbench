@@ -9,6 +9,7 @@ Public hiring evidence for internal-ops AX frontend.
 - Evals JSON: https://roomy.page/workbench/api/evals
 - Demo (90s): https://roomy.page/workbench/demo/release-workbench-90s.webm
 - QA fail deep link: https://roomy.page/workbench/?mock=1&scenario=rw-027&filter=failure&autorun=1
+- Args soft-timeout: https://roomy.page/workbench/?mock=1&scenario=rw-004&holdArgs=1
 - Failure matrix: https://roomy.page/workbench/evals#failures
 - GitHub: https://github.com/zmzmvkvk/release-workbench
 - CI: https://github.com/zmzmvkvk/release-workbench/actions
@@ -19,22 +20,22 @@ Operating FE experience alone was weak AX hiring evidence. Internal AI automatio
 
 ## Approach
 
-Ship a **public work system**: request → structure with citations → HITL approve/edit/reject → tools/diff/preview/QA → gate. Same event protocol for client mock, Worker SSE mock, and Workers AI. Live HTTP execute pauses on first `tool.started` until `args_continue`/`args_edit` (KV across isolates). Preview uses DOMPurify + sandboxed iframe. Gate reject writes `eval.case_recorded` into the public failure→eval loop.
+Ship a **public work system**: request → structure with citations → HITL approve/edit/reject → tools/diff/preview/QA → gate. Same event protocol for client mock, Worker SSE mock, and Workers AI. Live HTTP execute pauses on first `tool.started` until `args_continue`/`args_edit` or soft-timeout (~12s), then emits `tool.args_gate_released` (KV across isolates). Preview uses DOMPurify + sandboxed iframe. Gate reject writes `eval.case_recorded` into the public failure→eval loop.
 
 ## Evidence (verified)
 
 | Item | Status |
 | --- | --- |
 | Live app + HTTP SSE | yes (`roomy.page` same-origin) |
-| Protocol catalog API | yes (`GET /workbench/api/protocol`) |
+| Protocol catalog API | yes (`GET /workbench/api/protocol` · includes `tool.args_gate_released`) |
 | Workers AI structure + patch tool | yes (struct-v3 + patch-v1 → `apply_code_patch` args + diff `AI plan:`) |
-| HTTP HITL args gate | yes (KV resume + `waitUntil` persist) |
+| HTTP HITL args gate | yes (KV resume + soft-timeout → `tool.args_gate_released` + `holdArgs` deep link) |
 | Synthetic scenarios | yes (**35** · native fixtures **26** · `fixtureAliasFrom` 0) |
-| Failure demos (10+) + E2E | yes (incl. QA fail → gate reject → eval · SSE-drop recovered Vitest) |
+| Failure demos (10+) + E2E | yes (incl. QA fail → gate reject → eval · SSE-drop recovered Vitest · soft-timeout E2E) |
 | Playwright / Vitest / axe CI | yes (public Actions · eval gates) |
 | Prod health + Workers AI SSE + hybrid smoke | yes (`run_persisted` SSE + KV snapshot retry) |
 | Mock bench n=35 + Workers AI spot | yes (extraction/toolSelection/conflict = 1; tokens p50≈232) |
-| Eval summary API | yes (`GET /workbench/api/evals` · fixtureCoverage) |
+| Eval summary API | yes (`GET /workbench/api/evals` · fixtureCoverage · TTFT/workflow curl fields) |
 | Run snapshot API | yes (KV-first `GET /workbench/api/runs/:id` · UI link on http-sse) |
 | Architecture / protocol / security / failures | yes (`docs/`) |
 | 60–90s demo | yes (~63s · QA fail + eval · evals fixture coverage) |
