@@ -1481,6 +1481,18 @@ export default {
     }
 
     const assetReq = new Request(new URL(url.pathname, url.origin), request);
-    return env.ASSETS.fetch(assetReq);
+    const assetRes = await env.ASSETS.fetch(assetReq);
+    // ASSETS html_handling redirects (e.g. /evals/ -> /evals) lose the basePath
+    // because we stripped /workbench above. Re-prefix so the custom domain
+    // does not bounce to roomy.page/evals (522).
+    if ([301, 302, 307, 308].includes(assetRes.status)) {
+      const loc = assetRes.headers.get("Location") ?? "";
+      if (loc.startsWith("/") && !loc.startsWith("/workbench")) {
+        const headers = new Headers(assetRes.headers);
+        headers.set("Location", `/workbench${loc}`);
+        return new Response(null, { status: assetRes.status, headers });
+      }
+    }
+    return assetRes;
   },
 };
